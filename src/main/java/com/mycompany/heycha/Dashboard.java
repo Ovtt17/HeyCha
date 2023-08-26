@@ -8,7 +8,10 @@ import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialLighterIJTheme;
 import java.awt.Color;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import javax.swing.UIManager;
+import javax.swing.text.html.HTML;
 
 /**
  *
@@ -38,12 +41,8 @@ public class Dashboard extends javax.swing.JFrame {
     
     private void SetDate(){
         LocalDate now = LocalDate.now();
-        int year = now.getYear();
-        int day = now.getDayOfMonth();
-        int month = now.getMonthValue();
-        String[] months = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre",
-                            "Octubre", "Noviembre", "Diciembre"};
-        dateText.setText("Hoy es " + day + " de " +months[month-1] + " de "+ year);
+        Locale spanishLocale = new Locale("es", "ES");
+        dateText.setText(now.format(DateTimeFormatter.ofPattern("'Hoy es' EEEE dd 'de' MMMM 'de' yyyy", spanishLocale)));
     }
 
     /**
@@ -72,7 +71,7 @@ public class Dashboard extends javax.swing.JFrame {
 
         background.setBackground(new java.awt.Color(240, 240, 240));
 
-        menu.setBackground(new java.awt.Color(255, 102, 255));
+        menu.setBackground(new java.awt.Color(13, 71, 161));
         menu.setPreferredSize(new java.awt.Dimension(270, 640));
 
         jSeparator1.setPreferredSize(new java.awt.Dimension(50, 5));
