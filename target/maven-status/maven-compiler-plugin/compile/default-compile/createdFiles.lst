@@ -1,3 +1,12 @@
-com\mycompany\heycha\Dashboard.class
+com\mycompany\views\Clients.class
 com\mycompany\heycha\Dashboard$1.class
 com\mycompany\heycha\HeyCha.class
+com\mycompany\views\Products$1.class
+com\mycompany\views\Products.class
+com\mycompany\heycha\Dashboard$2.class
+com\mycompany\heycha\Dashboard.class
+com\mycompany\views\Sales.class
+com\mycompany\views\Clients$1.class
+com\mycompany\heycha\Dashboard$3.class
+com\mycompany\views\Sales$1.class
+com\mycompany\heycha\Dashboard$4.class
