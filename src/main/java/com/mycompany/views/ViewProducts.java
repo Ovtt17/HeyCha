@@ -1,4 +1,3 @@
-
 package com.mycompany.views;
 
 import com.mycompany.heycha.Dashboard;
@@ -15,13 +14,24 @@ public class ViewProducts extends javax.swing.JPanel {
      */
     public ViewProducts() {
         initComponents();
-        InitStyles();
+        initStyles();
+        loadProducts();
     }
 
-    private void InitStyles() {
+    private void initStyles() {
         title.putClientProperty("FlatLaf.styleClass", "h1");
         title.setForeground(Color.black);
         productSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto a buscar.");
+    }
+
+    private void loadProducts() {
+//        try {
+//            DAOProducts dao = new DAOProductsImpl();
+//            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+//            dao.consult("").forEach((u) -> model.addRow(new Object[]{u.getId(), u.getName(), u.getPrice(), u.getDescription(), u.getDisCount(), u.getBrand(), u.}));
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
     }
 
     /**

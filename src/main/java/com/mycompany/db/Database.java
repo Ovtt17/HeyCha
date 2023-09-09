@@ -12,14 +12,14 @@ import java.util.logging.Logger;
  */
 public class Database {
 
-    protected Connection connection;
+    public Connection connection;
     private final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
     private final String DB_URL = "jdbc:mysql://localhost/probando";
 
     private final String USER = "root";
     private final String PASSWORD = "Ovettmora_12";
 
-    public void ConnectDB() {
+    public void connectDB() {
         try {
             connection = DriverManager.getConnection(DB_URL, USER, PASSWORD);
             Class.forName(JDBC_DRIVER);
@@ -30,11 +30,13 @@ public class Database {
         }
     }
     
-    public void CloseDB() throws SQLException {
+    public void closeDB() throws SQLException {
         if (connection != null) {
             if (!connection.isClosed()) {
                 connection.close();
             }
         }
     }
+    
 }
+

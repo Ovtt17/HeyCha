@@ -6,8 +6,11 @@
     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
       <Color blue="ff" green="ff" red="ff" type="rgb"/>
     </Property>
+    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+      <Dimension value="[1090, 680]"/>
+    </Property>
     <Property name="size" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[1040, 680]"/>
+      <Dimension value="[1090, 680]"/>
     </Property>
   </Properties>
   <SyntheticProperties>
@@ -72,7 +75,7 @@
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="menu" pref="680" max="32767" attributes="0"/>
+              <Component id="menu" pref="686" max="32767" attributes="0"/>
               <Group type="102" attributes="0">
                   <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
                   <Component id="message" min="-2" pref="36" max="-2" attributes="0"/>
@@ -307,7 +310,7 @@
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
             </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[764, 430]"/>
+              <Dimension value="[764, 436]"/>
             </Property>
           </Properties>
           <AuxValues>

@@ -9,12 +9,8 @@ import java.text.DecimalFormat;
 public class ModelProducts {
     private int id;
     private String name;
-    private float price;
+    private Float price;
     private String description;
-    private int discount;
-    private int idBrand;
-    private int idCategory;
-    private int idType;
 
     public int getId() {
         return id;
@@ -32,14 +28,13 @@ public class ModelProducts {
         this.name = name;
     }
 
-    public float getPrice() {
+    public Float getPrice() {
         return price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(Float price) {
         this.price = price;
     }
-
 
     public String getDescription() {
         return description;
@@ -49,36 +44,41 @@ public class ModelProducts {
         this.description = description;
     }
 
-    public int getDiscount() {
+    public Integer getDiscount() {
         return discount;
     }
 
-    public void setDiscount(int discount) {
+    public void setDiscount(Integer discount) {
         this.discount = discount;
     }
 
-    public int getIdBrand() {
+    public Integer getIdBrand() {
         return idBrand;
     }
 
-    public void setIdBrand(int idBrand) {
+    public void setIdBrand(Integer idBrand) {
         this.idBrand = idBrand;
     }
 
-    public int getIdCategory() {
+    public Integer getIdCategory() {
         return idCategory;
     }
 
-    public void setIdCategory(int idCategory) {
+    public void setIdCategory(Integer idCategory) {
         this.idCategory = idCategory;
     }
 
-    public int getIdType() {
+    public Integer getIdType() {
         return idType;
     }
 
-    public void setIdType(int idType) {
+    public void setIdType(Integer idType) {
         this.idType = idType;
     }
+    private Integer discount;
+    private Integer idBrand;
+    private Integer idCategory;
+    private Integer idType;
+
     
 }

@@ -1,9 +1,6 @@
 package com.mycompany.heycha;
 
-import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialLighterIJTheme;
-import com.mycompany.interfaces.DAOProducts;
-import com.mycompany.views.UpProducts;
 import com.mycompany.views.ViewClients;
 import com.mycompany.views.ViewProducts;
 import com.mycompany.views.ViewSales;
@@ -13,8 +10,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.text.html.HTML;
 
 /**
  *
@@ -53,7 +48,7 @@ public class Dashboard extends javax.swing.JFrame {
         ShowPanel(new ViewProducts());
     }
     public static void ShowPanel(JPanel p){
-        p.setSize(770, 410);
+        p.setSize(764, 436);
         p.setLocation(0,0);
         
         content.removeAll();
@@ -85,7 +80,8 @@ public class Dashboard extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
-        setSize(new java.awt.Dimension(1040, 680));
+        setPreferredSize(new java.awt.Dimension(1090, 680));
+        setSize(new java.awt.Dimension(1090, 680));
 
         background.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -213,7 +209,7 @@ public class Dashboard extends javax.swing.JFrame {
         message.setText("Bienvenido!");
 
         content.setBackground(new java.awt.Color(255, 255, 255));
-        content.setPreferredSize(new java.awt.Dimension(764, 430));
+        content.setPreferredSize(new java.awt.Dimension(764, 436));
         content.setLayout(new java.awt.BorderLayout());
 
         javax.swing.GroupLayout backgroundLayout = new javax.swing.GroupLayout(background);
@@ -234,7 +230,7 @@ public class Dashboard extends javax.swing.JFrame {
         );
         backgroundLayout.setVerticalGroup(
             backgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(menu, javax.swing.GroupLayout.DEFAULT_SIZE, 680, Short.MAX_VALUE)
+            .addComponent(menu, javax.swing.GroupLayout.DEFAULT_SIZE, 686, Short.MAX_VALUE)
             .addGroup(backgroundLayout.createSequentialGroup()
                 .addGap(6, 6, 6)
                 .addComponent(message, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
