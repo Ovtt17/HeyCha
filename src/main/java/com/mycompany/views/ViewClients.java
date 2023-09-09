@@ -5,21 +5,24 @@
 package com.mycompany.views;
 
 import java.awt.Color;
+import java.awt.Insets;
+import javax.swing.JScrollBar;
 
 /**
  *
  * @author Ovett
  */
-public class Clients extends javax.swing.JPanel {
+public class ViewClients extends javax.swing.JPanel {
 
     /**
      * Creates new form Clients
      */
-    public Clients() {
+    public ViewClients() {
         initComponents();
         InitStyles();
     }
-    private void InitStyles(){
+
+    private void InitStyles() {
         title.putClientProperty("FlatLaf.styleClass", "h1");
         title.setForeground(Color.black);
         clientSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del cliente a buscar.");
@@ -147,9 +150,9 @@ public class Clients extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 770, Short.MAX_VALUE)
+            .addGap(0, 778, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(background_sells, javax.swing.GroupLayout.PREFERRED_SIZE, 770, Short.MAX_VALUE))
+                .addComponent(background_sells, javax.swing.GroupLayout.DEFAULT_SIZE, 778, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

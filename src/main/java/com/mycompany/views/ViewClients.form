@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
-  <Properties>
-    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[770, 410]"/>
-    </Property>
-  </Properties>
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
@@ -21,9 +16,9 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <EmptySpace min="0" pref="770" max="32767" attributes="0"/>
+          <EmptySpace min="0" pref="778" max="32767" attributes="0"/>
           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
-              <Component id="background_sells" alignment="0" pref="770" max="32767" attributes="0"/>
+              <Component id="background_sells" alignment="0" pref="778" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -62,7 +57,7 @@
                   <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="saleSearch" max="32767" attributes="0"/>
+                          <Component id="clientSearch" max="32767" attributes="0"/>
                           <EmptySpace min="-2" pref="51" max="-2" attributes="0"/>
                           <Component id="btnSearch" min="-2" pref="121" max="-2" attributes="0"/>
                       </Group>
@@ -87,7 +82,7 @@
                   <Component id="title" min="-2" pref="24" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="saleSearch" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
+                      <Component id="clientSearch" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
                       <Component id="btnSearch" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
@@ -106,10 +101,10 @@
       <SubComponents>
         <Component class="javax.swing.JLabel" name="title">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Ventas"/>
+            <Property name="text" type="java.lang.String" value="Clientes"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="saleSearch">
+        <Component class="javax.swing.JTextField" name="clientSearch">
           <Properties>
             <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
               <Color id="Text Cursor"/>
@@ -147,34 +142,16 @@
             <Component class="javax.swing.JTable" name="jTable1">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="8" rowCount="0">
-                    <Column editable="true" title="ID Venta" type="java.lang.Integer"/>
-                    <Column editable="true" title="Nombre de Producto" type="java.lang.String"/>
-                    <Column editable="true" title="ID Producto" type="java.lang.Integer"/>
-                    <Column editable="true" title="Nombre de Cliente" type="java.lang.String"/>
-                    <Column editable="true" title="Precio Unitario" type="java.lang.Float"/>
-                    <Column editable="true" title="Cantidad" type="java.lang.Float"/>
-                    <Column editable="true" title="Total" type="java.lang.Float"/>
-                    <Column editable="true" title="Fecha" type="java.lang.String"/>
+                  <Table columnCount="5" rowCount="0">
+                    <Column editable="true" title="ID Cliente" type="java.lang.Integer"/>
+                    <Column editable="true" title="Nombre Cliente" type="java.lang.Integer"/>
+                    <Column editable="true" title="Telefono" type="java.lang.Integer"/>
+                    <Column editable="true" title="Ciudad" type="java.lang.String"/>
+                    <Column editable="true" title="Direcci&#xf3;n" type="java.lang.String"/>
                   </Table>
                 </Property>
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                   <TableColumnModel selectionModel="0">
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
                     <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                       <Title/>
                       <Editor/>

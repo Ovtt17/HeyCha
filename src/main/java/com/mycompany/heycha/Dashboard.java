@@ -1,14 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package com.mycompany.heycha;
 
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialLighterIJTheme;
-import com.mycompany.views.Clients;
-import com.mycompany.views.Products;
-import com.mycompany.views.Sales;
+import com.mycompany.interfaces.DAOProducts;
+import com.mycompany.views.UpProducts;
+import com.mycompany.views.ViewClients;
+import com.mycompany.views.ViewProducts;
+import com.mycompany.views.ViewSales;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.time.LocalDate;
@@ -29,6 +27,7 @@ public class Dashboard extends javax.swing.JFrame {
      */
     public Dashboard() {
         initComponents();
+        this.setExtendedState(MAXIMIZED_BOTH);
         InitStyles();
         SetDate();
         InitContent();
@@ -51,9 +50,9 @@ public class Dashboard extends javax.swing.JFrame {
     }
 
     private void InitContent() {
-        ShowPanel(new Products());
+        ShowPanel(new ViewProducts());
     }
-    private void ShowPanel(JPanel p){
+    public static void ShowPanel(JPanel p){
         p.setSize(770, 410);
         p.setLocation(0,0);
         
@@ -259,15 +258,30 @@ public class Dashboard extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnProductsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductsActionPerformed
-        ShowPanel(new Products());
+        ShowPanel(new ViewProducts());
+//        com.mycompany.models.ModelProducts product = new com.mycompany.models.ModelProducts();
+//        product.setName("ANA");
+//        product.setPrice((float) 500.45);
+//        product.setDescription("mi hermana");
+//        product.setDiscount(5);
+//        product.setIdBrand(1);
+//        product.setIdCategory(1);
+//        product.setIdType(3);
+//        
+//        try {
+//            DAOProducts dao = new DAOProductsImpl();
+//            dao.record(product);
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
     }//GEN-LAST:event_btnProductsActionPerformed
 
     private void btnSalesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalesActionPerformed
-        ShowPanel(new Sales());
+        ShowPanel(new ViewSales());
     }//GEN-LAST:event_btnSalesActionPerformed
 
     private void btnClientsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClientsActionPerformed
-        ShowPanel(new Clients());
+        ShowPanel(new ViewClients());
     }//GEN-LAST:event_btnClientsActionPerformed
 
     /**

@@ -10,20 +10,19 @@ import java.awt.Color;
  *
  * @author Ovett
  */
-public class Products extends javax.swing.JPanel {
+public class ViewSales extends javax.swing.JPanel {
 
     /**
-     * Creates new form products
+     * Creates new form Sales
      */
-    public Products() {
+    public ViewSales() {
         initComponents();
         InitStyles();
     }
-
-    private void InitStyles() {
+    private void InitStyles(){
         title.putClientProperty("FlatLaf.styleClass", "h1");
         title.setForeground(Color.black);
-        productSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto a buscar.");
+        saleSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto vendido a buscar.");
     }
 
     /**
@@ -35,9 +34,9 @@ public class Products extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        background_products = new javax.swing.JPanel();
+        background_sells = new javax.swing.JPanel();
         title = new javax.swing.JLabel();
-        productSearch = new javax.swing.JTextField();
+        saleSearch = new javax.swing.JTextField();
         btnSearch = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -47,12 +46,13 @@ public class Products extends javax.swing.JPanel {
 
         setPreferredSize(new java.awt.Dimension(770, 410));
 
-        background_products.setBackground(new java.awt.Color(255, 255, 255));
-        background_products.setMaximumSize(new java.awt.Dimension(2147483647, 2147483647));
-        background_products.setMinimumSize(new java.awt.Dimension(0, 0));
-        background_products.setPreferredSize(new java.awt.Dimension(770, 410));
+        background_sells.setBackground(new java.awt.Color(255, 255, 255));
+        background_sells.setMaximumSize(new java.awt.Dimension(2147483647, 2147483647));
+        background_sells.setPreferredSize(new java.awt.Dimension(770, 410));
 
-        title.setText("Productos");
+        title.setText("Ventas");
+
+        saleSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
 
         btnSearch.setBackground(new java.awt.Color(21, 101, 192));
         btnSearch.setForeground(new java.awt.Color(255, 255, 255));
@@ -71,11 +71,11 @@ public class Products extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID", "Nombre", "Talla", "Descripcion", "Precio", "Descuento", "ID_Marca", "ID_Categoria"
+                "ID Venta", "Nombre de Producto", "ID Producto", "Nombre de Cliente", "Precio Unitario", "Cantidad", "Total", "Fecha"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Float.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.Float.class, java.lang.Float.class, java.lang.Float.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -101,44 +101,44 @@ public class Products extends javax.swing.JPanel {
         btnDelete.setText("Eliminar");
         btnDelete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        javax.swing.GroupLayout background_productsLayout = new javax.swing.GroupLayout(background_products);
-        background_products.setLayout(background_productsLayout);
-        background_productsLayout.setHorizontalGroup(
-            background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(background_productsLayout.createSequentialGroup()
+        javax.swing.GroupLayout background_sellsLayout = new javax.swing.GroupLayout(background_sells);
+        background_sells.setLayout(background_sellsLayout);
+        background_sellsLayout.setHorizontalGroup(
+            background_sellsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(background_sellsLayout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(676, 676, 676))
-            .addGroup(background_productsLayout.createSequentialGroup()
+            .addGroup(background_sellsLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(background_productsLayout.createSequentialGroup()
-                        .addComponent(productSearch)
+                .addGroup(background_sellsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(background_sellsLayout.createSequentialGroup()
+                        .addComponent(saleSearch)
                         .addGap(51, 51, 51)
                         .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_sellsLayout.createSequentialGroup()
                         .addGap(410, 410, 410)
                         .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(33, 33, 33)
                         .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(36, 36, 36)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1))
                 .addGap(65, 65, 65))
         );
-        background_productsLayout.setVerticalGroup(
-            background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(background_productsLayout.createSequentialGroup()
+        background_sellsLayout.setVerticalGroup(
+            background_sellsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(background_sellsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20)
-                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(productSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(background_sellsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(saleSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
-                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(background_sellsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -149,11 +149,15 @@ public class Products extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(background_products, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGap(0, 770, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(background_sells, javax.swing.GroupLayout.DEFAULT_SIZE, 770, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(background_products, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGap(0, 410, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(background_sells, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -163,14 +167,14 @@ public class Products extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel background_products;
+    private javax.swing.JPanel background_sells;
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnSearch;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField productSearch;
+    private javax.swing.JTextField saleSearch;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
 }
