@@ -7,10 +7,15 @@ import java.text.DecimalFormat;
  * @author Ovett
  */
 public class ModelProducts {
+
     private int id;
     private String name;
     private Float price;
     private String description;
+    private Integer discount;
+    private Integer idBrand;
+    private Integer idCategory;
+    private Integer idType;
 
     public int getId() {
         return id;
@@ -75,10 +80,5 @@ public class ModelProducts {
     public void setIdType(Integer idType) {
         this.idType = idType;
     }
-    private Integer discount;
-    private Integer idBrand;
-    private Integer idCategory;
-    private Integer idType;
 
-    
 }

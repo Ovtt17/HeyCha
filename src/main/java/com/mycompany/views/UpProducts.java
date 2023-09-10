@@ -6,8 +6,11 @@ import com.mycompany.models.ModelProducts;
 import com.mycompany.db.Database;
 import java.awt.Color;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 import javax.swing.JComboBox;
 
 /**
@@ -23,7 +26,7 @@ public class UpProducts extends javax.swing.JPanel {
         initComponents();
         initStyles();
         try {
-            loadCategories(brandCmb, categoryCmb, typeCmb);
+            loadCmb(brandCmb, categoryCmb, typeCmb);
         } catch (Exception ex) {
             Logger.getLogger(UpProducts.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -33,30 +36,23 @@ public class UpProducts extends javax.swing.JPanel {
         initComponents();
         initStyles();
         try {
-            loadCategories(brandCmb, categoryCmb, typeCmb);
+            loadCmb(brandCmb, categoryCmb, typeCmb);
         } catch (Exception ex) {
             Logger.getLogger(UpProducts.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public void loadCategories(JComboBox<String> brandCmb, JComboBox<String> categoryCmb, JComboBox<String> typeCmb) throws Exception {
+    public void loadCmb(JComboBox<String> brandCmb, JComboBox<String> categoryCmb, JComboBox<String> typeCmb) throws Exception {
         Database d = new Database();
 
         try {
             d.connectDB();
-            java.sql.Statement statement = d.connection.createStatement();
-            String query = "SELECT M.NOMBRE AS NOMBRE_MARCA, C.NOMBRE AS NOMBRE_CATEGORIA, T.NOMBRE AS NOMRBE_TIPO FROM PRODUCTOS P INNER JOIN MARCAS M ON P.ID_MARCA = M.ID INNER JOIN CATEGORIAS C ON P.ID_CATEGORIA = C.ID INNER JOIN TIPO T ON P.ID_TIPO = T.ID;";
-            boolean result = statement.execute(query);
-            ResultSet resultSet = statement.getResultSet();
-
-            while (resultSet.next()) {
-                brandCmb.addItem(resultSet.getString(1));
-                categoryCmb.addItem(resultSet.getString(2));
-                typeCmb.addItem(resultSet.getString(3));
-            }
-            brandCmb.setSelectedIndex(-1);
-            categoryCmb.setSelectedIndex(-1);
-            typeCmb.setSelectedIndex(-1);
+            String queryBrand = "select nombre from marcas;";
+            String queryCategory = "select nombre from categorias;";
+            String queryType = "select nombre from tipo;";
+            fillComboBox(brandCmb, queryBrand, d);
+            fillComboBox(categoryCmb, queryCategory, d);
+            fillComboBox(typeCmb, queryType, d);          
 
         } catch (Exception e) {
             throw e;
@@ -64,6 +60,20 @@ public class UpProducts extends javax.swing.JPanel {
             d.closeDB();
         }
 
+    }
+
+    private void fillComboBox(JComboBox<String> comboBox, String query, Database d) throws SQLException {
+        Statement statement = d.connection.createStatement();
+        statement.execute(query);
+        ResultSet resultSet = statement.getResultSet();
+
+        while (resultSet.next()) {
+            comboBox.addItem(resultSet.getString(1));
+        }
+
+        statement.close();
+        resultSet.close();
+        comboBox.setSelectedIndex(-1);
     }
 
     private void initStyles() {

@@ -1,7 +1,10 @@
 package com.mycompany.views;
 
+import com.mycompany.heycha.DAOProductsImpl;
 import com.mycompany.heycha.Dashboard;
+import com.mycompany.interfaces.DAOProducts;
 import java.awt.Color;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -25,13 +28,15 @@ public class ViewProducts extends javax.swing.JPanel {
     }
 
     private void loadProducts() {
-//        try {
-//            DAOProducts dao = new DAOProductsImpl();
-//            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-//            dao.consult("").forEach((u) -> model.addRow(new Object[]{u.getId(), u.getName(), u.getPrice(), u.getDescription(), u.getDisCount(), u.getBrand(), u.}));
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//        }
+        try {
+            DAOProducts dao = new DAOProductsImpl();
+            DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
+            dao.consult().forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getIdBrand(), p.getIdCategory(), p.getIdType()}));
+            dao.consult().forEach((p) -> System.out.println(p.getId() + " " + p.getName() + " " + p.getPrice() + " " + p.getDescription() + " " + p.getDiscount()));
+            
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -48,7 +53,7 @@ public class ViewProducts extends javax.swing.JPanel {
         productSearch = new javax.swing.JTextField();
         btnSearch = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTableProducts = new javax.swing.JTable();
         btnAdd = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
@@ -74,25 +79,15 @@ public class ViewProducts extends javax.swing.JPanel {
 
         jScrollPane1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTableProducts.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "ID", "Nombre", "Precio", "Descripcion", "Descuento", "Marca", "Categoria", "Tipo"
+                "ID", "Nombre", "Precio", "Descripcion", "Descuento", "ID_Marca", "ID_Categoria", "ID_Tipo"
             }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Float.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
-        jTable1.setMinimumSize(new java.awt.Dimension(90, 0));
-        jTable1.setPreferredSize(new java.awt.Dimension(450, 0));
-        jScrollPane1.setViewportView(jTable1);
+        ));
+        jScrollPane1.setViewportView(jTableProducts);
 
         btnAdd.setBackground(new java.awt.Color(21, 101, 192));
         btnAdd.setForeground(new java.awt.Color(255, 255, 255));
@@ -119,27 +114,27 @@ public class ViewProducts extends javax.swing.JPanel {
         background_productsLayout.setHorizontalGroup(
             background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(background_productsLayout.createSequentialGroup()
-                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(background_productsLayout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addComponent(productSearch)
-                        .addGap(51, 51, 51)
-                        .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(background_productsLayout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addComponent(jScrollPane1))
-                    .addGroup(background_productsLayout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(659, 659, 659))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
+                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, background_productsLayout.createSequentialGroup()
                         .addGap(426, 426, 426)
                         .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
                         .addGap(36, 36, 36)
                         .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
                         .addGap(36, 36, 36)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)))
+                        .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, background_productsLayout.createSequentialGroup()
+                        .addGap(16, 16, 16)
+                        .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(background_productsLayout.createSequentialGroup()
+                                .addComponent(productSearch)
+                                .addGap(28, 28, 28)
+                                .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addGap(33, 33, 33))
-            .addGroup(background_productsLayout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(659, 659, 659))
         );
         background_productsLayout.setVerticalGroup(
             background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -188,7 +183,7 @@ public class ViewProducts extends javax.swing.JPanel {
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnSearch;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTableProducts;
     private javax.swing.JTextField productSearch;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
