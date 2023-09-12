@@ -260,21 +260,6 @@ public class Dashboard extends javax.swing.JFrame {
 
     private void btnProductsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductsActionPerformed
         ShowPanel(new ViewProducts());
-//        com.mycompany.models.ModelProducts product = new com.mycompany.models.ModelProducts();
-//        product.setName("ANA");
-//        product.setPrice((float) 500.45);
-//        product.setDescription("mi hermana");
-//        product.setDiscount(5);
-//        product.setIdBrand(1);
-//        product.setIdCategory(1);
-//        product.setIdType(3);
-//        
-//        try {
-//            DAOProducts dao = new DAOProductsImpl();
-//            dao.record(product);
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//        }
     }//GEN-LAST:event_btnProductsActionPerformed
 
     private void btnSalesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalesActionPerformed

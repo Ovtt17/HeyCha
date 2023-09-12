@@ -6,7 +6,8 @@ import java.util.List;
 public interface DAOProducts {
     public void record (ModelProducts product) throws Exception;
     public void modify (ModelProducts product) throws Exception;
-    public void delete (ModelProducts product) throws Exception;
+    public void delete (int productId) throws Exception;
     public List<ModelProducts> consult() throws Exception;
+    public ModelProducts getProductById(int productId) throws Exception;
     
 }

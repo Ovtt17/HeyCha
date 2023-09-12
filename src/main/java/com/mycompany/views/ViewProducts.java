@@ -4,6 +4,7 @@ import com.mycompany.heycha.DAOProductsImpl;
 import com.mycompany.heycha.Dashboard;
 import com.mycompany.interfaces.DAOProducts;
 import java.awt.Color;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -32,8 +33,6 @@ public class ViewProducts extends javax.swing.JPanel {
             DAOProducts dao = new DAOProductsImpl();
             DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
             dao.consult().forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getIdBrand(), p.getIdCategory(), p.getIdType()}));
-            dao.consult().forEach((p) -> System.out.println(p.getId() + " " + p.getName() + " " + p.getPrice() + " " + p.getDescription() + " " + p.getDiscount()));
-            
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -86,7 +85,15 @@ public class ViewProducts extends javax.swing.JPanel {
             new String [] {
                 "ID", "Nombre", "Precio", "Descripcion", "Descuento", "ID_Marca", "ID_Categoria", "ID_Tipo"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(jTableProducts);
 
         btnAdd.setBackground(new java.awt.Color(21, 101, 192));
@@ -103,11 +110,21 @@ public class ViewProducts extends javax.swing.JPanel {
         btnEdit.setForeground(new java.awt.Color(255, 255, 255));
         btnEdit.setText("Editar");
         btnEdit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
         btnDelete.setBackground(new java.awt.Color(21, 101, 192));
         btnDelete.setForeground(new java.awt.Color(255, 255, 255));
         btnDelete.setText("Eliminar");
         btnDelete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout background_productsLayout = new javax.swing.GroupLayout(background_products);
         background_products.setLayout(background_productsLayout);
@@ -115,26 +132,23 @@ public class ViewProducts extends javax.swing.JPanel {
             background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(background_productsLayout.createSequentialGroup()
                 .addGap(25, 25, 25)
-                .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
                 .addGap(659, 659, 659))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
-                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, background_productsLayout.createSequentialGroup()
-                        .addGap(426, 426, 426)
-                        .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
-                        .addGap(36, 36, 36)
-                        .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
-                        .addGap(36, 36, 36)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, background_productsLayout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(background_productsLayout.createSequentialGroup()
-                                .addComponent(productSearch)
-                                .addGap(28, 28, 28)
-                                .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addGap(33, 33, 33))
+                .addGap(16, 16, 16)
+                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
+                        .addComponent(productSearch)
+                        .addGap(38, 38, 38)
+                        .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
+                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(26, 26, 26)
+                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGap(61, 61, 61))
         );
         background_productsLayout.setVerticalGroup(
             background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -142,13 +156,13 @@ public class ViewProducts extends javax.swing.JPanel {
                 .addGap(14, 14, 14)
                 .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(productSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
-                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -174,6 +188,49 @@ public class ViewProducts extends javax.swing.JPanel {
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         Dashboard.ShowPanel(new UpProducts());
     }//GEN-LAST:event_btnAddActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
+
+        int rows = model.getRowCount();
+        if (rows == 0) {
+            javax.swing.JOptionPane.showMessageDialog(this, "No hay productos para eliminar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            btnAdd.requestFocus();
+            return;
+        } else if (jTableProducts.getSelectedRows().length < 1) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar uno o más productos para borrar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        
+        int confirmed = javax.swing.JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar estos datos? \n", "CONFIMARCIÓN", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
+        if (confirmed == javax.swing.JOptionPane.YES_OPTION) {
+            DAOProducts d = new DAOProductsImpl();
+            for (int i : jTableProducts.getSelectedRows()) {
+                try {
+                    d.delete((int) jTableProducts.getValueAt(i, 0));
+                    model.removeRow(i);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            javax.swing.JOptionPane.showMessageDialog(this, "Los datos se han eliminado correctamente. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        if (jTableProducts.getSelectedRow() > -1) {
+            try {
+                int productId = (int) jTableProducts.getValueAt(jTableProducts.getSelectedRow(), 0);
+                DAOProducts dao = new DAOProductsImpl();
+                Dashboard.ShowPanel(new UpProducts(dao.getProductById(productId)));
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto a editar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+
+        }
+    }//GEN-LAST:event_btnEditActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
