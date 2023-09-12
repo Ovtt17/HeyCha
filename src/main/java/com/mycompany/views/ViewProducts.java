@@ -32,7 +32,7 @@ public class ViewProducts extends javax.swing.JPanel {
         try {
             DAOProducts dao = new DAOProductsImpl();
             DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
-            dao.consult().forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getIdBrand(), p.getIdCategory(), p.getIdType()}));
+            dao.consult().forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -106,7 +106,7 @@ public class ViewProducts extends javax.swing.JPanel {
             }
         });
 
-        btnEdit.setBackground(new java.awt.Color(21, 101, 192));
+        btnEdit.setBackground(new java.awt.Color(204, 0, 204));
         btnEdit.setForeground(new java.awt.Color(255, 255, 255));
         btnEdit.setText("Editar");
         btnEdit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -116,7 +116,7 @@ public class ViewProducts extends javax.swing.JPanel {
             }
         });
 
-        btnDelete.setBackground(new java.awt.Color(21, 101, 192));
+        btnDelete.setBackground(new java.awt.Color(255, 51, 51));
         btnDelete.setForeground(new java.awt.Color(255, 255, 255));
         btnDelete.setText("Eliminar");
         btnDelete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -142,11 +142,12 @@ public class ViewProducts extends javax.swing.JPanel {
                         .addGap(38, 38, 38)
                         .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
-                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(26, 26, 26)
-                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(418, 418, 418)
+                        .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addGap(61, 61, 61))
         );

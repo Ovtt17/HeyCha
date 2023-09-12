@@ -1,5 +1,4 @@
 C:\Users\Ovett\Documents\NetBeansProjects\HeyCha\src\main\java\com\mycompany\heycha\DAOProductsImpl.java
-C:\Users\Ovett\Documents\NetBeansProjects\HeyCha\src\main\java\com\mycompany\models\ModelSizes.java
 C:\Users\Ovett\Documents\NetBeansProjects\HeyCha\src\main\java\com\mycompany\views\ViewClients.java
 C:\Users\Ovett\Documents\NetBeansProjects\HeyCha\src\main\java\com\mycompany\views\UpProducts.java
 C:\Users\Ovett\Documents\NetBeansProjects\HeyCha\src\main\java\com\mycompany\models\ModelBrand.java
@@ -8,7 +7,10 @@ C:\Users\Ovett\Documents\NetBeansProjects\HeyCha\src\main\java\com\mycompany\int
 C:\Users\Ovett\Documents\NetBeansProjects\HeyCha\src\main\java\com\mycompany\views\ViewProducts.java
 C:\Users\Ovett\Documents\NetBeansProjects\HeyCha\src\main\java\com\mycompany\heycha\Dashboard.java
 C:\Users\Ovett\Documents\NetBeansProjects\HeyCha\src\main\java\com\mycompany\models\ModelClients.java
+C:\Users\Ovett\Documents\NetBeansProjects\HeyCha\src\main\java\com\mycompany\models\ModelProductSizes.java
 C:\Users\Ovett\Documents\NetBeansProjects\HeyCha\src\main\java\com\mycompany\interfaces\DAOProducts.java
 C:\Users\Ovett\Documents\NetBeansProjects\HeyCha\src\main\java\com\mycompany\db\Database.java
+C:\Users\Ovett\Documents\NetBeansProjects\HeyCha\src\main\java\com\mycompany\interfaces\DAOProductSizes.java
+C:\Users\Ovett\Documents\NetBeansProjects\HeyCha\src\main\java\com\mycompany\heycha\DAOProductsSizesImpl.java
 C:\Users\Ovett\Documents\NetBeansProjects\HeyCha\src\main\java\com\mycompany\views\ViewSales.java
 C:\Users\Ovett\Documents\NetBeansProjects\HeyCha\src\main\java\com\mycompany\models\ModelProducts.java

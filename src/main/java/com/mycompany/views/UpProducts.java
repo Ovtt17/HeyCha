@@ -4,23 +4,27 @@ import com.mycompany.heycha.DAOProductsImpl;
 import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.models.ModelProducts;
 import com.mycompany.db.Database;
+import com.mycompany.heycha.DAOProductsSizesImpl;
+import com.mycompany.interfaces.DAOProductSizes;
+import com.mycompany.models.ModelProductSizes;
 import java.awt.Color;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
-/**
- *
- * @author Ovett
- */
 public class UpProducts extends javax.swing.JPanel {
 
     boolean isEditable = false;
     ModelProducts productEditable;
+    ModelProductSizes pSizesEditable;
 
     public UpProducts() {
         initComponents();
@@ -67,18 +71,18 @@ public class UpProducts extends javax.swing.JPanel {
 
                 Integer discount = productEditable.getDiscount() == null ? 0 : productEditable.getDiscount();
                 discountTxt.setText(discount.toString());
-                
-                /**
-                 * disminuir 1 para no generar un overflow, por el hecho de que los indices de los comboBox empiezan de 0
-                 */
-                int indexBrand = productEditable.getIdBrand() - 1;
-                brandCmb.setSelectedIndex(indexBrand);
 
-                int indexCategory = productEditable.getIdCategory() - 1;
-                categoryCmb.setSelectedIndex(indexCategory);
+                brandCmb.setSelectedItem(productEditable.getBrand());
 
-                Integer type = productEditable.getIdType() == null ? -1 : productEditable.getIdType();
-                typeCmb.setSelectedIndex(type);
+                categoryCmb.setSelectedItem(productEditable.getCategory());
+
+                String type = productEditable.getType();
+                if (type == null) {
+                    typeCmb.setSelectedIndex(-1);
+                } else {
+                    typeCmb.setSelectedItem(type);
+                }
+                typeCmb.setSelectedItem(type);
             }
         }
 
@@ -146,11 +150,11 @@ public class UpProducts extends javax.swing.JPanel {
         spinnerSizeS = new javax.swing.JSpinner();
         spinnerSizeL = new javax.swing.JSpinner();
         spinnerSizeXL = new javax.swing.JSpinner();
-        sizeXSLbl = new javax.swing.JLabel();
-        sizeSLbl = new javax.swing.JLabel();
-        sizeMLbl = new javax.swing.JLabel();
-        sizeLLbl = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
+        cbXS = new javax.swing.JCheckBox();
+        cbS = new javax.swing.JCheckBox();
+        cbM = new javax.swing.JCheckBox();
+        cbL = new javax.swing.JCheckBox();
+        cbXL = new javax.swing.JCheckBox();
 
         setPreferredSize(new java.awt.Dimension(764, 436));
 
@@ -209,15 +213,15 @@ public class UpProducts extends javax.swing.JPanel {
 
         spinnerSizeXL.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
 
-        sizeXSLbl.setText("XS");
+        cbXS.setText("XS");
 
-        sizeSLbl.setText("S");
+        cbS.setText("S");
 
-        sizeMLbl.setText("M");
+        cbM.setText("M");
 
-        sizeLLbl.setText("L");
+        cbL.setText("L");
 
-        jLabel5.setText("XL");
+        cbXL.setText("XL");
 
         javax.swing.GroupLayout bgLayout = new javax.swing.GroupLayout(bg);
         bg.setLayout(bgLayout);
@@ -232,7 +236,7 @@ public class UpProducts extends javax.swing.JPanel {
                         .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(nameTxt)
                             .addGroup(bgLayout.createSequentialGroup()
-                                .addComponent(nameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)
+                                .addComponent(nameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGap(288, 288, 288))
                             .addGroup(bgLayout.createSequentialGroup()
                                 .addComponent(priceLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -246,11 +250,10 @@ public class UpProducts extends javax.swing.JPanel {
                                 .addComponent(discountLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGap(216, 216, 216))
                             .addComponent(discountTxt)
+                            .addComponent(typeLbl)
                             .addGroup(bgLayout.createSequentialGroup()
-                                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(typeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(typeLbl))
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                                .addComponent(typeCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(137, 137, 137)))))
                 .addGap(22, 22, 22)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -264,38 +267,34 @@ public class UpProducts extends javax.swing.JPanel {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bgLayout.createSequentialGroup()
                         .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(button, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(brandCmb, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(categoryCmb, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, bgLayout.createSequentialGroup()
-                                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, bgLayout.createSequentialGroup()
-                                        .addComponent(sizeMLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGap(4, 4, 4))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, bgLayout.createSequentialGroup()
-                                        .addComponent(sizeXSLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGap(11, 11, 11))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, bgLayout.createSequentialGroup()
-                                        .addComponent(sizeSLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGap(15, 15, 15)))
-                                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(bgLayout.createSequentialGroup()
-                                        .addGap(1, 1, 1)
-                                        .addComponent(spinnerSizeM))
-                                    .addComponent(spinnerSizeXS, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(spinnerSizeS, javax.swing.GroupLayout.Alignment.LEADING))
-                                .addGap(134, 134, 134)
-                                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(cbXS)
+                                            .addComponent(cbS))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(spinnerSizeXS, javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(spinnerSizeS, javax.swing.GroupLayout.Alignment.LEADING)))
                                     .addGroup(bgLayout.createSequentialGroup()
-                                        .addGap(7, 7, 7)
-                                        .addComponent(sizeLLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addGroup(bgLayout.createSequentialGroup()
-                                        .addGap(2, 2, 2)
-                                        .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                                .addGap(18, 18, 18)
+                                        .addComponent(cbM)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(spinnerSizeM)))
+                                .addGap(84, 84, 84)
+                                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(cbL)
+                                    .addComponent(cbXL))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(spinnerSizeXL)
                                     .addComponent(spinnerSizeL))))
-                        .addGap(16, 16, 16))))
+                        .addGap(16, 16, 16))
+                    .addGroup(bgLayout.createSequentialGroup()
+                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(brandCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(categoryCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(134, 134, 134))))
         );
         bgLayout.setVerticalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -308,7 +307,7 @@ public class UpProducts extends javax.swing.JPanel {
                             .addGroup(bgLayout.createSequentialGroup()
                                 .addGap(32, 32, 32)
                                 .addComponent(BrandLbl, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE)
-                                .addGap(12, 12, 12))
+                                .addGap(15, 15, 15))
                             .addGroup(bgLayout.createSequentialGroup()
                                 .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -318,34 +317,34 @@ public class UpProducts extends javax.swing.JPanel {
                             .addGroup(bgLayout.createSequentialGroup()
                                 .addComponent(brandCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(categoryLbl, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(categoryLbl, javax.swing.GroupLayout.DEFAULT_SIZE, 19, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(categoryCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGap(24, 24, 24)
                                 .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(bgLayout.createSequentialGroup()
                                         .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                             .addComponent(spinnerSizeL, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(sizeLLbl))
+                                            .addComponent(cbL))
                                         .addGap(20, 20, 20)
                                         .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                             .addComponent(spinnerSizeXL, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel5))
-                                        .addGap(34, 34, 34)
-                                        .addComponent(sizeMLbl))
+                                            .addComponent(cbXL)))
                                     .addGroup(bgLayout.createSequentialGroup()
                                         .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                             .addComponent(spinnerSizeXS, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(sizeXSLbl))
+                                            .addComponent(cbXS))
                                         .addGap(20, 20, 20)
                                         .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                             .addComponent(spinnerSizeS, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(sizeSLbl))
+                                            .addComponent(cbS))
                                         .addGap(27, 27, 27)
-                                        .addComponent(spinnerSizeM, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                            .addComponent(spinnerSizeM, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(cbM))))
                                 .addGap(32, 32, 32)
                                 .addComponent(button, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(14, 14, 14))
+                                .addGap(17, 17, 17))
                             .addGroup(bgLayout.createSequentialGroup()
                                 .addComponent(nameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -365,14 +364,14 @@ public class UpProducts extends javax.swing.JPanel {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(typeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(33, 33, 33)))))
-                .addContainerGap())
+                .addGap(0, 0, 0))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, 769, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -400,11 +399,11 @@ public class UpProducts extends javax.swing.JPanel {
 
         String description = descriptionTxt.getText().isEmpty() ? null : descriptionTxt.getText();
         Integer discount = (discountTxt.getText().isEmpty() || Integer.valueOf(discountTxt.getText()) <= 1) ? null : Integer.valueOf(discountTxt.getText());
-        Integer brand = brandCmb.getSelectedIndex() == -1 ? null : brandCmb.getSelectedIndex() + 1;
-        Integer category = categoryCmb.getSelectedIndex() == -1 ? null : categoryCmb.getSelectedIndex() + 1;
-        Integer type = typeCmb.getSelectedIndex() == -1 ? null : typeCmb.getSelectedIndex() + 1;
+        Integer idBrand = brandCmb.getSelectedIndex() == -1 ? null : brandCmb.getSelectedIndex() + 1;
+        Integer idCategory = categoryCmb.getSelectedIndex() == -1 ? null : categoryCmb.getSelectedIndex() + 1;
+        Integer idType = typeCmb.getSelectedIndex() == -1 ? null : typeCmb.getSelectedIndex() + 1;
 
-        boolean incorrectData = name.isEmpty() || price == null || brand == null || category == null;
+        boolean incorrectData = name.isEmpty() || price == null || idBrand == null || idCategory == null;
 
         if (incorrectData) {
             javax.swing.JOptionPane.showMessageDialog(this, "Debe llenar todos los campos. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -417,16 +416,44 @@ public class UpProducts extends javax.swing.JPanel {
         product.setPrice(price);
         product.setDescription(description);
         product.setDiscount(discount);
-        product.setIdBrand(brand);
-        product.setIdCategory(category);
-        product.setIdType(type);
+        product.setIdBrand(idBrand);
+        product.setIdCategory(idCategory);
+        product.setIdType(idType);
+
+        ModelProductSizes pSizes = isEditable ? pSizesEditable : new ModelProductSizes();
+        int valueSpinnerXS = (int) spinnerSizeXS.getValue();
+        int valueSpinnerS = (int) spinnerSizeS.getValue();
+        int valueSpinnerM = (int) spinnerSizeM.getValue();
+        int valueSpinnerL = (int) spinnerSizeL.getValue();
+        int valueSpinnerXL = (int) spinnerSizeXL.getValue();
+
+        int[] values = {valueSpinnerXS, valueSpinnerS, valueSpinnerM, valueSpinnerL, valueSpinnerXL};
+        JCheckBox[] checkBoxes = {cbXS, cbS, cbM, cbL, cbXL};
 
         try {
             DAOProducts dao = new DAOProductsImpl();
+            DAOProductSizes daoSize = new DAOProductsSizesImpl();
             if (!isEditable) {
-                dao.record(product);
+                dao.record(product, pSizes);
+                
+                boolean selected = false;
+                for (int i = 0; i < values.length; i++) {
+                    if (values[i] != 0 && checkBoxes[i].isSelected()) {
+                        pSizes.setAmount(values[i]);
+                        pSizes.setIdSize(i + 1);
+                        daoSize.record(pSizes);
+                        selected = true;
+                    }
+                }
+
+                if (!selected) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Debe seleccionar correctamente las tallas. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
+                }
+                
+
             } else {
-                dao.modify(product);
+                dao.modify(product, pSizes);
+                daoSize.modify(pSizes);
             }
 
             String succecssMsg = isEditable ? "modificado" : "registrado";
@@ -459,20 +486,20 @@ public class UpProducts extends javax.swing.JPanel {
     private javax.swing.JButton button;
     private javax.swing.JComboBox<String> categoryCmb;
     private javax.swing.JLabel categoryLbl;
+    private javax.swing.JCheckBox cbL;
+    private javax.swing.JCheckBox cbM;
+    private javax.swing.JCheckBox cbS;
+    private javax.swing.JCheckBox cbXL;
+    private javax.swing.JCheckBox cbXS;
     private javax.swing.JLabel descriptionLbl;
     private javax.swing.JTextField descriptionTxt;
     private javax.swing.JLabel discountLbl;
     private javax.swing.JTextField discountTxt;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JLabel nameLbl;
     private javax.swing.JTextField nameTxt;
     private javax.swing.JLabel priceLbl;
     private javax.swing.JTextField priceTxt;
-    private javax.swing.JLabel sizeLLbl;
-    private javax.swing.JLabel sizeMLbl;
-    private javax.swing.JLabel sizeSLbl;
-    private javax.swing.JLabel sizeXSLbl;
     private javax.swing.JSpinner spinnerSizeL;
     private javax.swing.JSpinner spinnerSizeM;
     private javax.swing.JSpinner spinnerSizeS;

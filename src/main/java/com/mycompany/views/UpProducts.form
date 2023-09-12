@@ -21,7 +21,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="bg" alignment="0" max="32767" attributes="0"/>
+          <Component id="bg" alignment="0" pref="769" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -53,7 +53,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="nameTxt" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="nameLbl" pref="59" max="32767" attributes="0"/>
+                                  <Component id="nameLbl" max="32767" attributes="0"/>
                                   <EmptySpace min="288" pref="288" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
@@ -71,12 +71,10 @@
                                   <EmptySpace min="216" pref="216" max="-2" attributes="0"/>
                               </Group>
                               <Component id="discountTxt" alignment="0" max="32767" attributes="0"/>
+                              <Component id="typeLbl" min="-2" max="-2" attributes="0"/>
                               <Group type="102" attributes="0">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="typeCmb" min="-2" pref="334" max="-2" attributes="0"/>
-                                      <Component id="typeLbl" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  <Component id="typeCmb" max="32767" attributes="0"/>
+                                  <EmptySpace min="-2" pref="137" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -96,43 +94,31 @@
                       <Group type="102" alignment="1" attributes="0">
                           <Group type="103" groupAlignment="1" attributes="0">
                               <Component id="button" alignment="0" max="32767" attributes="0"/>
-                              <Component id="brandCmb" alignment="0" max="32767" attributes="0"/>
-                              <Component id="categoryCmb" alignment="0" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
-                                  <Group type="103" groupAlignment="1" attributes="0">
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="sizeMLbl" max="32767" attributes="0"/>
-                                          <EmptySpace min="4" pref="4" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" attributes="0">
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="cbXS" min="-2" max="-2" attributes="0"/>
+                                              <Component id="cbS" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="1" attributes="0">
+                                              <Component id="spinnerSizeXS" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="spinnerSizeS" alignment="0" max="32767" attributes="0"/>
+                                          </Group>
                                       </Group>
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="sizeXSLbl" max="32767" attributes="0"/>
-                                          <EmptySpace min="11" pref="11" max="-2" attributes="0"/>
-                                      </Group>
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="sizeSLbl" max="32767" attributes="0"/>
-                                          <EmptySpace min="15" pref="15" max="-2" attributes="0"/>
-                                      </Group>
-                                  </Group>
-                                  <Group type="103" groupAlignment="1" attributes="0">
-                                      <Group type="102" alignment="1" attributes="0">
-                                          <EmptySpace min="1" pref="1" max="-2" attributes="0"/>
+                                      <Group type="102" attributes="0">
+                                          <Component id="cbM" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
                                           <Component id="spinnerSizeM" max="32767" attributes="0"/>
                                       </Group>
-                                      <Component id="spinnerSizeXS" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="spinnerSizeS" alignment="0" max="32767" attributes="0"/>
                                   </Group>
-                                  <EmptySpace min="-2" pref="134" max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="1" attributes="0">
-                                      <Group type="102" alignment="1" attributes="0">
-                                          <EmptySpace min="7" pref="7" max="-2" attributes="0"/>
-                                          <Component id="sizeLLbl" max="32767" attributes="0"/>
-                                      </Group>
-                                      <Group type="102" alignment="1" attributes="0">
-                                          <EmptySpace min="2" pref="2" max="-2" attributes="0"/>
-                                          <Component id="jLabel5" max="32767" attributes="0"/>
-                                      </Group>
+                                  <EmptySpace min="-2" pref="84" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="cbL" min="-2" max="-2" attributes="0"/>
+                                      <Component id="cbXL" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="spinnerSizeXL" alignment="0" max="32767" attributes="0"/>
                                       <Component id="spinnerSizeL" alignment="0" max="32767" attributes="0"/>
@@ -140,6 +126,13 @@
                               </Group>
                           </Group>
                           <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="brandCmb" max="32767" attributes="0"/>
+                              <Component id="categoryCmb" max="32767" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="134" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -156,7 +149,7 @@
                               <Group type="102" attributes="0">
                                   <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
                                   <Component id="BrandLbl" pref="24" max="32767" attributes="0"/>
-                                  <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="title" min="-2" pref="32" max="-2" attributes="0"/>
@@ -169,41 +162,42 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="brandCmb" min="-2" pref="35" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                                  <Component id="categoryLbl" pref="25" max="32767" attributes="0"/>
-                                  <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                                  <Component id="categoryLbl" pref="19" max="32767" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="categoryCmb" min="-2" pref="35" max="-2" attributes="0"/>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" attributes="0">
                                           <Group type="103" groupAlignment="3" attributes="0">
                                               <Component id="spinnerSizeL" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                              <Component id="sizeLLbl" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="cbL" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="3" attributes="0">
                                               <Component id="spinnerSizeXL" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                              <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="cbXL" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
-                                          <Component id="sizeMLbl" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <Group type="102" attributes="0">
                                           <Group type="103" groupAlignment="3" attributes="0">
                                               <Component id="spinnerSizeXS" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                              <Component id="sizeXSLbl" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="cbXS" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="3" attributes="0">
                                               <Component id="spinnerSizeS" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                                              <Component id="sizeSLbl" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="cbS" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
-                                          <Component id="spinnerSizeM" min="-2" pref="30" max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="spinnerSizeM" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                                              <Component id="cbM" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
                                       </Group>
                                   </Group>
                                   <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
                                   <Component id="button" min="-2" pref="45" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="nameTxt" min="-2" pref="35" max="-2" attributes="0"/>
@@ -228,7 +222,7 @@
                           </Group>
                       </Group>
                   </Group>
-                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -400,27 +394,27 @@
             </Property>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="sizeXSLbl">
+        <Component class="javax.swing.JCheckBox" name="cbXS">
           <Properties>
             <Property name="text" type="java.lang.String" value="XS"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="sizeSLbl">
+        <Component class="javax.swing.JCheckBox" name="cbS">
           <Properties>
             <Property name="text" type="java.lang.String" value="S"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="sizeMLbl">
+        <Component class="javax.swing.JCheckBox" name="cbM">
           <Properties>
             <Property name="text" type="java.lang.String" value="M"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="sizeLLbl">
+        <Component class="javax.swing.JCheckBox" name="cbL">
           <Properties>
             <Property name="text" type="java.lang.String" value="L"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabel5">
+        <Component class="javax.swing.JCheckBox" name="cbXL">
           <Properties>
             <Property name="text" type="java.lang.String" value="XL"/>
           </Properties>

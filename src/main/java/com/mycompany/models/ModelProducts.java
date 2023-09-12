@@ -1,11 +1,5 @@
 package com.mycompany.models;
 
-import java.text.DecimalFormat;
-
-/**
- *
- * @author Ovett
- */
 public class ModelProducts {
 
     private int id;
@@ -13,9 +7,14 @@ public class ModelProducts {
     private Float price;
     private String description;
     private Integer discount;
-    private Integer idBrand;
-    private Integer idCategory;
-    private Integer idType;
+    
+    private Integer IdBrand;
+    private Integer IdCategory;
+    private Integer IdType;
+    
+    private String brand;
+    private String category;
+    private String type;
 
     public int getId() {
         return id;
@@ -40,6 +39,30 @@ public class ModelProducts {
     public void setPrice(Float price) {
         this.price = price;
     }
+    
+    public Integer getIdBrand() {
+        return IdBrand;
+    }
+
+    public void setIdBrand(Integer IdBrand) {
+        this.IdBrand = IdBrand;
+    }
+
+    public Integer getIdCategory() {
+        return IdCategory;
+    }
+
+    public void setIdCategory(Integer IdCategory) {
+        this.IdCategory = IdCategory;
+    }
+
+    public Integer getIdType() {
+        return IdType;
+    }
+
+    public void setIdType(Integer IdType) {
+        this.IdType = IdType;
+    }
 
     public String getDescription() {
         return description;
@@ -56,29 +79,29 @@ public class ModelProducts {
     public void setDiscount(Integer discount) {
         this.discount = discount;
     }
-
-    public Integer getIdBrand() {
-        return idBrand;
+    
+    public String getBrand() {
+        return brand;
     }
 
-    public void setIdBrand(Integer idBrand) {
-        this.idBrand = idBrand;
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 
-    public Integer getIdCategory() {
-        return idCategory;
+    public String getCategory() {
+        return category;
     }
 
-    public void setIdCategory(Integer idCategory) {
-        this.idCategory = idCategory;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
-    public Integer getIdType() {
-        return idType;
+    public String getType() {
+        return type;
     }
 
-    public void setIdType(Integer idType) {
-        this.idType = idType;
+    public void setType(String type) {
+        this.type = type;
     }
 
 }

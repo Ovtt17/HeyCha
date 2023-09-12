@@ -1,9 +1,5 @@
 package com.mycompany.models;
 
-/**
- *
- * @author Ovett
- */
 public class ModelProductSizes {
     private int id;
     private Integer idProduct;

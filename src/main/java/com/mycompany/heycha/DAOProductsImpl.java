@@ -3,10 +3,12 @@ package com.mycompany.heycha;
 import com.google.protobuf.Empty;
 import com.mycompany.db.Database;
 import com.mycompany.interfaces.DAOProducts;
+import com.mycompany.models.ModelProductSizes;
 import com.mycompany.models.ModelProducts;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,12 +16,34 @@ import java.util.List;
 public class DAOProductsImpl extends Database implements DAOProducts {
 
     @Override
-    public void record(ModelProducts product) throws Exception {
+    public void record(ModelProducts product, ModelProductSizes pSizes) throws Exception {
         try {
             this.connectDB();
-            PreparedStatement st = this.connection.prepareStatement("INSERT INTO PRODUCTOS(NOMBRE, PRECIO, DESCRIPCION, DESCUENTO, ID_MARCA, ID_CATEGORIA, ID_TIPO) VALUES (?,?,?,?,?,?,?);");
+            String query = "INSERT INTO PRODUCTOS(NOMBRE, PRECIO, DESCRIPCION, DESCUENTO, ID_MARCA, ID_CATEGORIA, ID_TIPO) VALUES (?,?,?,?,?,?,?);";
+            PreparedStatement st = this.connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             setProductFieldsToDB(st, product);
             // Ejecuta la sentencia SQL
+            st.executeUpdate();
+            ResultSet rs = st.getGeneratedKeys();
+            if (rs.next()) {
+                int idProducto = rs.getInt(1);
+                pSizes.setIdProduct(idProducto);
+            }
+            st.close();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.closeDB();
+        }
+    }
+
+    @Override
+    public void modify(ModelProducts product, ModelProductSizes pSizes) throws Exception {
+        try {
+            this.connectDB();
+            PreparedStatement st = this.connection.prepareStatement("UPDATE PRODUCTOS SET NOMBRE = ?, PRECIO = ?, DESCRIPCION = ?, DESCUENTO = ?, ID_MARCA = ?, ID_CATEGORIA = ?, ID_TIPO = ? WHERE ID = ?;");
+            setProductFieldsToDB(st, product);
+            st.setInt(8, product.getId());
             st.executeUpdate();
             st.close();
         } catch (Exception e) {
@@ -28,6 +52,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
             this.closeDB();
         }
     }
+    
 
     private void setProductFieldsToDB(PreparedStatement st, ModelProducts product) throws SQLException {
         // Asigna los valores para los parámetros de la sentencia SQL
@@ -55,22 +80,6 @@ public class DAOProductsImpl extends Database implements DAOProducts {
     }
 
     @Override
-    public void modify(ModelProducts product) throws Exception {
-        try {
-            this.connectDB();
-            PreparedStatement st = this.connection.prepareCall("UPDATE PRODUCTOS SET NOMBRE = ?, PRECIO = ?, DESCRIPCION = ?, DESCUENTO = ?, ID_MARCA = ?, ID_CATEGORIA = ?, ID_TIPO = ? WHERE ID = ?;");
-            setProductFieldsToDB(st, product);
-            st.setInt( 8, product.getId());
-            st.executeUpdate();
-            st.close();            
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            this.closeDB();
-        }
-    }
-
-    @Override
     public void delete(int productId) throws Exception {
         try {
             this.connectDB();
@@ -90,14 +99,19 @@ public class DAOProductsImpl extends Database implements DAOProducts {
         List<ModelProducts> list = null;
         try {
             this.connectDB();
-            String Query = "SELECT * FROM productos;";
-            PreparedStatement st = this.connection.prepareStatement(Query);
+            String query = "SELECT P.ID, P.NOMBRE AS NOMBRE_PRODUCTO, P.PRECIO, P.DESCRIPCION, P.DESCUENTO, M.NOMBRE AS NOMBRE_MARCA, C.NOMBRE AS NOMBRE_CATEGORIA, T.NOMBRE AS NOMBRE_TIPO \n"
+                    + "FROM PRODUCTOS P\n"
+                    + "INNER JOIN MARCAS M ON P.ID_MARCA = M.ID\n"
+                    + "INNER JOIN CATEGORIAS C ON P.ID_CATEGORIA = C.ID\n"
+                    + "LEFT JOIN TIPO T ON P.ID_TIPO = T.ID\n"
+                    + "ORDER BY P.ID;";
+            PreparedStatement st = this.connection.prepareStatement(query);
             list = new ArrayList();
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
                 ModelProducts product = new ModelProducts();
-                setProductFieldsFromDB(rs, product);
+                setProductFieldsFromDBForConsult(rs, product);
                 list.add(product);
             }
             rs.close();
@@ -110,25 +124,24 @@ public class DAOProductsImpl extends Database implements DAOProducts {
         return list;
     }
 
-    private void setProductFieldsFromDB(ResultSet rs, ModelProducts product) throws SQLException {
-        product.setId(rs.getInt("id"));
-        product.setName(rs.getString("Nombre"));
-        product.setPrice(rs.getFloat("Precio"));
+    private void setProductFieldsFromDBForConsult(ResultSet rs, ModelProducts product) throws SQLException {
+        product.setId(rs.getInt("ID"));
+        product.setName(rs.getString("NOMBRE_PRODUCTO"));
+        product.setPrice(rs.getFloat("PRECIO"));
 
         // hacer estas validaciones para evitar que muestre datos que no ordene
-        String description = rs.getString("Descripcion");
+        String description = rs.getString("DESCRIPCION");
         product.setDescription(rs.wasNull() ? null : description);
 
-        int discount = rs.getInt("Descuento");
+        Integer discount = rs.getInt("DESCUENTO");
         product.setDiscount(rs.wasNull() ? null : discount);
-        
-        int idBrand = rs.getInt("ID_Marca");
-        product.setIdBrand(idBrand);
-        int idCat = rs.getInt("ID_Categoria");
-        product.setIdCategory(idCat);
 
-        int idType = rs.getInt("ID_Tipo");
-        product.setIdType(rs.wasNull() ? null : idType);
+        product.setBrand(rs.getString("NOMBRE_MARCA"));
+
+        product.setCategory(rs.getString("NOMBRE_CATEGORIA"));
+
+        String type = rs.getString("NOMBRE_TIPO");
+        product.setType(rs.wasNull() ? null : type);
     }
 
     @Override
@@ -137,12 +150,19 @@ public class DAOProductsImpl extends Database implements DAOProducts {
 
         try {
             this.connectDB();
-            PreparedStatement st = this.connection.prepareStatement("SELECT * FROM PRODUCTOS WHERE ID = ? LIMIT 1;");
+            String query = "SELECT P.ID, P.NOMBRE AS NOMBRE_PRODUCTO, P.PRECIO, P.DESCRIPCION, P.DESCUENTO, M.NOMBRE AS NOMBRE_MARCA, C.NOMBRE AS NOMBRE_CATEGORIA, T.NOMBRE AS NOMBRE_TIPO \n"
+                    + "FROM PRODUCTOS P\n"
+                    + "INNER JOIN MARCAS M ON P.ID_MARCA = M.ID\n"
+                    + "INNER JOIN CATEGORIAS C ON P.ID_CATEGORIA = C.ID\n"
+                    + "LEFT JOIN TIPO T ON P.ID_TIPO = T.ID\n"
+                    + "WHERE P.ID = ?\n"
+                    + "LIMIT 1;";
+            PreparedStatement st = this.connection.prepareStatement(query);
             st.setInt(1, productId);
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
-                setProductFieldsFromDB(rs, product);
+                setProductFieldsFromDBForConsult(rs, product);
             }
         } catch (Exception e) {
             throw e;
@@ -151,4 +171,6 @@ public class DAOProductsImpl extends Database implements DAOProducts {
         }
         return product;
     }
+
+    
 }
