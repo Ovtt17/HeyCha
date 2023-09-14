@@ -19,22 +19,25 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JSpinner;
 
 public class UpProducts extends javax.swing.JPanel {
 
     boolean isEditable = false;
     ModelProducts productEditable;
     ModelProductSizes pSizesEditable;
+    List<ModelProductSizes> listEditable;
 
     public UpProducts() {
         initComponents();
         initStyles();
     }
 
-    public UpProducts(ModelProducts product) {
+    public UpProducts(ModelProducts product, List<ModelProductSizes> list) {
         initComponents();
         isEditable = true;
         productEditable = product;
+        listEditable = list;
         initStyles();
     }
 
@@ -55,7 +58,8 @@ public class UpProducts extends javax.swing.JPanel {
         discountTxt.putClientProperty("JTextField.placeholderText", "Ingrese el descuento que tendrá el producto. (opcional)");
 
         try {
-            loadCmb(brandCmb, categoryCmb, typeCmb);
+            DAOProducts dao = new DAOProductsImpl();
+            dao.loadCmb(brandCmb, categoryCmb, typeCmb);
         } catch (Exception ex) {
             Logger.getLogger(UpProducts.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -83,44 +87,22 @@ public class UpProducts extends javax.swing.JPanel {
                     typeCmb.setSelectedItem(type);
                 }
                 typeCmb.setSelectedItem(type);
+                
+                JSpinner[] spinnerArray = {spinnerSizeXS, spinnerSizeS, spinnerSizeM, spinnerSizeL, spinnerSizeXL};
+                JCheckBox[] checkBoxes = {cbXS, cbS, cbM, cbL, cbXL};
+                for (int i = 0; i < listEditable.size(); i++) {
+                    ModelProductSizes pSize = listEditable.get(i);
+                    
+                    int spinnerValue = pSize.getAmount() == null ? 0 : pSize.getAmount();
+                    spinnerArray[i].setValue(spinnerValue);
+                    
+                    if (spinnerValue != 0) {
+                        checkBoxes[i].setSelected(true);
+                    }
+                }
             }
         }
 
-    }
-
-    public void loadCmb(JComboBox<String> brandCmb, JComboBox<String> categoryCmb, JComboBox<String> typeCmb) throws Exception {
-
-        Database d = new Database();
-
-        try {
-            d.connectDB();
-            String queryBrand = "select nombre from marcas;";
-            String queryCategory = "select nombre from categorias;";
-            String queryType = "select nombre from tipo;";
-            fillComboBox(brandCmb, queryBrand, d);
-            fillComboBox(categoryCmb, queryCategory, d);
-            fillComboBox(typeCmb, queryType, d);
-
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            d.closeDB();
-        }
-
-    }
-
-    private void fillComboBox(JComboBox<String> comboBox, String query, Database d) throws SQLException {
-        Statement statement = d.connection.createStatement();
-        statement.execute(query);
-        ResultSet resultSet = statement.getResultSet();
-
-        while (resultSet.next()) {
-            comboBox.addItem(resultSet.getString(1));
-        }
-
-        statement.close();
-        resultSet.close();
-        comboBox.setSelectedIndex(-1);
     }
 
     @SuppressWarnings("unchecked")
@@ -420,40 +402,53 @@ public class UpProducts extends javax.swing.JPanel {
         product.setIdCategory(idCategory);
         product.setIdType(idType);
 
-        ModelProductSizes pSizes = isEditable ? pSizesEditable : new ModelProductSizes();
+        ModelProductSizes pSizes = new ModelProductSizes();
         int valueSpinnerXS = (int) spinnerSizeXS.getValue();
         int valueSpinnerS = (int) spinnerSizeS.getValue();
         int valueSpinnerM = (int) spinnerSizeM.getValue();
         int valueSpinnerL = (int) spinnerSizeL.getValue();
         int valueSpinnerXL = (int) spinnerSizeXL.getValue();
 
-        int[] values = {valueSpinnerXS, valueSpinnerS, valueSpinnerM, valueSpinnerL, valueSpinnerXL};
+        int[] valueSpinners = {valueSpinnerXS, valueSpinnerS, valueSpinnerM, valueSpinnerL, valueSpinnerXL};
         JCheckBox[] checkBoxes = {cbXS, cbS, cbM, cbL, cbXL};
 
         try {
             DAOProducts dao = new DAOProductsImpl();
             DAOProductSizes daoSize = new DAOProductsSizesImpl();
+
+            boolean selected = false;
+            for (int i = 0; i < valueSpinners.length; i++) {
+                if (valueSpinners[i] != 0 && checkBoxes[i].isSelected()) {
+                    selected = true;
+                }
+            }
+            if (!selected) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Debe seleccionar correctamente las tallas. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             if (!isEditable) {
                 dao.record(product, pSizes);
-                
-                boolean selected = false;
-                for (int i = 0; i < values.length; i++) {
-                    if (values[i] != 0 && checkBoxes[i].isSelected()) {
-                        pSizes.setAmount(values[i]);
+                for (int i = 0; i < valueSpinners.length; i++) {
+                    if (valueSpinners[i] != 0 && checkBoxes[i].isSelected()) {
+                        pSizes.setAmount(valueSpinners[i]);
                         pSizes.setIdSize(i + 1);
                         daoSize.record(pSizes);
-                        selected = true;
+                    }
+                }
+            } else {
+                dao.modify(product, pSizes);
+                for (int i = 0; i < valueSpinners.length; i++) {
+                    if (valueSpinners[i] != 0 && checkBoxes[i].isSelected()) {
+                        pSizes.setAmount(valueSpinners[i]);
+                        pSizes.setIdSize(i + 1);
+                        boolean isModified = daoSize.modify(pSizes);
+                        
+                        if(!isModified) {
+                            daoSize.record(pSizes);
+                        }                        
                     }
                 }
 
-                if (!selected) {
-                    javax.swing.JOptionPane.showMessageDialog(this, "Debe seleccionar correctamente las tallas. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
-                }
-                
-
-            } else {
-                dao.modify(product, pSizes);
-                daoSize.modify(pSizes);
             }
 
             String succecssMsg = isEditable ? "modificado" : "registrado";

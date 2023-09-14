@@ -1,19 +1,10 @@
 package com.mycompany.models;
 
 public class ModelProductSizes {
-    private int id;
     private Integer idProduct;
     private Integer idSize;
     private Integer amount;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-    
     public Integer getIdProduct() {
         return idProduct;
     }

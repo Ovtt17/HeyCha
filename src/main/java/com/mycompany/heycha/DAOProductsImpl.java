@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JComboBox;
 
 public class DAOProductsImpl extends Database implements DAOProducts {
 
@@ -46,6 +47,8 @@ public class DAOProductsImpl extends Database implements DAOProducts {
             st.setInt(8, product.getId());
             st.executeUpdate();
             st.close();
+            
+            pSizes.setIdProduct(product.getId());
         } catch (Exception e) {
             throw e;
         } finally {
@@ -150,7 +153,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
 
         try {
             this.connectDB();
-            String query = "SELECT P.ID, P.NOMBRE AS NOMBRE_PRODUCTO, P.PRECIO, P.DESCRIPCION, P.DESCUENTO, M.NOMBRE AS NOMBRE_MARCA, C.NOMBRE AS NOMBRE_CATEGORIA, T.NOMBRE AS NOMBRE_TIPO \n"
+            String query = "SELECT P.ID, P.NOMBRE AS NOMBRE_PRODUCTO, P.PRECIO, P.DESCRIPCION, P.DESCUENTO, M.NOMBRE AS NOMBRE_MARCA, C.NOMBRE AS NOMBRE_CATEGORIA, T.NOMBRE AS NOMBRE_TIPO\n"
                     + "FROM PRODUCTOS P\n"
                     + "INNER JOIN MARCAS M ON P.ID_MARCA = M.ID\n"
                     + "INNER JOIN CATEGORIAS C ON P.ID_CATEGORIA = C.ID\n"
@@ -163,6 +166,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
 
             while (rs.next()) {
                 setProductFieldsFromDBForConsult(rs, product);
+//                setProductSizes(rs, pSizes);
             }
         } catch (Exception e) {
             throw e;
@@ -172,5 +176,38 @@ public class DAOProductsImpl extends Database implements DAOProducts {
         return product;
     }
 
+    @Override
+    public void loadCmb(JComboBox<String> brandCmb, JComboBox<String> categoryCmb, JComboBox<String> typeCmb) throws Exception {
+
+        try {
+            this.connectDB();
+            String queryBrand = "select nombre from marcas;";
+            String queryCategory = "select nombre from categorias;";
+            String queryType = "select nombre from tipo;";
+            fillComboBox(brandCmb, queryBrand);
+            fillComboBox(categoryCmb, queryCategory);
+            fillComboBox(typeCmb, queryType);
+
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.closeDB();
+        }
+    }
+
+    @Override
+    public void fillComboBox(JComboBox<String> comboBox, String query) throws SQLException {
+        Statement statement = this.connection.createStatement();
+        statement.execute(query);
+        ResultSet resultSet = statement.getResultSet();
+
+        while (resultSet.next()) {
+            comboBox.addItem(resultSet.getString(1));
+        }
+
+        statement.close();
+        resultSet.close();
+        comboBox.setSelectedIndex(-1);
+    }
     
 }

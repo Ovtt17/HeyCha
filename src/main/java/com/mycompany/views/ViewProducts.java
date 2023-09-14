@@ -1,7 +1,9 @@
 package com.mycompany.views;
 
 import com.mycompany.heycha.DAOProductsImpl;
+import com.mycompany.heycha.DAOProductsSizesImpl;
 import com.mycompany.heycha.Dashboard;
+import com.mycompany.interfaces.DAOProductSizes;
 import com.mycompany.interfaces.DAOProducts;
 import java.awt.Color;
 import javax.swing.JOptionPane;
@@ -223,7 +225,8 @@ public class ViewProducts extends javax.swing.JPanel {
             try {
                 int productId = (int) jTableProducts.getValueAt(jTableProducts.getSelectedRow(), 0);
                 DAOProducts dao = new DAOProductsImpl();
-                Dashboard.ShowPanel(new UpProducts(dao.getProductById(productId)));
+                DAOProductSizes daoSize = new DAOProductsSizesImpl();
+                Dashboard.ShowPanel(new UpProducts(dao.getProductById(productId), daoSize.consult(productId)));
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
