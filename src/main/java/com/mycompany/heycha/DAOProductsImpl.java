@@ -86,10 +86,18 @@ public class DAOProductsImpl extends Database implements DAOProducts {
     public void delete(int productId) throws Exception {
         try {
             this.connectDB();
-            PreparedStatement pst = this.connection.prepareStatement("DELETE FROM PRODUCTOS WHERE ID = ?");
+            String deleteProduct = "DELETE FROM PRODUCTOS WHERE ID = ?;";
+            PreparedStatement pst = this.connection.prepareStatement(deleteProduct);
+            
+            String sqlResetId = "ALTER TABLE PRODUCTOS AUTO_INCREMENT = ?;";
+            PreparedStatement pst2 = this.connection.prepareStatement(sqlResetId);
             pst.setInt(1, productId);
+            pst2.setInt(1, productId);
+            
             pst.executeUpdate();
+            pst2.executeUpdate();
             pst.close();
+            pst2.close();
         } catch (Exception e) {
             throw e;
         } finally {
