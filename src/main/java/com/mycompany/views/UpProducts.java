@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +26,11 @@ public class UpProducts extends javax.swing.JPanel {
 
     boolean isEditable = false;
     ModelProducts productEditable;
-    ModelProductSizes pSizesEditable;
     List<ModelProductSizes> listEditable;
+
+    HashMap<String, JSpinner> spinnerMap = new HashMap<>();
+    HashMap<String, JCheckBox> checkBoxMap = new HashMap<>();
+    String[] sizes = {"XS", "S", "M", "L", "XL"};
 
     public UpProducts() {
         initComponents();
@@ -87,22 +91,37 @@ public class UpProducts extends javax.swing.JPanel {
                     typeCmb.setSelectedItem(type);
                 }
                 typeCmb.setSelectedItem(type);
-                
-                JSpinner[] spinnerArray = {spinnerSizeXS, spinnerSizeS, spinnerSizeM, spinnerSizeL, spinnerSizeXL};
-                JCheckBox[] checkBoxes = {cbXS, cbS, cbM, cbL, cbXL};
-                for (int i = 0; i < listEditable.size(); i++) {
-                    ModelProductSizes pSize = listEditable.get(i);
-                    
-                    int spinnerValue = pSize.getAmount() == null ? 0 : pSize.getAmount();
-                    spinnerArray[i].setValue(spinnerValue);
-                    
-                    if (spinnerValue != 0) {
-                        checkBoxes[i].setSelected(true);
-                    }
-                }
+
+                loadSizes();
             }
         }
 
+    }
+
+    private void loadSizes() {
+        spinnerMap.put("XS", spinnerSizeXS);
+        spinnerMap.put("S", spinnerSizeS);
+        spinnerMap.put("M", spinnerSizeM);
+        spinnerMap.put("L", spinnerSizeL);
+        spinnerMap.put("XL", spinnerSizeXL);
+
+        checkBoxMap.put("XS", cbXS);
+        checkBoxMap.put("S", cbS);
+        checkBoxMap.put("M", cbM);
+        checkBoxMap.put("L", cbL);
+        checkBoxMap.put("XL", cbXL);
+
+        for (ModelProductSizes pSize : listEditable) {
+            String size = sizes[pSize.getIdSize() - 1];
+            int spinnerValue = pSize.getAmount() == null ? 0 : pSize.getAmount();
+
+            if (spinnerMap.containsKey(size)) {
+                spinnerMap.get(size).setValue(spinnerValue);
+                if (spinnerValue != 0) {
+                    checkBoxMap.get(size).setSelected(true);
+                }
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -403,22 +422,26 @@ public class UpProducts extends javax.swing.JPanel {
         product.setIdType(idType);
 
         ModelProductSizes pSizes = new ModelProductSizes();
-        int valueSpinnerXS = (int) spinnerSizeXS.getValue();
-        int valueSpinnerS = (int) spinnerSizeS.getValue();
-        int valueSpinnerM = (int) spinnerSizeM.getValue();
-        int valueSpinnerL = (int) spinnerSizeL.getValue();
-        int valueSpinnerXL = (int) spinnerSizeXL.getValue();
 
-        int[] valueSpinners = {valueSpinnerXS, valueSpinnerS, valueSpinnerM, valueSpinnerL, valueSpinnerXL};
-        JCheckBox[] checkBoxes = {cbXS, cbS, cbM, cbL, cbXL};
+        HashMap<String, Integer> spinnerValues = new HashMap<>();
+        spinnerValues.put("XS", (int) spinnerSizeXS.getValue());
+        spinnerValues.put("S", (int) spinnerSizeS.getValue());
+        spinnerValues.put("M", (int) spinnerSizeM.getValue());
+        spinnerValues.put("L", (int) spinnerSizeL.getValue());
+        spinnerValues.put("XL", (int) spinnerSizeXL.getValue());
 
+        checkBoxMap.put("XS", cbXS);
+        checkBoxMap.put("S", cbS);
+        checkBoxMap.put("M", cbM);
+        checkBoxMap.put("L", cbL);
+        checkBoxMap.put("XL", cbXL);
         try {
             DAOProducts dao = new DAOProductsImpl();
             DAOProductSizes daoSize = new DAOProductsSizesImpl();
 
             boolean selected = false;
-            for (int i = 0; i < valueSpinners.length; i++) {
-                if (valueSpinners[i] != 0 && checkBoxes[i].isSelected()) {
+            for (String size : sizes) {
+                if (spinnerValues.get(size) != 0 && checkBoxMap.get(size).isSelected()) {
                     selected = true;
                 }
             }
@@ -426,35 +449,49 @@ public class UpProducts extends javax.swing.JPanel {
                 javax.swing.JOptionPane.showMessageDialog(this, "Debe seleccionar correctamente las tallas. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
                 return;
             }
+
             if (!isEditable) {
                 dao.record(product, pSizes);
-                for (int i = 0; i < valueSpinners.length; i++) {
-                    if (valueSpinners[i] != 0 && checkBoxes[i].isSelected()) {
-                        pSizes.setAmount(valueSpinners[i]);
-                        pSizes.setIdSize(i + 1);
+                for (String size : sizes) {
+                    if (spinnerValues.get(size) != 0 && checkBoxMap.get(size).isSelected()) {
+                        pSizes.setAmount(spinnerValues.get(size));
+                        pSizes.setIdSize(Arrays.asList(sizes).indexOf(size) + 1);
                         daoSize.record(pSizes);
                     }
                 }
             } else {
                 dao.modify(product, pSizes);
-                for (int i = 0; i < valueSpinners.length; i++) {
-                    if (valueSpinners[i] != 0 && checkBoxes[i].isSelected()) {
-                        pSizes.setAmount(valueSpinners[i]);
-                        pSizes.setIdSize(i + 1);
+                for (String size : sizes) {
+                    boolean isNotSelectedButHasValue = !checkBoxMap.get(size).isSelected() && spinnerValues.get(size) != 0;
+
+                    if (isNotSelectedButHasValue) {
+                        javax.swing.JOptionPane.showMessageDialog(this, "Debe marcar la talla que desea modificar.\n\nSi desea borrar una debe igualar a 0 y marcarla.", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    pSizes.setAmount(spinnerValues.get(size));
+                    pSizes.setIdSize(Arrays.asList(sizes).indexOf(size) + 1);
+
+                    boolean isSelectedButHasNoValue = checkBoxMap.get(size).isSelected() && spinnerValues.get(size) == 0;
+                    if (isSelectedButHasNoValue) {
+                        daoSize.deleteIfZero(pSizes);
+                        continue;
+                    }
+
+                    boolean isSelectedAndHasValue = spinnerValues.get(size) != 0 && checkBoxMap.get(size).isSelected();
+                    if (isSelectedAndHasValue) {
                         boolean isModified = daoSize.modify(pSizes);
-                        
-                        if(!isModified) {
+                        if (!isModified) {
                             daoSize.record(pSizes);
-                        }                        
+                        }
                     }
                 }
-
             }
 
             String succecssMsg = isEditable ? "modificado" : "registrado";
             javax.swing.JOptionPane.showMessageDialog(this, "Datos " + succecssMsg + " correctamente. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             if (!isEditable) {
-                emptyFields();
+                emptyFields(spinnerMap);
             }
         } catch (Exception e) {
             String errorMsg = isEditable ? "modificar" : "registrar";
@@ -464,7 +501,7 @@ public class UpProducts extends javax.swing.JPanel {
 
     }//GEN-LAST:event_buttonActionPerformed
 
-    private void emptyFields() {
+    private void emptyFields(HashMap<String, JSpinner> spinnerMap) {
         nameTxt.setText("");
         priceTxt.setText("");
         descriptionTxt.setText("");
@@ -472,6 +509,13 @@ public class UpProducts extends javax.swing.JPanel {
         brandCmb.setSelectedIndex(-1);
         categoryCmb.setSelectedIndex(-1);
         typeCmb.setSelectedIndex(-1);
+
+        for (String size : sizes) {
+            if (spinnerMap.containsKey(size)) {
+                spinnerMap.get(size).setValue(0);
+                checkBoxMap.get(size).setSelected(false);
+            }
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

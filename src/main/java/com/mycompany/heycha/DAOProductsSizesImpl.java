@@ -2,13 +2,10 @@ package com.mycompany.heycha;
 
 import com.mycompany.db.Database;
 import com.mycompany.interfaces.DAOProductSizes;
-import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.models.ModelProductSizes;
-import com.mycompany.models.ModelProducts;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,10 +26,11 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
             this.closeDB();
         }
     }
+
     private void sendRecordedFields(PreparedStatement st, ModelProductSizes productSize) throws SQLException {
-         st.setInt(1, productSize.getIdProduct());
-         st.setInt(2, productSize.getIdSize());
-         st.setInt(3, productSize.getAmount());
+        st.setInt(1, productSize.getIdProduct());
+        st.setInt(2, productSize.getIdSize());
+        st.setInt(3, productSize.getAmount());
     }
 
     private void sendModifiedFields(PreparedStatement st, ModelProductSizes productSize) throws SQLException {
@@ -63,8 +61,20 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
     }
 
     @Override
-    public void delete(int productId) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void delete(ModelProductSizes productSize) throws Exception {
+        try {
+            this.connectDB();
+            String query = "DELETE FROM PRODUCTOS_TALLAS WHERE ID_PRODUCTO = ? AND ID_TALLA = ?;";
+            PreparedStatement pst = this.connection.prepareStatement(query);
+            pst.setInt(1, productSize.getIdProduct());
+            pst.setInt(2, productSize.getIdSize());
+            pst.executeUpdate();
+            pst.close();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.closeDB();
+        }
     }
 
     @Override
@@ -93,32 +103,28 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
         return list;
     }
 
-    @Override
-    public ModelProductSizes getProductSizesById(int productId) throws Exception {
-        ModelProductSizes pSize = new ModelProductSizes();
+    private void setProductSizesForConsult(ResultSet rs, ModelProductSizes pSize) throws SQLException {
+        pSize.setIdProduct(rs.getInt("ID_PRODUCTO"));
+        pSize.setIdSize(rs.getInt("ID_TALLA"));
+        pSize.setAmount(rs.getInt("CANTIDAD_INVENTARIO"));
+    }
 
+    @Override
+    public void deleteIfZero(ModelProductSizes productSize) throws Exception {
         try {
             this.connectDB();
-            String query = "SELECT * FROM productos_tallas WHERE ID_Producto = ?;";
+            String query = "DELETE FROM PRODUCTOS_TALLAS WHERE ID_PRODUCTO = ? AND ID_TALLA = ?;";
             PreparedStatement st = this.connection.prepareStatement(query);
-            st.setInt(1, productId);
-            ResultSet rs = st.executeQuery();
-
-            while (rs.next()) {
-                setProductSizesForConsult(rs, pSize);
-            }
+            st.setInt(1, productSize.getIdProduct());
+            st.setInt(2, productSize.getIdSize());
+            st.executeUpdate();
+            st.close();
         } catch (Exception e) {
             throw e;
         } finally {
             this.closeDB();
         }
-        return pSize;
-    }
 
-    private void setProductSizesForConsult(ResultSet rs, ModelProductSizes pSize) throws SQLException {
-        pSize.setIdProduct(rs.getInt("ID_PRODUCTO"));
-        pSize.setIdSize(rs.getInt("ID_TALLA"));
-        pSize.setAmount(rs.getInt("CANTIDAD_INVENTARIO"));
     }
 
 }
