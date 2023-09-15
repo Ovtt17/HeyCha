@@ -6,7 +6,7 @@ import java.util.List;
 public interface DAOProductSizes {
     public void record (ModelProductSizes productSize) throws Exception;
     public boolean modify (ModelProductSizes productSize) throws Exception;
-    public void delete (ModelProductSizes productSize) throws Exception;
+    public void delete (int productId) throws Exception;
     public List<ModelProductSizes> consult(int productId) throws Exception;
     public void deleteIfZero (ModelProductSizes productSize) throws Exception;
 

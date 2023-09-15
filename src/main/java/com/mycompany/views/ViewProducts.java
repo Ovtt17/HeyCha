@@ -36,7 +36,7 @@ public class ViewProducts extends javax.swing.JPanel {
             DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
             dao.consult().forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -204,18 +204,24 @@ public class ViewProducts extends javax.swing.JPanel {
             javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar uno o más productos para borrar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        
+
         int confirmed = javax.swing.JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar estos datos? \n", "CONFIMARCIÓN", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
         if (confirmed == javax.swing.JOptionPane.YES_OPTION) {
-            DAOProducts d = new DAOProductsImpl();
-            for (int i : jTableProducts.getSelectedRows()) {
+            DAOProducts dao = new DAOProductsImpl();
+            DAOProductSizes daoSize = new DAOProductsSizesImpl();
+
+            int[] selectedRows = jTableProducts.getSelectedRows();
+            for (int i = selectedRows.length - 1; i >= 0; i--) {
                 try {
-                    d.delete((int) jTableProducts.getValueAt(i, 0));
-                    model.removeRow(i);
+                    int selectedRow = selectedRows[i];
+                    dao.delete((int) jTableProducts.getValueAt(selectedRow, 0));
+                    daoSize.delete((int) jTableProducts.getValueAt(selectedRow, 0));
+                    model.removeRow(selectedRow);
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                    javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
                 }
             }
+
             javax.swing.JOptionPane.showMessageDialog(this, "Los datos se han eliminado correctamente. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_btnDeleteActionPerformed

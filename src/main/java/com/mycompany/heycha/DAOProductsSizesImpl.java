@@ -61,13 +61,12 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
     }
 
     @Override
-    public void delete(ModelProductSizes productSize) throws Exception {
+    public void delete(int productId) throws Exception {
         try {
             this.connectDB();
-            String query = "DELETE FROM PRODUCTOS_TALLAS WHERE ID_PRODUCTO = ? AND ID_TALLA = ?;";
+            String query = "DELETE FROM PRODUCTOS_TALLAS WHERE ID_PRODUCTO = ?;";
             PreparedStatement pst = this.connection.prepareStatement(query);
-            pst.setInt(1, productSize.getIdProduct());
-            pst.setInt(2, productSize.getIdSize());
+            pst.setInt(1, productId);
             pst.executeUpdate();
             pst.close();
         } catch (Exception e) {

@@ -423,12 +423,11 @@ public class UpProducts extends javax.swing.JPanel {
 
         ModelProductSizes pSizes = new ModelProductSizes();
 
-        HashMap<String, Integer> spinnerValues = new HashMap<>();
-        spinnerValues.put("XS", (int) spinnerSizeXS.getValue());
-        spinnerValues.put("S", (int) spinnerSizeS.getValue());
-        spinnerValues.put("M", (int) spinnerSizeM.getValue());
-        spinnerValues.put("L", (int) spinnerSizeL.getValue());
-        spinnerValues.put("XL", (int) spinnerSizeXL.getValue());
+        spinnerMap.put("XS", spinnerSizeXS);
+        spinnerMap.put("S", spinnerSizeS);
+        spinnerMap.put("M", spinnerSizeM);
+        spinnerMap.put("L", spinnerSizeL);
+        spinnerMap.put("XL", spinnerSizeXL);
 
         checkBoxMap.put("XS", cbXS);
         checkBoxMap.put("S", cbS);
@@ -438,10 +437,12 @@ public class UpProducts extends javax.swing.JPanel {
         try {
             DAOProducts dao = new DAOProductsImpl();
             DAOProductSizes daoSize = new DAOProductsSizesImpl();
+            
 
             boolean selected = false;
             for (String size : sizes) {
-                if (spinnerValues.get(size) != 0 && checkBoxMap.get(size).isSelected()) {
+                int spinnervalue = (int) spinnerMap.get(size).getValue();
+                if (spinnervalue  != 0 && checkBoxMap.get(size).isSelected()) {
                     selected = true;
                 }
             }
@@ -453,8 +454,9 @@ public class UpProducts extends javax.swing.JPanel {
             if (!isEditable) {
                 dao.record(product, pSizes);
                 for (String size : sizes) {
-                    if (spinnerValues.get(size) != 0 && checkBoxMap.get(size).isSelected()) {
-                        pSizes.setAmount(spinnerValues.get(size));
+                    int spinnervalue = (int) spinnerMap.get(size).getValue();
+                    if (spinnervalue != 0 && checkBoxMap.get(size).isSelected()) {
+                        pSizes.setAmount(spinnervalue);
                         pSizes.setIdSize(Arrays.asList(sizes).indexOf(size) + 1);
                         daoSize.record(pSizes);
                     }
@@ -462,23 +464,24 @@ public class UpProducts extends javax.swing.JPanel {
             } else {
                 dao.modify(product, pSizes);
                 for (String size : sizes) {
-                    boolean isNotSelectedButHasValue = !checkBoxMap.get(size).isSelected() && spinnerValues.get(size) != 0;
+                    int spinnervalue = (int) spinnerMap.get(size).getValue();
+                    boolean isNotSelectedButHasValue = !checkBoxMap.get(size).isSelected() && spinnervalue != 0;
 
                     if (isNotSelectedButHasValue) {
                         javax.swing.JOptionPane.showMessageDialog(this, "Debe marcar la talla que desea modificar.\n\nSi desea borrar una debe igualar a 0 y marcarla.", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
-                    pSizes.setAmount(spinnerValues.get(size));
+                    pSizes.setAmount(spinnervalue);
                     pSizes.setIdSize(Arrays.asList(sizes).indexOf(size) + 1);
 
-                    boolean isSelectedButHasNoValue = checkBoxMap.get(size).isSelected() && spinnerValues.get(size) == 0;
+                    boolean isSelectedButHasNoValue = checkBoxMap.get(size).isSelected() && spinnervalue == 0;
                     if (isSelectedButHasNoValue) {
                         daoSize.deleteIfZero(pSizes);
                         continue;
                     }
 
-                    boolean isSelectedAndHasValue = spinnerValues.get(size) != 0 && checkBoxMap.get(size).isSelected();
+                    boolean isSelectedAndHasValue = spinnervalue != 0 && checkBoxMap.get(size).isSelected();
                     if (isSelectedAndHasValue) {
                         boolean isModified = daoSize.modify(pSizes);
                         if (!isModified) {
@@ -491,7 +494,7 @@ public class UpProducts extends javax.swing.JPanel {
             String succecssMsg = isEditable ? "modificado" : "registrado";
             javax.swing.JOptionPane.showMessageDialog(this, "Datos " + succecssMsg + " correctamente. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             if (!isEditable) {
-                emptyFields(spinnerMap);
+                emptyFields();
             }
         } catch (Exception e) {
             String errorMsg = isEditable ? "modificar" : "registrar";
@@ -499,9 +502,10 @@ public class UpProducts extends javax.swing.JPanel {
 
         }
 
+
     }//GEN-LAST:event_buttonActionPerformed
 
-    private void emptyFields(HashMap<String, JSpinner> spinnerMap) {
+    private void emptyFields() {
         nameTxt.setText("");
         priceTxt.setText("");
         descriptionTxt.setText("");
