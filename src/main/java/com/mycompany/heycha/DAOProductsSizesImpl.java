@@ -81,7 +81,12 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
         List<ModelProductSizes> list = null;
         try {
             this.connectDB();
-            String query = "SELECT * FROM productos_tallas WHERE ID_Producto = ?;";
+            String query = "select pt.id_producto, p.nombre, t.talla, cantidad_inventario\n"
+                    + "from productos_tallas pt \n"
+                    + "inner join productos p on p.ID = pt.ID_Producto\n"
+                    + "inner join tallas t on t.id = pt.ID_Talla\n"
+                    + "where pt.ID_Producto = ?\n"
+                    + "order by p.nombre, pt.ID_Producto desc;";
             PreparedStatement st = this.connection.prepareStatement(query);
             st.setInt(1, productId);
             list = new ArrayList();
@@ -104,7 +109,8 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
 
     private void setProductSizesForConsult(ResultSet rs, ModelProductSizes pSize) throws SQLException {
         pSize.setIdProduct(rs.getInt("ID_PRODUCTO"));
-        pSize.setIdSize(rs.getInt("ID_TALLA"));
+        pSize.setNameProduct(rs.getString("NOMBRE"));
+        pSize.setNameSize(rs.getString("TALLA"));
         pSize.setAmount(rs.getInt("CANTIDAD_INVENTARIO"));
     }
 
@@ -124,6 +130,38 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
             this.closeDB();
         }
 
+    }
+
+    @Override
+    public List<ModelProductSizes> getProductSizesById(int productId) throws Exception {
+        List<ModelProductSizes> list = null;
+        try {
+            this.connectDB();
+            String query = "SELECT * FROM productos_tallas WHERE ID_Producto = ?;";
+            PreparedStatement st = this.connection.prepareStatement(query);
+            st.setInt(1, productId);
+            list = new ArrayList();
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next()) {
+                ModelProductSizes pSize = new ModelProductSizes();
+                setProductSizesForModify(rs, pSize);
+                list.add(pSize);
+            }
+            rs.close();
+            st.close();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.closeDB();
+        }
+        return list;
+    }
+
+    private void setProductSizesForModify(ResultSet rs, ModelProductSizes pSize) throws SQLException {
+        pSize.setIdProduct(rs.getInt("ID_PRODUCTO"));
+        pSize.setIdSize(rs.getInt("ID_TALLA"));
+        pSize.setAmount(rs.getInt("CANTIDAD_INVENTARIO"));
     }
 
 }

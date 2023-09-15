@@ -4,6 +4,10 @@ public class ModelProductSizes {
     private Integer idProduct;
     private Integer idSize;
     private Integer amount;
+    
+    private String nameSize;
+    private String nameProduct;
+    
 
     public Integer getIdProduct() {
         return idProduct;
@@ -29,5 +33,20 @@ public class ModelProductSizes {
         this.amount = amount;
     }
 
+    public String getNameSize() {
+        return nameSize;
+    }
+
+    public void setNameSize(String nameSize) {
+        this.nameSize = nameSize;
+    }
+
+    public String getNameProduct() {
+        return nameProduct;
+    }
+
+    public void setNameProduct(String nameProduct) {
+        this.nameProduct = nameProduct;
+    }
     
 }

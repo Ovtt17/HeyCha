@@ -5,6 +5,7 @@ com\mycompany\views\ViewProducts.class
 com\mycompany\views\UpProducts$1.class
 com\mycompany\views\ViewClients$1.class
 com\mycompany\views\ViewProducts$1.class
+com\mycompany\views\ViewProducts$6.class
 com\mycompany\views\ViewProducts$3.class
 com\mycompany\heycha\DAOProductsSizesImpl.class
 com\mycompany\views\ViewClients.class
