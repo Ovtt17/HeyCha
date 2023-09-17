@@ -106,12 +106,11 @@ public class DAOProductsImpl extends Database implements DAOProducts {
     }
 
     @Override
-    public List<ModelProducts> consult(String name) throws Exception {
+    public List<ModelProducts> consult(String name, String brand) throws Exception {
         List<ModelProducts> list = null;
         try {
             this.connectDB();
-            
-            String query = name.isEmpty() ? "call consulta('');" : "call consulta('"+name+"');";
+            String query = "call consulta('"+name+"', '"+brand+"');";
             PreparedStatement st = this.connection.prepareStatement(query);
             list = new ArrayList();
             ResultSet rs = st.executeQuery();
@@ -157,20 +156,13 @@ public class DAOProductsImpl extends Database implements DAOProducts {
 
         try {
             this.connectDB();
-            String query = "SELECT P.ID, P.NOMBRE AS NOMBRE_PRODUCTO, P.PRECIO, P.DESCRIPCION, P.DESCUENTO, M.NOMBRE AS NOMBRE_MARCA, C.NOMBRE AS NOMBRE_CATEGORIA, T.NOMBRE AS NOMBRE_TIPO\n"
-                    + "FROM PRODUCTOS P\n"
-                    + "INNER JOIN MARCAS M ON P.ID_MARCA = M.ID\n"
-                    + "INNER JOIN CATEGORIAS C ON P.ID_CATEGORIA = C.ID\n"
-                    + "LEFT JOIN TIPO T ON P.ID_TIPO = T.ID\n"
-                    + "WHERE P.ID = ?\n"
-                    + "LIMIT 1;";
+            String query = "call consultaPorCodigoProducto(?)";
             PreparedStatement st = this.connection.prepareStatement(query);
             st.setInt(1, productId);
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
                 setProductFieldsFromDBForConsult(rs, product);
-//                setProductSizes(rs, pSizes);
             }
         } catch (Exception e) {
             throw e;

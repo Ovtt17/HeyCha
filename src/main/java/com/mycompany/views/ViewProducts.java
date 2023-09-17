@@ -29,12 +29,14 @@ public class ViewProducts extends javax.swing.JPanel {
         title.setForeground(Color.black);
         productSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto a buscar.");
     }
-
+    
     private void loadProducts() {
         try {
             DAOProducts dao = new DAOProductsImpl();
             DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
-            dao.consult("").forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
+            String nameToFind = "";
+            String brandSeleted = "Ninguno";
+            dao.consult(nameToFind, brandSeleted).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -58,7 +60,7 @@ public class ViewProducts extends javax.swing.JPanel {
         btnAdd = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
-        btnNoFilter = new javax.swing.JButton();
+        FilterCmb = new javax.swing.JComboBox<>();
 
         setPreferredSize(new java.awt.Dimension(764, 436));
 
@@ -141,12 +143,10 @@ public class ViewProducts extends javax.swing.JPanel {
             }
         });
 
-        btnNoFilter.setBackground(new java.awt.Color(255, 51, 51));
-        btnNoFilter.setForeground(new java.awt.Color(255, 255, 255));
-        btnNoFilter.setText("Quitar Filtro");
-        btnNoFilter.addActionListener(new java.awt.event.ActionListener() {
+        FilterCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ninguno", "Tommy", "Nautica", "Levis", "Polo", "Guess" }));
+        FilterCmb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnNoFilterActionPerformed(evt);
+                FilterCmbActionPerformed(evt);
             }
         });
 
@@ -156,16 +156,17 @@ public class ViewProducts extends javax.swing.JPanel {
             background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(background_productsLayout.createSequentialGroup()
                 .addGap(25, 25, 25)
-                .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
+                .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(659, 659, 659))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
+                        .addGap(1, 1, 1)
                         .addComponent(productSearch)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnNoFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(18, 18, 18)
+                        .addComponent(FilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
                         .addGap(418, 418, 418)
@@ -186,7 +187,7 @@ public class ViewProducts extends javax.swing.JPanel {
                 .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(productSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnNoFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(FilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
@@ -210,7 +211,7 @@ public class ViewProducts extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        filterConsult(productSearch.getText());
+        filterConsult();
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
@@ -294,32 +295,34 @@ public class ViewProducts extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jTableProductsMouseClicked
 
-    private void btnNoFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNoFilterActionPerformed
-        filterConsult("");
-    }//GEN-LAST:event_btnNoFilterActionPerformed
-
     private void productSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_productSearchActionPerformed
         btnSearchActionPerformed(evt);
     }//GEN-LAST:event_productSearchActionPerformed
 
-    private void filterConsult(String name){
+    private void FilterCmbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FilterCmbActionPerformed
+        filterConsult();
+    }//GEN-LAST:event_FilterCmbActionPerformed
+
+    private void filterConsult(){
         DAOProducts dao = new DAOProductsImpl();
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
         model.setRowCount(0);
+        String productNameToSearch = productSearch.getText();
+        String productBrandToSearch = FilterCmb.getSelectedItem().toString();
         try {
-            dao.consult(name).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
+            dao.consult(productNameToSearch,productBrandToSearch).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
-        productSearch.setText(name);
+        productSearch.setText(productNameToSearch);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> FilterCmb;
     private javax.swing.JPanel background_products;
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
-    private javax.swing.JButton btnNoFilter;
     private javax.swing.JButton btnSearch;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableProducts;
