@@ -62,7 +62,7 @@
                           <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
                           <Component id="productSearch" max="32767" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="FilterCmb" min="-2" pref="130" max="-2" attributes="0"/>
+                          <Component id="BrandFilterCmb" min="-2" pref="130" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="btnSearch" min="-2" pref="119" max="-2" attributes="0"/>
                       </Group>
@@ -89,7 +89,7 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="productSearch" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
                       <Component id="btnSearch" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
-                      <Component id="FilterCmb" alignment="0" min="-2" pref="37" max="-2" attributes="0"/>
+                      <Component id="BrandFilterCmb" alignment="0" min="-2" pref="37" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                   <Component id="jScrollPane1" pref="253" max="32767" attributes="0"/>
@@ -263,7 +263,7 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDeleteActionPerformed"/>
           </Events>
         </Component>
-        <Component class="javax.swing.JComboBox" name="FilterCmb">
+        <Component class="javax.swing.JComboBox" name="BrandFilterCmb">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="6">
@@ -277,7 +277,7 @@
             </Property>
           </Properties>
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="FilterCmbActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="BrandFilterCmbActionPerformed"/>
           </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>

@@ -28,6 +28,9 @@ public class ViewProducts extends javax.swing.JPanel {
         title.putClientProperty("FlatLaf.styleClass", "h1");
         title.setForeground(Color.black);
         productSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto a buscar.");
+        
+        btnDelete.setEnabled(true);
+        BrandFilterCmb.setEnabled(true);
     }
     
     private void loadProducts() {
@@ -60,7 +63,7 @@ public class ViewProducts extends javax.swing.JPanel {
         btnAdd = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
-        FilterCmb = new javax.swing.JComboBox<>();
+        BrandFilterCmb = new javax.swing.JComboBox<>();
 
         setPreferredSize(new java.awt.Dimension(764, 436));
 
@@ -143,10 +146,10 @@ public class ViewProducts extends javax.swing.JPanel {
             }
         });
 
-        FilterCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ninguno", "Tommy", "Nautica", "Levis", "Polo", "Guess" }));
-        FilterCmb.addActionListener(new java.awt.event.ActionListener() {
+        BrandFilterCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ninguno", "Tommy", "Nautica", "Levis", "Polo", "Guess" }));
+        BrandFilterCmb.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                FilterCmbActionPerformed(evt);
+                BrandFilterCmbActionPerformed(evt);
             }
         });
 
@@ -165,7 +168,7 @@ public class ViewProducts extends javax.swing.JPanel {
                         .addGap(1, 1, 1)
                         .addComponent(productSearch)
                         .addGap(18, 18, 18)
-                        .addComponent(FilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(BrandFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
@@ -187,7 +190,7 @@ public class ViewProducts extends javax.swing.JPanel {
                 .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(productSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(FilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(BrandFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
@@ -211,7 +214,13 @@ public class ViewProducts extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        filterConsult();
+        if (!btnDelete.isEnabled() || !BrandFilterCmb.isEnabled() && productSearch.getText().isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "No puede realizar búsqueda dentro de los detalles de un producto. \n", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+            productSearch.setText("");
+            return;
+        } else {
+            filterConsult();
+        }
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
@@ -289,6 +298,8 @@ public class ViewProducts extends javax.swing.JPanel {
 
                 daoSizes.consult(productId).forEach((p) -> newModel.addRow(new Object[]{p.getIdProduct(), p.getNameProduct(), p.getNameSize(), p.getAmount()}));
                 jTableProducts.setModel(newModel);
+                btnDelete.setEnabled(false);
+                BrandFilterCmb.setEnabled(false);
             } catch (Exception e) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
@@ -299,16 +310,16 @@ public class ViewProducts extends javax.swing.JPanel {
         btnSearchActionPerformed(evt);
     }//GEN-LAST:event_productSearchActionPerformed
 
-    private void FilterCmbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FilterCmbActionPerformed
+    private void BrandFilterCmbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrandFilterCmbActionPerformed
         filterConsult();
-    }//GEN-LAST:event_FilterCmbActionPerformed
+    }//GEN-LAST:event_BrandFilterCmbActionPerformed
 
     private void filterConsult(){
         DAOProducts dao = new DAOProductsImpl();
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
         model.setRowCount(0);
         String productNameToSearch = productSearch.getText();
-        String productBrandToSearch = FilterCmb.getSelectedItem().toString();
+        String productBrandToSearch = BrandFilterCmb.getSelectedItem().toString();
         try {
             dao.consult(productNameToSearch,productBrandToSearch).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
         } catch (Exception e) {
@@ -318,7 +329,7 @@ public class ViewProducts extends javax.swing.JPanel {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<String> FilterCmb;
+    private javax.swing.JComboBox<String> BrandFilterCmb;
     private javax.swing.JPanel background_products;
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnDelete;
