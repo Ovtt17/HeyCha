@@ -106,16 +106,12 @@ public class DAOProductsImpl extends Database implements DAOProducts {
     }
 
     @Override
-    public List<ModelProducts> consult() throws Exception {
+    public List<ModelProducts> consult(String name) throws Exception {
         List<ModelProducts> list = null;
         try {
             this.connectDB();
-            String query = "SELECT P.ID, P.NOMBRE AS NOMBRE_PRODUCTO, P.PRECIO, P.DESCRIPCION, P.DESCUENTO, M.NOMBRE AS NOMBRE_MARCA, C.NOMBRE AS NOMBRE_CATEGORIA, T.NOMBRE AS NOMBRE_TIPO \n"
-                    + "FROM PRODUCTOS P\n"
-                    + "INNER JOIN MARCAS M ON P.ID_MARCA = M.ID\n"
-                    + "INNER JOIN CATEGORIAS C ON P.ID_CATEGORIA = C.ID\n"
-                    + "LEFT JOIN TIPO T ON P.ID_TIPO = T.ID\n"
-                    + "ORDER BY P.ID;";
+            
+            String query = name.isEmpty() ? "call consulta('');" : "call consulta('"+name+"');";
             PreparedStatement st = this.connection.prepareStatement(query);
             list = new ArrayList();
             ResultSet rs = st.executeQuery();

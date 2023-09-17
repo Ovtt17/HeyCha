@@ -34,7 +34,7 @@ public class ViewProducts extends javax.swing.JPanel {
         try {
             DAOProducts dao = new DAOProductsImpl();
             DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
-            dao.consult().forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
+            dao.consult("").forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -58,6 +58,7 @@ public class ViewProducts extends javax.swing.JPanel {
         btnAdd = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
+        btnNoFilter = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(764, 436));
 
@@ -67,6 +68,12 @@ public class ViewProducts extends javax.swing.JPanel {
         background_products.setPreferredSize(new java.awt.Dimension(764, 436));
 
         title.setText("Productos");
+
+        productSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                productSearchActionPerformed(evt);
+            }
+        });
 
         btnSearch.setBackground(new java.awt.Color(21, 101, 192));
         btnSearch.setForeground(new java.awt.Color(255, 255, 255));
@@ -85,7 +92,7 @@ public class ViewProducts extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID", "Nombre", "Precio", "Descripcion", "Descuento", "ID_Marca", "ID_Categoria", "ID_Tipo"
+                "ID", "Nombre", "Precio", "Descripcion", "Descuento", "Marca", "Categoria", "Tipo"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -96,6 +103,7 @@ public class ViewProducts extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
+        jTableProducts.setRowHeight(30);
         jTableProducts.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTableProductsMouseClicked(evt);
@@ -133,6 +141,15 @@ public class ViewProducts extends javax.swing.JPanel {
             }
         });
 
+        btnNoFilter.setBackground(new java.awt.Color(255, 51, 51));
+        btnNoFilter.setForeground(new java.awt.Color(255, 255, 255));
+        btnNoFilter.setText("Quitar Filtro");
+        btnNoFilter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNoFilterActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout background_productsLayout = new javax.swing.GroupLayout(background_products);
         background_products.setLayout(background_productsLayout);
         background_productsLayout.setHorizontalGroup(
@@ -146,7 +163,9 @@ public class ViewProducts extends javax.swing.JPanel {
                 .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
                         .addComponent(productSearch)
-                        .addGap(38, 38, 38)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnNoFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
                         .addGap(418, 418, 418)
@@ -166,7 +185,8 @@ public class ViewProducts extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(productSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnNoFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
@@ -190,7 +210,7 @@ public class ViewProducts extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        // TODO add your handling code here:
+        filterConsult(productSearch.getText());
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
@@ -239,7 +259,7 @@ public class ViewProducts extends javax.swing.JPanel {
                 DAOProductSizes daoSize = new DAOProductsSizesImpl();
                 Dashboard.ShowPanel(new UpProducts(dao.getProductById(productId), daoSize.getProductSizesById(productId)));
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
         } else {
             javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto a editar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
@@ -251,14 +271,7 @@ public class ViewProducts extends javax.swing.JPanel {
         if (evt.getClickCount() == 2) {
             try {
                 DAOProductSizes daoSizes = new DAOProductsSizesImpl();
-                DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
-
-                int rows = model.getRowCount();
-                if (rows == 0) {
-                    javax.swing.JOptionPane.showMessageDialog(this, "No hay productos para visualizar sus detalles. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-                    btnAdd.requestFocus();
-                    return;
-                } else if (jTableProducts.getSelectedRow() < 1) {
+                if (jTableProducts.getSelectedRow() < 0) {
                     javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto para ver sus detalles. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
@@ -267,12 +280,13 @@ public class ViewProducts extends javax.swing.JPanel {
                 int productId = (int) jTableProducts.getValueAt(selectedRows, 0);
 
                 DefaultTableModel newModel = new DefaultTableModel();
+                jTableProducts.setDefaultEditor(Object.class, null);
                 newModel.addColumn("ID del producto");
                 newModel.addColumn("Nombre del producto");
                 newModel.addColumn("Talla");
                 newModel.addColumn("Cantidad");
 
-                daoSizes.consult(productId).forEach((p) -> newModel.addRow(new Object[]{p.getIdProduct(), p.getNameProduct(),p.getNameSize(), p.getAmount()}));
+                daoSizes.consult(productId).forEach((p) -> newModel.addRow(new Object[]{p.getIdProduct(), p.getNameProduct(), p.getNameSize(), p.getAmount()}));
                 jTableProducts.setModel(newModel);
             } catch (Exception e) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -280,12 +294,32 @@ public class ViewProducts extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jTableProductsMouseClicked
 
+    private void btnNoFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNoFilterActionPerformed
+        filterConsult("");
+    }//GEN-LAST:event_btnNoFilterActionPerformed
+
+    private void productSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_productSearchActionPerformed
+        btnSearchActionPerformed(evt);
+    }//GEN-LAST:event_productSearchActionPerformed
+
+    private void filterConsult(String name){
+        DAOProducts dao = new DAOProductsImpl();
+        DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
+        model.setRowCount(0);
+        try {
+            dao.consult(name).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        productSearch.setText(name);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel background_products;
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnNoFilter;
     private javax.swing.JButton btnSearch;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableProducts;

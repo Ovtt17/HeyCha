@@ -13,7 +13,7 @@ public interface DAOProducts {
     public void record (ModelProducts product, ModelProductSizes pSizes) throws Exception;
     public void modify (ModelProducts product, ModelProductSizes pSizes) throws Exception;
     public void delete (int productId) throws Exception;
-    public List<ModelProducts> consult() throws Exception;
+    public List<ModelProducts> consult(String name) throws Exception;
     public ModelProducts getProductById(int productId) throws Exception;
     
     /**
