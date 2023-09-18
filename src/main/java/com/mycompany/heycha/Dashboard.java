@@ -1,15 +1,21 @@
 package com.mycompany.heycha;
 
 import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialLighterIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatCarbonIJTheme;
+import com.mycompany.interfaces.Styleable;
 import com.mycompany.views.ViewClients;
 import com.mycompany.views.ViewProducts;
 import com.mycompany.views.ViewSales;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.event.ItemEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -17,45 +23,92 @@ import javax.swing.JPanel;
  */
 public class Dashboard extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Dashboard
-     */
     public Dashboard() {
         initComponents();
-        this.setExtendedState(MAXIMIZED_BOTH);
         InitStyles();
         SetDate();
         InitContent();
     }
+
+    public boolean isDarkModeEnabled() {
+        return ModeBtn.isSelected();
+    }
+
+    private void updateStyles(Component component, boolean isDarkModeEnabled) {
+        if (component instanceof Styleable) {
+            ((Styleable) component).updateStyles(isDarkModeEnabled);
+        }
+
+        if (component instanceof Container) {
+            for (Component child : ((Container) component).getComponents()) {
+                updateStyles(child, isDarkModeEnabled);
+            }
+        }
+    }
+
     private void InitStyles() {
         message.putClientProperty("FlatLaf.style", "font: 20 $light.font");
-        message.setForeground(Color.black);
         navText.putClientProperty("FlatLaf.style", "font: bold $h3.regular.font");
-        navText.setForeground(Color.white);
         dateText.putClientProperty("FlatLaf.style", "font: 24 $light.font");
-        dateText.setForeground(Color.white);
         appName.putClientProperty("FlatLaf.style", "font: bold $h1.regular.font");
+
+        navText.setForeground(Color.white);
+        dateText.setForeground(Color.white);
         appName.setForeground(Color.white);
+
+        if (ModeBtn.isSelected()) {
+            FlatCarbonIJTheme.setup();
+            ModeBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon-moon.png")));
+            message.setForeground(Color.white);
+
+            background.putClientProperty("FlatLaf.style", "background: #172030");
+            menu.putClientProperty("FlatLaf.style", "background: #172030");
+            header.putClientProperty("FlatLaf.style", "background: #26354f");
+
+            btnProducts.putClientProperty("FlatLaf.style", "background: #26354f");
+            btnClients.putClientProperty("FlatLaf.style", "background: #26354f");
+            btnSales.putClientProperty("FlatLaf.style", "background: #26354f");
+        } else {
+            FlatMaterialLighterIJTheme.setup();
+            ModeBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon-sun.png")));
+            message.setForeground(Color.black);
+
+            background.putClientProperty("FlatLaf.style", "background: #FFFFFF");
+            menu.putClientProperty("FlatLaf.style", "background: #0D47A1");
+            header.putClientProperty("FlatLaf.style", "background: #1976D2");
+
+            btnProducts.putClientProperty("FlatLaf.style", "background: #1565C0");
+            btnClients.putClientProperty("FlatLaf.style", "background: #1565C0");
+            btnSales.putClientProperty("FlatLaf.style", "background: #1565C0");
+        }
+
+        // Actualiza los estilos de los paneles
+        for (Component component : getComponents()) {
+            updateStyles(component, this.isDarkModeEnabled());
+        }
+        SwingUtilities.updateComponentTreeUI(this);
     }
-    
-    private void SetDate(){
+
+    private void SetDate() {
         LocalDate now = LocalDate.now();
         Locale spanishLocale = new Locale("es", "ES");
         dateText.setText(now.format(DateTimeFormatter.ofPattern("'Hoy es' EEEE dd 'de' MMMM 'de' yyyy", spanishLocale)));
     }
 
     private void InitContent() {
-        ShowPanel(new ViewProducts());
+        ShowPanel(new ViewProducts(this.isDarkModeEnabled()));
     }
-    public static void ShowPanel(JPanel p){
+
+    public static void ShowPanel(JPanel p) {
         p.setSize(764, 436);
-        p.setLocation(0,0);
-        
+        p.setLocation(0, 0);
+
         content.removeAll();
         content.add(p, BorderLayout.CENTER);
         content.revalidate();
         content.repaint();
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -77,9 +130,11 @@ public class Dashboard extends javax.swing.JFrame {
         dateText = new javax.swing.JLabel();
         message = new javax.swing.JLabel();
         content = new javax.swing.JPanel();
+        ModeBtn = new javax.swing.JToggleButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
+        setExtendedState(6);
         setPreferredSize(new java.awt.Dimension(1090, 680));
         setSize(new java.awt.Dimension(1090, 680));
 
@@ -209,6 +264,13 @@ public class Dashboard extends javax.swing.JFrame {
         content.setPreferredSize(new java.awt.Dimension(764, 436));
         content.setLayout(new java.awt.BorderLayout());
 
+        ModeBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon-sun.png"))); // NOI18N
+        ModeBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ModeBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout backgroundLayout = new javax.swing.GroupLayout(background);
         background.setLayout(backgroundLayout);
         backgroundLayout.setHorizontalGroup(
@@ -220,17 +282,21 @@ public class Dashboard extends javax.swing.JFrame {
                     .addGroup(backgroundLayout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addGroup(backgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(backgroundLayout.createSequentialGroup()
-                                .addComponent(message, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap())
-                            .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                                .addComponent(message, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                .addGap(452, 452, 452)
+                                .addComponent(ModeBtn)
+                                .addGap(32, 32, 32))))))
         );
         backgroundLayout.setVerticalGroup(
             backgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(menu, javax.swing.GroupLayout.DEFAULT_SIZE, 686, Short.MAX_VALUE)
             .addGroup(backgroundLayout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addComponent(message, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addGroup(backgroundLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(message, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ModeBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(6, 6, 6)
                 .addComponent(header, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -256,24 +322,26 @@ public class Dashboard extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnProductsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductsActionPerformed
-        ShowPanel(new ViewProducts());
+        ShowPanel(new ViewProducts(this.isDarkModeEnabled()));
     }//GEN-LAST:event_btnProductsActionPerformed
 
     private void btnSalesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalesActionPerformed
-        ShowPanel(new ViewSales());
+        ShowPanel(new ViewSales(this.isDarkModeEnabled()));
     }//GEN-LAST:event_btnSalesActionPerformed
 
     private void btnClientsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClientsActionPerformed
-        ShowPanel(new ViewClients());
+        ShowPanel(new ViewClients(this.isDarkModeEnabled()));
     }//GEN-LAST:event_btnClientsActionPerformed
+
+    private void ModeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModeBtnActionPerformed
+        InitStyles();
+    }//GEN-LAST:event_ModeBtnActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
         FlatMaterialLighterIJTheme.setup();
-
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -283,6 +351,7 @@ public class Dashboard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JToggleButton ModeBtn;
     private javax.swing.JLabel appName;
     private javax.swing.JPanel background;
     private javax.swing.JButton btnClients;
@@ -297,7 +366,4 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JLabel navText;
     // End of variables declaration//GEN-END:variables
 
-    
-
-    
 }

@@ -4,6 +4,7 @@
  */
 package com.mycompany.views;
 
+import com.mycompany.interfaces.Styleable;
 import java.awt.Color;
 import java.awt.Insets;
 import javax.swing.JScrollBar;
@@ -12,20 +13,37 @@ import javax.swing.JScrollBar;
  *
  * @author Ovett
  */
-public class ViewClients extends javax.swing.JPanel {
+public class ViewClients extends javax.swing.JPanel implements Styleable {
 
     /**
      * Creates new form Clients
      */
-    public ViewClients() {
+    public ViewClients(boolean darkModeEnabled) {
         initComponents();
-        InitStyles();
+        updateStyles(darkModeEnabled);
     }
 
-    private void InitStyles() {
+    @Override
+    public void updateStyles(boolean isDarkModeEnabled) {
         title.putClientProperty("FlatLaf.styleClass", "h1");
         title.setForeground(Color.black);
         clientSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del cliente a buscar.");
+
+        if (isDarkModeEnabled) {
+            title.setForeground(Color.white);
+            background_clients.putClientProperty("FlatLaf.style", "background: #172030");
+            btnSearch.putClientProperty("FlatLaf.style", "background: #0A677A");
+            btnAdd.putClientProperty("FlatLaf.style", "background: #0c9294");
+            btnDelete.putClientProperty("FlatLaf.style", "background: #0c9294");
+            btnEdit.putClientProperty("FlatLaf.style", "background: #0c9294");
+        } else {
+            title.setForeground(Color.black);
+            background_clients.putClientProperty("FlatLaf.style", "background: #FFFFFF");
+            btnSearch.putClientProperty("FlatLaf.style", "background: #1565C0");
+            btnAdd.putClientProperty("FlatLaf.style", "background: #1565C0");
+            btnDelete.putClientProperty("FlatLaf.style", "background: #FF3333");
+            btnEdit.putClientProperty("FlatLaf.style", "background: #FFB72C");
+        }
     }
 
     /**
@@ -94,12 +112,12 @@ public class ViewClients extends javax.swing.JPanel {
         btnAdd.setText("Agregar");
         btnAdd.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        btnEdit.setBackground(new java.awt.Color(21, 101, 192));
+        btnEdit.setBackground(new java.awt.Color(255, 183, 44));
         btnEdit.setForeground(new java.awt.Color(255, 255, 255));
         btnEdit.setText("Editar");
         btnEdit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        btnDelete.setBackground(new java.awt.Color(21, 101, 192));
+        btnDelete.setBackground(new java.awt.Color(255, 51, 51));
         btnDelete.setForeground(new java.awt.Color(255, 255, 255));
         btnDelete.setText("Eliminar");
         btnDelete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -182,4 +200,5 @@ public class ViewClients extends javax.swing.JPanel {
     private javax.swing.JTable jTable1;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
+
 }

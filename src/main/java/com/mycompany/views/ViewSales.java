@@ -1,28 +1,47 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package com.mycompany.views;
 
+import com.mycompany.interfaces.Styleable;
 import java.awt.Color;
 
 /**
  *
  * @author Ovett
  */
-public class ViewSales extends javax.swing.JPanel {
+public class ViewSales extends javax.swing.JPanel implements Styleable {
 
     /**
      * Creates new form Sales
      */
-    public ViewSales() {
+    public ViewSales(boolean darkModeEnabled) {
         initComponents();
-        InitStyles();
+        updateStyles(darkModeEnabled);
     }
-    private void InitStyles(){
+
+    @Override
+    public void updateStyles(boolean isDarkModeEnabled) {
         title.putClientProperty("FlatLaf.styleClass", "h1");
         title.setForeground(Color.black);
         saleSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto vendido a buscar.");
+
+        title.putClientProperty("FlatLaf.styleClass", "h1");
+
+        saleSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto a buscar.");
+
+        if (isDarkModeEnabled) {
+            title.setForeground(Color.white);
+            background_sales.putClientProperty("FlatLaf.style", "background: #172030");
+            btnSearch.putClientProperty("FlatLaf.style", "background: #0A677A");
+            btnAdd.putClientProperty("FlatLaf.style", "background: #0c9294");
+            btnDelete.putClientProperty("FlatLaf.style", "background: #0c9294");
+            btnEdit.putClientProperty("FlatLaf.style", "background: #0c9294");
+        } else {
+            title.setForeground(Color.black);
+            background_sales.putClientProperty("FlatLaf.style", "background: #FFFFFF");
+            btnSearch.putClientProperty("FlatLaf.style", "background: #1565C0");
+            btnAdd.putClientProperty("FlatLaf.style", "background: #1565C0");
+            btnDelete.putClientProperty("FlatLaf.style", "background: #FF3333");
+            btnEdit.putClientProperty("FlatLaf.style", "background: #FFB72C");
+        }
     }
 
     /**
@@ -34,7 +53,7 @@ public class ViewSales extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        background_sells = new javax.swing.JPanel();
+        background_sales = new javax.swing.JPanel();
         title = new javax.swing.JLabel();
         saleSearch = new javax.swing.JTextField();
         btnSearch = new javax.swing.JButton();
@@ -46,9 +65,9 @@ public class ViewSales extends javax.swing.JPanel {
 
         setPreferredSize(new java.awt.Dimension(764, 436));
 
-        background_sells.setBackground(new java.awt.Color(255, 255, 255));
-        background_sells.setMaximumSize(new java.awt.Dimension(2147483647, 2147483647));
-        background_sells.setPreferredSize(new java.awt.Dimension(764, 436));
+        background_sales.setBackground(new java.awt.Color(255, 255, 255));
+        background_sales.setMaximumSize(new java.awt.Dimension(2147483647, 2147483647));
+        background_sales.setPreferredSize(new java.awt.Dimension(764, 436));
 
         title.setText("Ventas");
 
@@ -91,32 +110,32 @@ public class ViewSales extends javax.swing.JPanel {
         btnAdd.setText("Agregar");
         btnAdd.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        btnEdit.setBackground(new java.awt.Color(21, 101, 192));
+        btnEdit.setBackground(new java.awt.Color(255, 183, 44));
         btnEdit.setForeground(new java.awt.Color(255, 255, 255));
         btnEdit.setText("Editar");
         btnEdit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        btnDelete.setBackground(new java.awt.Color(21, 101, 192));
+        btnDelete.setBackground(new java.awt.Color(255, 51, 51));
         btnDelete.setForeground(new java.awt.Color(255, 255, 255));
         btnDelete.setText("Eliminar");
         btnDelete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
-        javax.swing.GroupLayout background_sellsLayout = new javax.swing.GroupLayout(background_sells);
-        background_sells.setLayout(background_sellsLayout);
-        background_sellsLayout.setHorizontalGroup(
-            background_sellsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(background_sellsLayout.createSequentialGroup()
+        javax.swing.GroupLayout background_salesLayout = new javax.swing.GroupLayout(background_sales);
+        background_sales.setLayout(background_salesLayout);
+        background_salesLayout.setHorizontalGroup(
+            background_salesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(background_salesLayout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(676, 676, 676))
-            .addGroup(background_sellsLayout.createSequentialGroup()
+            .addGroup(background_salesLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addGroup(background_sellsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(background_sellsLayout.createSequentialGroup()
+                .addGroup(background_salesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(background_salesLayout.createSequentialGroup()
                         .addComponent(saleSearch)
                         .addGap(51, 51, 51)
                         .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_sellsLayout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_salesLayout.createSequentialGroup()
                         .addGap(410, 410, 410)
                         .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(33, 33, 33)
@@ -126,19 +145,19 @@ public class ViewSales extends javax.swing.JPanel {
                     .addComponent(jScrollPane1))
                 .addGap(30, 30, 30))
         );
-        background_sellsLayout.setVerticalGroup(
-            background_sellsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(background_sellsLayout.createSequentialGroup()
+        background_salesLayout.setVerticalGroup(
+            background_salesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(background_salesLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20)
-                .addGroup(background_sellsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(background_salesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(saleSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
-                .addGroup(background_sellsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(background_salesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -151,13 +170,13 @@ public class ViewSales extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 764, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(background_sells, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(background_sales, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 436, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(background_sells, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(background_sales, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -167,7 +186,7 @@ public class ViewSales extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel background_sells;
+    private javax.swing.JPanel background_sales;
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
@@ -177,4 +196,5 @@ public class ViewSales extends javax.swing.JPanel {
     private javax.swing.JTextField saleSearch;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
+
 }

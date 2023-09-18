@@ -5,34 +5,67 @@ import com.mycompany.heycha.DAOProductsSizesImpl;
 import com.mycompany.heycha.Dashboard;
 import com.mycompany.interfaces.DAOProductSizes;
 import com.mycompany.interfaces.DAOProducts;
+import com.mycompany.interfaces.Styleable;
 import java.awt.Color;
-import javax.swing.JOptionPane;
+import java.awt.Component;
+import java.awt.Container;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author Ovett
- */
-public class ViewProducts extends javax.swing.JPanel {
+public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
     /**
      * Creates new form products
      */
-    public ViewProducts() {
+    boolean lightOrDarkMode;
+
+    private void updateChildStyles(Component component, boolean isDarkModeEnabled) {
+        if (component instanceof Styleable) {
+            ((Styleable) component).updateStyles(isDarkModeEnabled);
+        }
+
+        if (component instanceof Container) {
+            for (Component child : ((Container) component).getComponents()) {
+                updateChildStyles(child, isDarkModeEnabled);
+            }
+        }
+    }
+
+    public ViewProducts(boolean isDarkModeEnabled) {
         initComponents();
-        initStyles();
+        updateStyles(isDarkModeEnabled);
         loadProducts();
     }
 
-    private void initStyles() {
+    @Override
+    public void updateStyles(boolean isDarkModeEnabled) {
         title.putClientProperty("FlatLaf.styleClass", "h1");
-        title.setForeground(Color.black);
+
         productSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto a buscar.");
-        
+        lightOrDarkMode = isDarkModeEnabled;
+        if (isDarkModeEnabled) {
+            title.setForeground(Color.white);
+            background_products.putClientProperty("FlatLaf.style", "background: #172030");
+            btnSearch.putClientProperty("FlatLaf.style", "background: #0A677A");
+            btnAdd.putClientProperty("FlatLaf.style", "background: #0c9294");
+            btnAdd.putClientProperty("JButton.buttonType", "roundRect");
+            btnDelete.putClientProperty("FlatLaf.style", "background: #0c9294");
+            btnEdit.putClientProperty("FlatLaf.style", "background: #0c9294");
+        } else {
+            title.setForeground(Color.black);
+            background_products.putClientProperty("FlatLaf.style", "background: #FFFFFF");
+            btnSearch.putClientProperty("FlatLaf.style", "background: #1565C0");
+            btnAdd.putClientProperty("FlatLaf.style", "background: #1565C0");
+            btnDelete.putClientProperty("FlatLaf.style", "background: #FF3333");
+            btnEdit.putClientProperty("FlatLaf.style", "background: #FFB72C");
+        }
+        for (Component component : getComponents()) {
+            updateChildStyles(component, isDarkModeEnabled);
+        }
         btnDelete.setEnabled(true);
         BrandFilterCmb.setEnabled(true);
     }
-    
+
     private void loadProducts() {
         try {
             DAOProducts dao = new DAOProductsImpl();
@@ -126,7 +159,7 @@ public class ViewProducts extends javax.swing.JPanel {
             }
         });
 
-        btnEdit.setBackground(new java.awt.Color(204, 0, 204));
+        btnEdit.setBackground(new java.awt.Color(255, 183, 44));
         btnEdit.setForeground(new java.awt.Color(255, 255, 255));
         btnEdit.setText("Editar");
         btnEdit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -187,10 +220,11 @@ public class ViewProducts extends javax.swing.JPanel {
                 .addGap(14, 14, 14)
                 .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(productSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(BrandFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(BrandFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(productSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
@@ -224,7 +258,7 @@ public class ViewProducts extends javax.swing.JPanel {
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        Dashboard.ShowPanel(new UpProducts());
+        Dashboard.ShowPanel(new UpProducts(lightOrDarkMode));
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
@@ -267,7 +301,7 @@ public class ViewProducts extends javax.swing.JPanel {
                 int productId = (int) jTableProducts.getValueAt(jTableProducts.getSelectedRow(), 0);
                 DAOProducts dao = new DAOProductsImpl();
                 DAOProductSizes daoSize = new DAOProductsSizesImpl();
-                Dashboard.ShowPanel(new UpProducts(dao.getProductById(productId), daoSize.getProductSizesById(productId)));
+                Dashboard.ShowPanel(new UpProducts(dao.getProductById(productId), daoSize.getProductSizesById(productId), lightOrDarkMode));
             } catch (Exception e) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
@@ -314,14 +348,14 @@ public class ViewProducts extends javax.swing.JPanel {
         filterConsult();
     }//GEN-LAST:event_BrandFilterCmbActionPerformed
 
-    private void filterConsult(){
+    private void filterConsult() {
         DAOProducts dao = new DAOProductsImpl();
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
         model.setRowCount(0);
         String productNameToSearch = productSearch.getText();
         String productBrandToSearch = BrandFilterCmb.getSelectedItem().toString();
         try {
-            dao.consult(productNameToSearch,productBrandToSearch).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
+            dao.consult(productNameToSearch, productBrandToSearch).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -340,4 +374,5 @@ public class ViewProducts extends javax.swing.JPanel {
     private javax.swing.JTextField productSearch;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
+
 }

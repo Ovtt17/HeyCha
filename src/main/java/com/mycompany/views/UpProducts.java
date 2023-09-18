@@ -3,26 +3,20 @@ package com.mycompany.views;
 import com.mycompany.heycha.DAOProductsImpl;
 import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.models.ModelProducts;
-import com.mycompany.db.Database;
 import com.mycompany.heycha.DAOProductsSizesImpl;
 import com.mycompany.interfaces.DAOProductSizes;
+import com.mycompany.interfaces.Styleable;
 import com.mycompany.models.ModelProductSizes;
 import java.awt.Color;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JSpinner;
 
-public class UpProducts extends javax.swing.JPanel {
+public class UpProducts extends javax.swing.JPanel implements Styleable {
 
     boolean isEditable = false;
     ModelProducts productEditable;
@@ -32,17 +26,32 @@ public class UpProducts extends javax.swing.JPanel {
     HashMap<String, JCheckBox> checkBoxMap = new HashMap<>();
     String[] sizes = {"XS", "S", "M", "L", "XL"};
 
-    public UpProducts() {
+    public UpProducts(boolean isDarkModeEnabled) {
         initComponents();
         initStyles();
+        updateStyles(isDarkModeEnabled);
     }
 
-    public UpProducts(ModelProducts product, List<ModelProductSizes> list) {
+    public UpProducts(ModelProducts product, List<ModelProductSizes> list, boolean isDarkModeEnabled) {
         initComponents();
         isEditable = true;
         productEditable = product;
         listEditable = list;
         initStyles();
+        updateStyles(isDarkModeEnabled);
+    }
+
+    @Override
+    public void updateStyles(boolean isDarkModeEnabled) {
+        if (isDarkModeEnabled) {
+            title.setForeground(Color.white);
+            bg.putClientProperty("FlatLaf.style", "background: #172030");
+            DataUpdateBtn.putClientProperty("FlatLaf.style", "background: #0c9294");
+        } else {
+            title.setForeground(Color.black);
+            bg.putClientProperty("FlatLaf.style", "background: #FFFFFF");
+            DataUpdateBtn.putClientProperty("FlatLaf.style", "background: #125AAD");
+        }
     }
 
     private void initStyles() {
@@ -70,7 +79,7 @@ public class UpProducts extends javax.swing.JPanel {
 
         if (isEditable) {
             title.setText("Editar producto.");
-            button.setText("Guardar");
+            DataUpdateBtn.setText("Guardar");
             if (productEditable != null) {
                 nameTxt.setText(productEditable.getName());
                 priceTxt.setText(productEditable.getPrice().toString());
@@ -95,7 +104,6 @@ public class UpProducts extends javax.swing.JPanel {
                 loadSizes();
             }
         }
-
     }
 
     private void loadSizes() {
@@ -140,7 +148,7 @@ public class UpProducts extends javax.swing.JPanel {
         discountTxt = new javax.swing.JTextField();
         categoryLbl = new javax.swing.JLabel();
         typeLbl = new javax.swing.JLabel();
-        button = new javax.swing.JButton();
+        DataUpdateBtn = new javax.swing.JButton();
         descriptionLbl = new javax.swing.JLabel();
         brandCmb = new javax.swing.JComboBox<>();
         categoryCmb = new javax.swing.JComboBox<>();
@@ -166,40 +174,49 @@ public class UpProducts extends javax.swing.JPanel {
 
         nameLbl.setText("Nombre:");
 
+        nameTxt.setMinimumSize(new java.awt.Dimension(0, 0));
+
         priceLbl.setText("Precio:");
+
+        priceTxt.setMinimumSize(new java.awt.Dimension(0, 0));
+
+        descriptionTxt.setMinimumSize(new java.awt.Dimension(0, 0));
 
         BrandLbl.setText("Marca:");
 
         discountLbl.setText("Descuento (Opcional):");
 
+        discountTxt.setMinimumSize(new java.awt.Dimension(0, 0));
+
         categoryLbl.setText("Categoria:");
 
         typeLbl.setText("Tipo (Opcional):");
 
-        button.setBackground(new java.awt.Color(18, 90, 173));
-        button.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        button.setForeground(new java.awt.Color(255, 255, 255));
-        button.setText("Subir");
-        button.setBorderPainted(false);
-        button.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        button.addActionListener(new java.awt.event.ActionListener() {
+        DataUpdateBtn.setBackground(new java.awt.Color(18, 90, 173));
+        DataUpdateBtn.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        DataUpdateBtn.setForeground(new java.awt.Color(255, 255, 255));
+        DataUpdateBtn.setText("Subir");
+        DataUpdateBtn.setBorderPainted(false);
+        DataUpdateBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        DataUpdateBtn.setMinimumSize(new java.awt.Dimension(0, 0));
+        DataUpdateBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonActionPerformed(evt);
+                DataUpdateBtnActionPerformed(evt);
             }
         });
 
         descriptionLbl.setText("Descripción (Opcional):");
 
         brandCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        brandCmb.setMinimumSize(new java.awt.Dimension(64, 22));
+        brandCmb.setMinimumSize(new java.awt.Dimension(0, 0));
         brandCmb.setPreferredSize(new java.awt.Dimension(64, 22));
 
         categoryCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        categoryCmb.setMinimumSize(new java.awt.Dimension(64, 22));
+        categoryCmb.setMinimumSize(new java.awt.Dimension(0, 0));
         categoryCmb.setPreferredSize(new java.awt.Dimension(64, 22));
 
         typeCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        typeCmb.setMinimumSize(new java.awt.Dimension(64, 22));
+        typeCmb.setMinimumSize(new java.awt.Dimension(0, 0));
         typeCmb.setPreferredSize(new java.awt.Dimension(64, 22));
 
         jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
@@ -235,22 +252,22 @@ public class UpProducts extends javax.swing.JPanel {
                     .addGroup(bgLayout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(nameTxt)
+                            .addComponent(nameTxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(bgLayout.createSequentialGroup()
                                 .addComponent(nameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGap(288, 288, 288))
                             .addGroup(bgLayout.createSequentialGroup()
                                 .addComponent(priceLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGap(299, 299, 299))
-                            .addComponent(priceTxt)
+                            .addComponent(priceTxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(bgLayout.createSequentialGroup()
                                 .addComponent(descriptionLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGap(210, 210, 210))
-                            .addComponent(descriptionTxt)
+                            .addComponent(descriptionTxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(bgLayout.createSequentialGroup()
                                 .addComponent(discountLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGap(216, 216, 216))
-                            .addComponent(discountTxt)
+                            .addComponent(discountTxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(typeLbl)
                             .addGroup(bgLayout.createSequentialGroup()
                                 .addComponent(typeCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -267,7 +284,7 @@ public class UpProducts extends javax.swing.JPanel {
                         .addGap(308, 308, 308))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bgLayout.createSequentialGroup()
                         .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(button, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(DataUpdateBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, bgLayout.createSequentialGroup()
                                 .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(bgLayout.createSequentialGroup()
@@ -344,7 +361,7 @@ public class UpProducts extends javax.swing.JPanel {
                                             .addComponent(spinnerSizeM, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addComponent(cbM))))
                                 .addGap(32, 32, 32)
-                                .addComponent(button, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(DataUpdateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(17, 17, 17))
                             .addGroup(bgLayout.createSequentialGroup()
                                 .addComponent(nameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -380,7 +397,7 @@ public class UpProducts extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonActionPerformed
+    private void DataUpdateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DataUpdateBtnActionPerformed
         String name = nameTxt.getText();
         Float price = null;
         if (!priceTxt.getText().isEmpty()) {
@@ -437,12 +454,11 @@ public class UpProducts extends javax.swing.JPanel {
         try {
             DAOProducts dao = new DAOProductsImpl();
             DAOProductSizes daoSize = new DAOProductsSizesImpl();
-            
 
             boolean selected = false;
             for (String size : sizes) {
                 int spinnervalue = (int) spinnerMap.get(size).getValue();
-                if (spinnervalue  != 0 && checkBoxMap.get(size).isSelected()) {
+                if (spinnervalue != 0 && checkBoxMap.get(size).isSelected()) {
                     selected = true;
                 }
             }
@@ -503,7 +519,7 @@ public class UpProducts extends javax.swing.JPanel {
         }
 
 
-    }//GEN-LAST:event_buttonActionPerformed
+    }//GEN-LAST:event_DataUpdateBtnActionPerformed
 
     private void emptyFields() {
         nameTxt.setText("");
@@ -524,9 +540,9 @@ public class UpProducts extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel BrandLbl;
+    private javax.swing.JButton DataUpdateBtn;
     private javax.swing.JPanel bg;
     private javax.swing.JComboBox<String> brandCmb;
-    private javax.swing.JButton button;
     private javax.swing.JComboBox<String> categoryCmb;
     private javax.swing.JLabel categoryLbl;
     private javax.swing.JCheckBox cbL;
@@ -552,4 +568,5 @@ public class UpProducts extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> typeCmb;
     private javax.swing.JLabel typeLbl;
     // End of variables declaration//GEN-END:variables
+
 }
