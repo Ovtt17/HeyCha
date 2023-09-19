@@ -20,17 +20,19 @@ public class DAOProductsImpl extends Database implements DAOProducts {
     public void record(ModelProducts product, ModelProductSizes pSizes) throws Exception {
         try {
             this.connectDB();
-            String query = "INSERT INTO PRODUCTOS(NOMBRE, PRECIO, DESCRIPCION, DESCUENTO, ID_MARCA, ID_CATEGORIA, ID_TIPO) VALUES (?,?,?,?,?,?,?);";
+            String query = "call insertProduct(?,?,?,?,?,?,?);";
             PreparedStatement st = this.connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             setProductFieldsToDB(st, product);
             // Ejecuta la sentencia SQL
             st.executeUpdate();
-            ResultSet rs = st.getGeneratedKeys();
+            ResultSet rs = st.getResultSet();
             if (rs.next()) {
-                int idProducto = rs.getInt(1);
+                //haciendo una consulta dentro del procedure para obtener el ultimo id insertado
+                int idProducto = rs.getInt("idProduct");
                 pSizes.setIdProduct(idProducto);
             }
             st.close();
+            rs.close();
         } catch (Exception e) {
             throw e;
         } finally {
@@ -42,7 +44,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
     public void modify(ModelProducts product, ModelProductSizes pSizes) throws Exception {
         try {
             this.connectDB();
-            PreparedStatement st = this.connection.prepareStatement("UPDATE PRODUCTOS SET NOMBRE = ?, PRECIO = ?, DESCRIPCION = ?, DESCUENTO = ?, ID_MARCA = ?, ID_CATEGORIA = ?, ID_TIPO = ? WHERE ID = ?;");
+            PreparedStatement st = this.connection.prepareStatement("call modifyProduct(?, ?, ?, ?, ?, ?, ?, ?);");
             setProductFieldsToDB(st, product);
             st.setInt(8, product.getId());
             st.executeUpdate();
@@ -85,7 +87,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
     public void delete(int productId) throws Exception {
         try {
             this.connectDB();
-            String deleteProduct = "DELETE FROM PRODUCTOS WHERE ID = ?;";
+            String deleteProduct = "call deleteProduct(?);";
             PreparedStatement pst = this.connection.prepareStatement(deleteProduct);
 
             String sqlResetId = "ALTER TABLE PRODUCTOS AUTO_INCREMENT = ?;";
@@ -109,7 +111,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
         List<ModelProducts> list = null;
         try {
             this.connectDB();
-            String query = "call consulta(?, ?, ?);";
+            String query = "call consultProducts(?, ?, ?);";
             PreparedStatement st = this.connection.prepareStatement(query);
             st.setString(1, name);
             st.setString(2, brand);
@@ -158,7 +160,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
 
         try {
             this.connectDB();
-            String query = "call consultaPorCodigoProducto(?);";
+            String query = "call consultByProductId(?);";
             PreparedStatement st = this.connection.prepareStatement(query);
             st.setInt(1, productId);
             ResultSet rs = st.executeQuery();

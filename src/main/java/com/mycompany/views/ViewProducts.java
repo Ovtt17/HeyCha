@@ -128,6 +128,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             }
         });
         jTableProducts.setRowHeight(30);
+        jTableProducts.getTableHeader().setReorderingAllowed(false);
         jTableProducts.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTableProductsMouseClicked(evt);
@@ -183,7 +184,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
         btnCleanField.setBackground(new java.awt.Color(21, 101, 192));
         btnCleanField.setForeground(new java.awt.Color(255, 255, 255));
-        btnCleanField.setText("Limpiar");
+        btnCleanField.setText("Limpiar Campos");
         btnCleanField.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnCleanField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -207,24 +208,25 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
                 .addGap(18, 18, 18)
                 .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
                 .addGap(61, 61, 61))
-            .addGroup(background_productsLayout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(jScrollPane1)
-                .addGap(31, 31, 31))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(productSearch)
-                .addGap(18, 18, 18)
-                .addComponent(BrandLbl)
-                .addGap(18, 18, 18)
-                .addComponent(BrandFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(CategoryLbl)
-                .addGap(18, 18, 18)
-                .addComponent(CategoryFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnCleanField)
-                .addGap(36, 36, 36))
+                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(background_productsLayout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addComponent(productSearch)
+                        .addGap(18, 18, 18)
+                        .addComponent(BrandLbl)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(BrandFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(CategoryLbl)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(CategoryFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnCleanField))
+                    .addGroup(background_productsLayout.createSequentialGroup()
+                        .addGap(16, 16, 16)
+                        .addComponent(jScrollPane1)))
+                .addGap(31, 31, 31))
         );
         background_productsLayout.setVerticalGroup(
             background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
