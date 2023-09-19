@@ -21,18 +21,19 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
     @Override
     public void updateStyles(boolean isDarkModeEnabled) {
+        lightOrDarkMode = isDarkModeEnabled;
         title.putClientProperty("FlatLaf.styleClass", "h1");
 
         productSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto a buscar.");
+        
+        btnAdd.putClientProperty("JButton.buttonType", "roundRect");
+        btnDelete.putClientProperty("JButton.buttonType", "roundRect");
+        btnEdit.putClientProperty("JButton.buttonType", "roundRect");
+        btnCleanField.putClientProperty("JButton.buttonType", "roundRect");
 
         if (isDarkModeEnabled) {
             title.setForeground(Color.white);
             background_products.putClientProperty("FlatLaf.style", "background: #172030");
-
-            btnAdd.putClientProperty("JButton.buttonType", "roundRect");
-            btnDelete.putClientProperty("JButton.buttonType", "roundRect");
-            btnEdit.putClientProperty("JButton.buttonType", "roundRect");
-            btnCleanField.putClientProperty("JButton.buttonType", "roundRect");
 
             btnAdd.putClientProperty("FlatLaf.style", "background: #0c9294");
             btnDelete.putClientProperty("FlatLaf.style", "background: #0c9294");
@@ -41,11 +42,6 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         } else {
             title.setForeground(Color.black);
             background_products.putClientProperty("FlatLaf.style", "background: #FFFFFF");
-
-            btnAdd.putClientProperty("JButton.buttonType", "roundRect");
-            btnDelete.putClientProperty("JButton.buttonType", "roundRect");
-            btnEdit.putClientProperty("JButton.buttonType", "roundRect");
-            btnCleanField.putClientProperty("JButton.buttonType", "roundRect");
 
             btnAdd.putClientProperty("FlatLaf.style", "background: #1565C0");
             btnDelete.putClientProperty("FlatLaf.style", "background: #FF3333");
@@ -58,14 +54,22 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     }
 
     private void loadProducts() {
+        DAOProducts dao = new DAOProductsImpl();
+        DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
+        String nameToFind = "";
+        String brandSeleted = "NINGUNO";
+        String categorySelected = "NINGUNO";
+        consultProducts(dao, model, nameToFind, brandSeleted, categorySelected);
         try {
-            DAOProducts dao = new DAOProductsImpl();
-            DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
-            String nameToFind = "";
-            String brandSeleted = "NINGUNO";
-            String categorySelected = "NINGUNO";
-            dao.consult(nameToFind, brandSeleted, categorySelected).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
             dao.loadFilterCmb(BrandFilterCmb, CategoryFilterCmb);
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void consultProducts(DAOProducts dao, DefaultTableModel model, String nameToFind, String brandSelected, String categorySelected) {
+        try {
+            dao.consult(nameToFind, brandSelected, categorySelected).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -196,37 +200,33 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         background_products.setLayout(background_productsLayout);
         background_productsLayout.setHorizontalGroup(
             background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(background_productsLayout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(659, 659, 659))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
-                .addGap(434, 434, 434)
-                .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
-                .addGap(61, 61, 61))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
                 .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(background_productsLayout.createSequentialGroup()
+                        .addGap(449, 449, 449)
+                        .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(33, 33, 33)
+                        .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(33, 33, 33)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, background_productsLayout.createSequentialGroup()
                         .addGap(20, 20, 20)
-                        .addComponent(productSearch)
-                        .addGap(18, 18, 18)
-                        .addComponent(BrandLbl)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(BrandFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(CategoryLbl)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(CategoryFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnCleanField))
-                    .addGroup(background_productsLayout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addComponent(jScrollPane1)))
-                .addGap(31, 31, 31))
+                        .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(background_productsLayout.createSequentialGroup()
+                                .addComponent(productSearch)
+                                .addGap(18, 18, 18)
+                                .addComponent(BrandLbl)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(BrandFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(CategoryLbl)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(CategoryFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnCleanField))
+                            .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addGap(30, 30, 30))
         );
         background_productsLayout.setVerticalGroup(
             background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -386,11 +386,8 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         String productNameToSearch = productSearch.getText();
         String productBrandToSearch = BrandFilterCmb.getSelectedItem() == null ? "NINGUNO" : BrandFilterCmb.getSelectedItem().toString();
         String productCategoryToSearch = CategoryFilterCmb.getSelectedItem() == null ? "NINGUNO" : CategoryFilterCmb.getSelectedItem().toString();
-        try {
-            dao.consult(productNameToSearch, productBrandToSearch, productCategoryToSearch).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
+
+        consultProducts(dao, model, productNameToSearch, productBrandToSearch, productCategoryToSearch);
         productSearch.setText(productNameToSearch);
     }
 

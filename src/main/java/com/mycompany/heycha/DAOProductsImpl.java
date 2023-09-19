@@ -1,6 +1,5 @@
 package com.mycompany.heycha;
 
-import com.google.protobuf.Empty;
 import com.mycompany.db.Database;
 import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.models.ModelProductSizes;
@@ -21,7 +20,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
         try {
             this.connectDB();
             String query = "call insertProduct(?,?,?,?,?,?,?);";
-            PreparedStatement st = this.connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement st = this.connection.prepareStatement(query);
             setProductFieldsToDB(st, product);
             // Ejecuta la sentencia SQL
             st.executeUpdate();

@@ -1,15 +1,12 @@
 package com.mycompany.models;
 
-/**
- *
- * @author Ovett
- */
 public class ModelClients {
+
     private int id;
     private String name;
-    private int telephone;
+    private Integer cellphone;
     private String city;
-    private String directory;
+    private String direction;
 
     public int getId() {
         return id;
@@ -27,12 +24,12 @@ public class ModelClients {
         this.name = name;
     }
 
-    public int getTelephone() {
-        return telephone;
+    public Integer getCellphone() {
+        return cellphone;
     }
 
-    public void setTelephone(int telephone) {
-        this.telephone = telephone;
+    public void setCellphone(Integer cellphone) {
+        this.cellphone = cellphone;
     }
 
     public String getCity() {
@@ -43,11 +40,11 @@ public class ModelClients {
         this.city = city;
     }
 
-    public String getDirectory() {
-        return directory;
+    public String getDirection() {
+        return direction;
     }
 
-    public void setDirectory(String directory) {
-        this.directory = directory;
+    public void setDirection(String direction) {
+        this.direction = direction;
     }
 }

@@ -1,48 +1,64 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package com.mycompany.views;
 
+import com.mycompany.heycha.DAOClientsImpl;
+import com.mycompany.heycha.DAOProductsImpl;
+import com.mycompany.heycha.Dashboard;
+import com.mycompany.interfaces.DAOClients;
+import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.interfaces.Styleable;
 import java.awt.Color;
-import java.awt.Insets;
-import javax.swing.JScrollBar;
+import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author Ovett
- */
 public class ViewClients extends javax.swing.JPanel implements Styleable {
 
-    /**
-     * Creates new form Clients
-     */
-    public ViewClients(boolean darkModeEnabled) {
+    boolean lightOrDarkMode;
+    public ViewClients(boolean isDarkModeEnabled) {
         initComponents();
-        updateStyles(darkModeEnabled);
+        updateStyles(isDarkModeEnabled);
+        loadClients();
     }
 
     @Override
     public void updateStyles(boolean isDarkModeEnabled) {
+        lightOrDarkMode = isDarkModeEnabled;
         title.putClientProperty("FlatLaf.styleClass", "h1");
         title.setForeground(Color.black);
         clientSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del cliente a buscar.");
 
+        btnAdd.putClientProperty("JButton.buttonType", "roundRect");
+        btnDelete.putClientProperty("JButton.buttonType", "roundRect");
+        btnEdit.putClientProperty("JButton.buttonType", "roundRect");
+        btnCleanField.putClientProperty("JButton.buttonType", "roundRect");
+        
         if (isDarkModeEnabled) {
             title.setForeground(Color.white);
             background_clients.putClientProperty("FlatLaf.style", "background: #172030");
-            btnSearch.putClientProperty("FlatLaf.style", "background: #0A677A");
+            btnCleanField.putClientProperty("FlatLaf.style", "background: #0A677A");
             btnAdd.putClientProperty("FlatLaf.style", "background: #0c9294");
             btnDelete.putClientProperty("FlatLaf.style", "background: #0c9294");
             btnEdit.putClientProperty("FlatLaf.style", "background: #0c9294");
         } else {
             title.setForeground(Color.black);
             background_clients.putClientProperty("FlatLaf.style", "background: #FFFFFF");
-            btnSearch.putClientProperty("FlatLaf.style", "background: #1565C0");
+            btnCleanField.putClientProperty("FlatLaf.style", "background: #1565C0");
             btnAdd.putClientProperty("FlatLaf.style", "background: #1565C0");
             btnDelete.putClientProperty("FlatLaf.style", "background: #FF3333");
             btnEdit.putClientProperty("FlatLaf.style", "background: #FFB72C");
+        }
+    }
+
+    private void loadClients() {
+        DAOClients dao = new DAOClientsImpl();
+        DefaultTableModel model = (DefaultTableModel) JTableClients.getModel();
+        String nameToFind = "";
+        consultClients(dao, model, nameToFind);
+    }
+
+    private void consultClients(DAOClients dao, DefaultTableModel model, String nameToFind) {
+        try {
+            dao.consult(nameToFind).forEach((c) -> model.addRow(new Object[]{c.getId(), c.getName(), c.getCellphone(), c.getCity(), c.getDirection()}));
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -58,12 +74,12 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
         background_clients = new javax.swing.JPanel();
         title = new javax.swing.JLabel();
         clientSearch = new javax.swing.JTextField();
-        btnSearch = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        JTableClients = new javax.swing.JTable();
         btnAdd = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
+        btnCleanField = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(764, 436));
 
@@ -74,25 +90,20 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
         title.setText("Clientes");
 
         clientSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
-
-        btnSearch.setBackground(new java.awt.Color(21, 101, 192));
-        btnSearch.setForeground(new java.awt.Color(255, 255, 255));
-        btnSearch.setText("Buscar");
-        btnSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnSearch.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSearchActionPerformed(evt);
+        clientSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                clientSearchKeyReleased(evt);
             }
         });
 
         jScrollPane1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        JTableClients.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "ID Cliente", "Nombre Cliente", "Telefono", "Ciudad", "Dirección"
+                "ID", "Nombre", "Celular", "Ciudad", "Dirección"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -103,15 +114,19 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
                 return canEdit [columnIndex];
             }
         });
-        jTable1.setMinimumSize(new java.awt.Dimension(90, 0));
-        jTable1.setPreferredSize(new java.awt.Dimension(450, 0));
-        jTable1.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(jTable1);
+        JTableClients.setRowHeight(30);
+        JTableClients.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(JTableClients);
 
         btnAdd.setBackground(new java.awt.Color(21, 101, 192));
         btnAdd.setForeground(new java.awt.Color(255, 255, 255));
         btnAdd.setText("Agregar");
         btnAdd.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
 
         btnEdit.setBackground(new java.awt.Color(255, 183, 44));
         btnEdit.setForeground(new java.awt.Color(255, 255, 255));
@@ -123,49 +138,59 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
         btnDelete.setText("Eliminar");
         btnDelete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
+        btnCleanField.setBackground(new java.awt.Color(21, 101, 192));
+        btnCleanField.setForeground(new java.awt.Color(255, 255, 255));
+        btnCleanField.setText("Limpiar Búsqueda");
+        btnCleanField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCleanFieldActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout background_clientsLayout = new javax.swing.GroupLayout(background_clients);
         background_clients.setLayout(background_clientsLayout);
         background_clientsLayout.setHorizontalGroup(
             background_clientsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(background_clientsLayout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(676, 676, 676))
-            .addGroup(background_clientsLayout.createSequentialGroup()
                 .addGroup(background_clientsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(background_clientsLayout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addComponent(clientSearch)
-                        .addGap(56, 56, 56)
-                        .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(background_clientsLayout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addComponent(jScrollPane1))
-                    .addGroup(background_clientsLayout.createSequentialGroup()
-                        .addGap(426, 426, 426)
-                        .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                        .addGap(450, 450, 450)
+                        .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(33, 33, 33)
-                        .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
-                        .addGap(36, 36, 36)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)))
-                .addGap(31, 31, 31))
+                        .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(33, 33, 33)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(background_clientsLayout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addGroup(background_clientsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(background_clientsLayout.createSequentialGroup()
+                                .addComponent(clientSearch)
+                                .addGap(41, 41, 41)
+                                .addComponent(btnCleanField))
+                            .addComponent(jScrollPane1))))
+                .addGap(30, 30, 30))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_clientsLayout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         background_clientsLayout.setVerticalGroup(
             background_clientsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(background_clientsLayout.createSequentialGroup()
-                .addGap(6, 6, 6)
+                .addGap(14, 14, 14)
                 .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
-                .addGroup(background_clientsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(background_clientsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(clientSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnCleanField, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(background_clientsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(background_clientsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(23, 23, 23))
         );
 
@@ -185,20 +210,34 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnSearchActionPerformed
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+        Dashboard.ShowPanel(new UpClients(lightOrDarkMode));
+    }//GEN-LAST:event_btnAddActionPerformed
+
+    private void clientSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_clientSearchKeyReleased
+//        if (!btnDelete.isEnabled() || !BrandFilterCmb.isEnabled() || !CategoryFilterCmb.isEnabled() && productSearch.getText().isEmpty()) {
+//            javax.swing.JOptionPane.showMessageDialog(this, "No puede realizar búsqueda dentro de los detalles de un producto. \n", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+//            productSearch.setText("");
+//            return;
+//        } else {
+//            filterConsult();
+//        }
+    }//GEN-LAST:event_clientSearchKeyReleased
+
+    private void btnCleanFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCleanFieldActionPerformed
+        clientSearch.setText("");
+    }//GEN-LAST:event_btnCleanFieldActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable JTableClients;
     private javax.swing.JPanel background_clients;
     private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnCleanField;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
-    private javax.swing.JButton btnSearch;
     private javax.swing.JTextField clientSearch;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
 

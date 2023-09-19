@@ -26,8 +26,8 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
 
     public UpProducts(boolean isDarkModeEnabled) {
         initComponents();
-        initStyles();
         updateStyles(isDarkModeEnabled);
+        initStyles();
     }
 
     public UpProducts(ModelProducts product, List<ModelProductSizes> list, boolean isDarkModeEnabled) {
@@ -35,8 +35,8 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         isEditable = true;
         productEditable = product;
         listEditable = list;
-        initStyles();
         updateStyles(isDarkModeEnabled);
+        initStyles();
     }
 
     @Override
@@ -62,7 +62,6 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         categoryLbl.putClientProperty("FlatLaf.styleClass", "h2");
         typeLbl.putClientProperty("FlatLaf.styleClass", "h2");
 
-        title.setForeground(Color.black);
         nameTxt.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto.");
         priceTxt.putClientProperty("JTextField.placeholderText", "Ingrese el precio del producto.");
         descriptionTxt.putClientProperty("JTextField.placeholderText", "Ingrese una descripcion para el producto");

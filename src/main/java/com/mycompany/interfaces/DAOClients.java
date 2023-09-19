@@ -8,10 +8,11 @@ public interface DAOClients {
     public void record(ModelClients client) throws Exception;
 
     public void modify(ModelClients client) throws Exception;
+    public ModelClients getProductById(int clientId) throws Exception;
 
     public void delete(ModelClients client) throws Exception;
 
-    public List<ModelClients> consult() throws Exception;
+    public List<ModelClients> consult(String name) throws Exception;
 
-    public ModelClients getProductById(int clientId) throws Exception;
+    
 }
