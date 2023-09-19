@@ -7,29 +7,11 @@ import com.mycompany.interfaces.DAOProductSizes;
 import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.interfaces.Styleable;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
-    /**
-     * Creates new form products
-     */
     boolean lightOrDarkMode;
-
-    private void updateChildStyles(Component component, boolean isDarkModeEnabled) {
-        if (component instanceof Styleable) {
-            ((Styleable) component).updateStyles(isDarkModeEnabled);
-        }
-
-        if (component instanceof Container) {
-            for (Component child : ((Container) component).getComponents()) {
-                updateChildStyles(child, isDarkModeEnabled);
-            }
-        }
-    }
 
     public ViewProducts(boolean isDarkModeEnabled) {
         initComponents();
@@ -42,28 +24,37 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         title.putClientProperty("FlatLaf.styleClass", "h1");
 
         productSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto a buscar.");
-        lightOrDarkMode = isDarkModeEnabled;
+
         if (isDarkModeEnabled) {
             title.setForeground(Color.white);
             background_products.putClientProperty("FlatLaf.style", "background: #172030");
-            btnSearch.putClientProperty("FlatLaf.style", "background: #0A677A");
-            btnAdd.putClientProperty("FlatLaf.style", "background: #0c9294");
+
             btnAdd.putClientProperty("JButton.buttonType", "roundRect");
+            btnDelete.putClientProperty("JButton.buttonType", "roundRect");
+            btnEdit.putClientProperty("JButton.buttonType", "roundRect");
+            btnCleanField.putClientProperty("JButton.buttonType", "roundRect");
+
+            btnAdd.putClientProperty("FlatLaf.style", "background: #0c9294");
             btnDelete.putClientProperty("FlatLaf.style", "background: #0c9294");
             btnEdit.putClientProperty("FlatLaf.style", "background: #0c9294");
+            btnCleanField.putClientProperty("FlatLaf.style", "background: #0c9294");
         } else {
             title.setForeground(Color.black);
             background_products.putClientProperty("FlatLaf.style", "background: #FFFFFF");
-            btnSearch.putClientProperty("FlatLaf.style", "background: #1565C0");
+
+            btnAdd.putClientProperty("JButton.buttonType", "roundRect");
+            btnDelete.putClientProperty("JButton.buttonType", "roundRect");
+            btnEdit.putClientProperty("JButton.buttonType", "roundRect");
+            btnCleanField.putClientProperty("JButton.buttonType", "roundRect");
+
             btnAdd.putClientProperty("FlatLaf.style", "background: #1565C0");
             btnDelete.putClientProperty("FlatLaf.style", "background: #FF3333");
             btnEdit.putClientProperty("FlatLaf.style", "background: #FFB72C");
-        }
-        for (Component component : getComponents()) {
-            updateChildStyles(component, isDarkModeEnabled);
+            btnCleanField.putClientProperty("FlatLaf.style", "background: #1565C0");
         }
         btnDelete.setEnabled(true);
         BrandFilterCmb.setEnabled(true);
+        CategoryFilterCmb.setEnabled(true);
     }
 
     private void loadProducts() {
@@ -71,8 +62,10 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             DAOProducts dao = new DAOProductsImpl();
             DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
             String nameToFind = "";
-            String brandSeleted = "Ninguno";
-            dao.consult(nameToFind, brandSeleted).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
+            String brandSeleted = "NINGUNO";
+            String categorySelected = "NINGUNO";
+            dao.consult(nameToFind, brandSeleted, categorySelected).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
+            dao.loadFilterCmb(BrandFilterCmb, CategoryFilterCmb);
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -90,13 +83,16 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         background_products = new javax.swing.JPanel();
         title = new javax.swing.JLabel();
         productSearch = new javax.swing.JTextField();
-        btnSearch = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableProducts = new javax.swing.JTable();
         btnAdd = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         BrandFilterCmb = new javax.swing.JComboBox<>();
+        CategoryFilterCmb = new javax.swing.JComboBox<>();
+        BrandLbl = new javax.swing.JLabel();
+        CategoryLbl = new javax.swing.JLabel();
+        btnCleanField = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(764, 436));
 
@@ -107,19 +103,9 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
         title.setText("Productos");
 
-        productSearch.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                productSearchActionPerformed(evt);
-            }
-        });
-
-        btnSearch.setBackground(new java.awt.Color(21, 101, 192));
-        btnSearch.setForeground(new java.awt.Color(255, 255, 255));
-        btnSearch.setText("Buscar");
-        btnSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnSearch.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSearchActionPerformed(evt);
+        productSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                productSearchKeyReleased(evt);
             }
         });
 
@@ -179,10 +165,29 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             }
         });
 
-        BrandFilterCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ninguno", "Tommy", "Nautica", "Levis", "Polo", "Guess" }));
-        BrandFilterCmb.addActionListener(new java.awt.event.ActionListener() {
+        BrandFilterCmb.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                BrandFilterCmbItemStateChanged(evt);
+            }
+        });
+
+        CategoryFilterCmb.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                CategoryFilterCmbItemStateChanged(evt);
+            }
+        });
+
+        BrandLbl.setText("Marca:");
+
+        CategoryLbl.setText("Categoria:");
+
+        btnCleanField.setBackground(new java.awt.Color(21, 101, 192));
+        btnCleanField.setForeground(new java.awt.Color(255, 255, 255));
+        btnCleanField.setText("Limpiar");
+        btnCleanField.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnCleanField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BrandFilterCmbActionPerformed(evt);
+                btnCleanFieldActionPerformed(evt);
             }
         });
 
@@ -195,24 +200,31 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
                 .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(659, 659, 659))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
-                        .addGap(1, 1, 1)
-                        .addComponent(productSearch)
-                        .addGap(18, 18, 18)
-                        .addComponent(BrandFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
-                        .addGap(418, 418, 418)
-                        .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGap(434, 434, 434)
+                .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
                 .addGap(61, 61, 61))
+            .addGroup(background_productsLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(jScrollPane1)
+                .addGap(31, 31, 31))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(productSearch)
+                .addGap(18, 18, 18)
+                .addComponent(BrandLbl)
+                .addGap(18, 18, 18)
+                .addComponent(BrandFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(CategoryLbl)
+                .addGap(18, 18, 18)
+                .addComponent(CategoryFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnCleanField)
+                .addGap(36, 36, 36))
         );
         background_productsLayout.setVerticalGroup(
             background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -220,11 +232,13 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
                 .addGap(14, 14, 14)
                 .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(productSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(BrandFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(productSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(CategoryFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(BrandLbl)
+                    .addComponent(CategoryLbl)
+                    .addComponent(btnCleanField, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
@@ -246,16 +260,6 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             .addComponent(background_products, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        if (!btnDelete.isEnabled() || !BrandFilterCmb.isEnabled() && productSearch.getText().isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "No puede realizar búsqueda dentro de los detalles de un producto. \n", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
-            productSearch.setText("");
-            return;
-        } else {
-            filterConsult();
-        }
-    }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         Dashboard.ShowPanel(new UpProducts(lightOrDarkMode));
@@ -334,28 +338,54 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
                 jTableProducts.setModel(newModel);
                 btnDelete.setEnabled(false);
                 BrandFilterCmb.setEnabled(false);
+                CategoryFilterCmb.setEnabled(false);
+                productSearch.setText("");
             } catch (Exception e) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
         }
     }//GEN-LAST:event_jTableProductsMouseClicked
 
-    private void productSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_productSearchActionPerformed
-        btnSearchActionPerformed(evt);
-    }//GEN-LAST:event_productSearchActionPerformed
+    private void productSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_productSearchKeyReleased
+        if (!btnDelete.isEnabled() || !BrandFilterCmb.isEnabled() || !CategoryFilterCmb.isEnabled() && productSearch.getText().isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "No puede realizar búsqueda dentro de los detalles de un producto. \n", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+            productSearch.setText("");
+            return;
+        } else {
+            filterConsult();
+        }
+    }//GEN-LAST:event_productSearchKeyReleased
 
-    private void BrandFilterCmbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BrandFilterCmbActionPerformed
+    private void BrandFilterCmbItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_BrandFilterCmbItemStateChanged
         filterConsult();
-    }//GEN-LAST:event_BrandFilterCmbActionPerformed
+    }//GEN-LAST:event_BrandFilterCmbItemStateChanged
+
+    private void CategoryFilterCmbItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_CategoryFilterCmbItemStateChanged
+        filterConsult();
+    }//GEN-LAST:event_CategoryFilterCmbItemStateChanged
+
+    private void btnCleanFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCleanFieldActionPerformed
+        if (!btnDelete.isEnabled() || !BrandFilterCmb.isEnabled() || !CategoryFilterCmb.isEnabled() && productSearch.getText().isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "No puede realizar búsqueda dentro de los detalles de un producto. \n", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+            productSearch.setText("");
+            return;
+        } else {
+            productSearch.setText("");
+            BrandFilterCmb.setSelectedIndex(0);
+            CategoryFilterCmb.setSelectedIndex(0);
+            filterConsult();
+        }
+    }//GEN-LAST:event_btnCleanFieldActionPerformed
 
     private void filterConsult() {
         DAOProducts dao = new DAOProductsImpl();
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
         model.setRowCount(0);
         String productNameToSearch = productSearch.getText();
-        String productBrandToSearch = BrandFilterCmb.getSelectedItem().toString();
+        String productBrandToSearch = BrandFilterCmb.getSelectedItem() == null ? "NINGUNO" : BrandFilterCmb.getSelectedItem().toString();
+        String productCategoryToSearch = CategoryFilterCmb.getSelectedItem() == null ? "NINGUNO" : CategoryFilterCmb.getSelectedItem().toString();
         try {
-            dao.consult(productNameToSearch, productBrandToSearch).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
+            dao.consult(productNameToSearch, productBrandToSearch, productCategoryToSearch).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -364,11 +394,14 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> BrandFilterCmb;
+    private javax.swing.JLabel BrandLbl;
+    private javax.swing.JComboBox<String> CategoryFilterCmb;
+    private javax.swing.JLabel CategoryLbl;
     private javax.swing.JPanel background_products;
     private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnCleanField;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
-    private javax.swing.JButton btnSearch;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableProducts;
     private javax.swing.JTextField productSearch;

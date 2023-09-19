@@ -47,7 +47,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
             st.setInt(8, product.getId());
             st.executeUpdate();
             st.close();
-            
+
             pSizes.setIdProduct(product.getId());
         } catch (Exception e) {
             throw e;
@@ -55,7 +55,6 @@ public class DAOProductsImpl extends Database implements DAOProducts {
             this.closeDB();
         }
     }
-    
 
     private void setProductFieldsToDB(PreparedStatement st, ModelProducts product) throws SQLException {
         // Asigna los valores para los parámetros de la sentencia SQL
@@ -88,16 +87,16 @@ public class DAOProductsImpl extends Database implements DAOProducts {
             this.connectDB();
             String deleteProduct = "DELETE FROM PRODUCTOS WHERE ID = ?;";
             PreparedStatement pst = this.connection.prepareStatement(deleteProduct);
-            
+
             String sqlResetId = "ALTER TABLE PRODUCTOS AUTO_INCREMENT = ?;";
-            PreparedStatement pst2 = this.connection.prepareStatement(sqlResetId);
+            PreparedStatement pstAutoIncrement = this.connection.prepareStatement(sqlResetId);
             pst.setInt(1, productId);
-            pst2.setInt(1, productId);
-            
+            pstAutoIncrement.setInt(1, productId);
+
             pst.executeUpdate();
-            pst2.executeUpdate();
+            pstAutoIncrement.executeUpdate();
             pst.close();
-            pst2.close();
+            pstAutoIncrement.close();
         } catch (Exception e) {
             throw e;
         } finally {
@@ -106,12 +105,15 @@ public class DAOProductsImpl extends Database implements DAOProducts {
     }
 
     @Override
-    public List<ModelProducts> consult(String name, String brand) throws Exception {
+    public List<ModelProducts> consult(String name, String brand, String category) throws Exception {
         List<ModelProducts> list = null;
         try {
             this.connectDB();
-            String query = "call consulta('"+name+"', '"+brand+"');";
+            String query = "call consulta(?, ?, ?);";
             PreparedStatement st = this.connection.prepareStatement(query);
+            st.setString(1, name);
+            st.setString(2, brand);
+            st.setString(3, category);
             list = new ArrayList();
             ResultSet rs = st.executeQuery();
 
@@ -156,7 +158,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
 
         try {
             this.connectDB();
-            String query = "call consultaPorCodigoProducto(?)";
+            String query = "call consultaPorCodigoProducto(?);";
             PreparedStatement st = this.connection.prepareStatement(query);
             st.setInt(1, productId);
             ResultSet rs = st.executeQuery();
@@ -205,5 +207,25 @@ public class DAOProductsImpl extends Database implements DAOProducts {
         resultSet.close();
         comboBox.setSelectedIndex(-1);
     }
-    
+
+    @Override
+    public void loadFilterCmb(JComboBox<String> BrandFilterCmb, JComboBox<String> CategoryFilterCmb) throws Exception {
+        try {
+            this.connectDB();
+            String queryBrand = "select nombre from marcas;";
+            String queryCategory = "select nombre from categorias;";
+            BrandFilterCmb.addItem("NINGUNO");
+            CategoryFilterCmb.addItem("NINGUNO");
+            fillComboBox(BrandFilterCmb, queryBrand);
+            fillComboBox(CategoryFilterCmb, queryCategory); 
+            BrandFilterCmb.setSelectedIndex(0);
+            CategoryFilterCmb.setSelectedIndex(0);
+
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.closeDB();
+        }
+    }
+
 }

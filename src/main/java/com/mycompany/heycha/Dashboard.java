@@ -1,6 +1,6 @@
 package com.mycompany.heycha;
 
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMaterialLighterIJTheme;
+import com.formdev.flatlaf.intellijthemes.FlatCyanLightIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatCarbonIJTheme;
 import com.mycompany.interfaces.Styleable;
 import com.mycompany.views.ViewClients;
@@ -10,17 +10,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.event.ItemEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-/**
- *
- * @author Ovett
- */
 public class Dashboard extends javax.swing.JFrame {
 
     public Dashboard() {
@@ -69,7 +64,7 @@ public class Dashboard extends javax.swing.JFrame {
             btnClients.putClientProperty("FlatLaf.style", "background: #26354f");
             btnSales.putClientProperty("FlatLaf.style", "background: #26354f");
         } else {
-            FlatMaterialLighterIJTheme.setup();
+            FlatCyanLightIJTheme.setup();
             ModeBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon-sun.png")));
             message.setForeground(Color.black);
 
@@ -135,6 +130,7 @@ public class Dashboard extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
         setExtendedState(6);
+        setIconImage(getIconImage());
         setPreferredSize(new java.awt.Dimension(1090, 680));
         setSize(new java.awt.Dimension(1090, 680));
 
@@ -341,7 +337,7 @@ public class Dashboard extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        FlatMaterialLighterIJTheme.setup();
+        FlatCyanLightIJTheme.setup();
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

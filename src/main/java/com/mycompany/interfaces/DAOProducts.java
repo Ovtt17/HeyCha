@@ -13,7 +13,7 @@ public interface DAOProducts {
     public void record (ModelProducts product, ModelProductSizes pSizes) throws Exception;
     public void modify (ModelProducts product, ModelProductSizes pSizes) throws Exception;
     public void delete (int productId) throws Exception;
-    public List<ModelProducts> consult(String name, String brand) throws Exception;
+    public List<ModelProducts> consult(String name, String brand, String category) throws Exception;
     public ModelProducts getProductById(int productId) throws Exception;
     
     /**
@@ -24,6 +24,7 @@ public interface DAOProducts {
      * @throws Exception 
      */
     public void loadCmb(JComboBox<String> brandCmb, JComboBox<String> categoryCmb, JComboBox<String> typeCmb) throws Exception;
+    public void loadFilterCmb(JComboBox<String> BrandFilterCmb, JComboBox<String> CategoryFilterCmb) throws Exception;
     public void fillComboBox(JComboBox<String> comboBox, String query) throws SQLException;
 
 }

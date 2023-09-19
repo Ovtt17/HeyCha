@@ -73,8 +73,8 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         try {
             DAOProducts dao = new DAOProductsImpl();
             dao.loadCmb(brandCmb, categoryCmb, typeCmb);
-        } catch (Exception ex) {
-            Logger.getLogger(UpProducts.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
 
         if (isEditable) {
