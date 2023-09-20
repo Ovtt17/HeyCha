@@ -132,6 +132,11 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
         btnEdit.setForeground(new java.awt.Color(255, 255, 255));
         btnEdit.setText("Editar");
         btnEdit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
         btnDelete.setBackground(new java.awt.Color(255, 51, 51));
         btnDelete.setForeground(new java.awt.Color(255, 255, 255));
@@ -227,6 +232,21 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
     private void btnCleanFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCleanFieldActionPerformed
         clientSearch.setText("");
     }//GEN-LAST:event_btnCleanFieldActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        if (JTableClients.getSelectedRow() > -1) {
+            try {
+                int productId = (int) JTableClients.getValueAt(JTableClients.getSelectedRow(), 0);
+                DAOClients dao = new DAOClientsImpl();
+                Dashboard.ShowPanel(new UpClients(dao.getClientById(productId), lightOrDarkMode));
+            } catch (Exception e) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto a editar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+
+        }
+    }//GEN-LAST:event_btnEditActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

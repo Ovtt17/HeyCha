@@ -313,7 +313,6 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             }
         } else {
             javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto a editar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-
         }
     }//GEN-LAST:event_btnEditActionPerformed
 

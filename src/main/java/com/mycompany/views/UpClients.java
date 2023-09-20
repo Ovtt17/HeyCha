@@ -64,7 +64,7 @@ public class UpClients extends javax.swing.JPanel implements Styleable {
             if (clientEditable != null) {
                 nameTxt.setText(clientEditable.getName());
                 cellphoneTxt.setText(clientEditable.getCellphone().toString());
-//                cityTxt.setText(clientEditable.getCity());
+                cityCmb.setSelectedItem(clientEditable.getCity());
                 directionTxt.setText(clientEditable.getDirection());
             }
         }
@@ -231,7 +231,7 @@ public class UpClients extends javax.swing.JPanel implements Styleable {
             if (!isEditable) {
                 dao.record(client);
             } else {
-                //implementar modificacion del cliente
+                dao.modify(client);
             }
             String succecssMsg = isEditable ? "modificado" : "registrado";
             javax.swing.JOptionPane.showMessageDialog(this, "Datos " + succecssMsg + " correctamente. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);

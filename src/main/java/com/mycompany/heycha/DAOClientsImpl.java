@@ -19,7 +19,7 @@ public class DAOClientsImpl extends Database implements DAOClients {
             this.connectDB();
             String query = "call insertClient(?,?,?,?);";
             PreparedStatement pst = this.connection.prepareStatement(query);
-            setClientFieldsToBD(pst, client);
+            setClientFieldsToInsert(pst, client);
             pst.executeQuery();
             pst.close();
         } catch (Exception e) {
@@ -29,7 +29,7 @@ public class DAOClientsImpl extends Database implements DAOClients {
         }
     }
 
-    private void setClientFieldsToBD(PreparedStatement pst, ModelClients client) throws SQLException {
+    private void setClientFieldsToInsert(PreparedStatement pst, ModelClients client) throws SQLException {
         pst.setString(1, client.getName());
         pst.setInt(2, client.getCellphone());
         pst.setString(3, client.getCity());
@@ -38,12 +38,45 @@ public class DAOClientsImpl extends Database implements DAOClients {
 
     @Override
     public void modify(ModelClients client) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            this.connectDB();
+            String query = "call modifyClient(?,?,?,?,?);";
+            PreparedStatement pst = this.connection.prepareStatement(query);
+            setClientFieldsToModify(pst, client);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.closeDB();
+        }
+    }
+
+    private void setClientFieldsToModify(PreparedStatement pst, ModelClients client) throws SQLException {
+        pst.setString(1, client.getName());
+        pst.setInt(2, client.getCellphone());
+        pst.setString(3, client.getCity());
+        pst.setString(4, client.getDirection());
+        pst.setInt(5, client.getId());
     }
 
     @Override
-    public ModelClients getProductById(int clientId) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public ModelClients getClientById(int clientId) throws Exception {
+        ModelClients client = new ModelClients();
+        try {
+            this.connectDB();
+            String query = "call consultByClientId(?);";
+            PreparedStatement pst = this.connection.prepareStatement(query);
+            pst.setInt(1, clientId);
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                setClientFieldsToConsult(rs, client);
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.closeDB();
+        }
+        return client;
     }
 
     @Override
@@ -62,7 +95,7 @@ public class DAOClientsImpl extends Database implements DAOClients {
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
                 ModelClients client = new ModelClients();
-                setClientFieldsFromBBForConsult(rs, client);
+                setClientFieldsToConsult(rs, client);
                 list.add(client);
             }
             pst.close();
@@ -75,7 +108,7 @@ public class DAOClientsImpl extends Database implements DAOClients {
         return list;
     }
 
-    private void setClientFieldsFromBBForConsult(ResultSet rs, ModelClients client) throws SQLException {
+    private void setClientFieldsToConsult(ResultSet rs, ModelClients client) throws SQLException {
         client.setId(rs.getInt("ID"));
         client.setName(rs.getString("NOMBRE"));
         client.setCellphone(rs.getInt("TELEFONO"));

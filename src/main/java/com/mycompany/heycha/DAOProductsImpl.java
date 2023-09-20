@@ -45,7 +45,6 @@ public class DAOProductsImpl extends Database implements DAOProducts {
             this.connectDB();
             PreparedStatement st = this.connection.prepareStatement("call modifyProduct(?, ?, ?, ?, ?, ?, ?, ?);");
             setProductFieldsToDB(st, product);
-            st.setInt(8, product.getId());
             st.executeUpdate();
             st.close();
 
@@ -80,6 +79,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
         } else {
             st.setNull(7, Types.INTEGER);
         }
+        st.setInt(8, product.getId());
     }
 
     @Override

@@ -9,7 +9,7 @@ public interface DAOClients {
     public void record(ModelClients client) throws Exception;
 
     public void modify(ModelClients client) throws Exception;
-    public ModelClients getProductById(int clientId) throws Exception;
+    public ModelClients getClientById(int clientId) throws Exception;
 
     public void delete(ModelClients client) throws Exception;
 
