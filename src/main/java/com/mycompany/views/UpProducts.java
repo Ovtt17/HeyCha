@@ -212,6 +212,7 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         categoryCmb.setMinimumSize(new java.awt.Dimension(0, 0));
         categoryCmb.setPreferredSize(new java.awt.Dimension(64, 22));
 
+        typeCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NINGUNO" }));
         typeCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         typeCmb.setMinimumSize(new java.awt.Dimension(0, 0));
         typeCmb.setPreferredSize(new java.awt.Dimension(64, 22));
@@ -395,33 +396,36 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
     }// </editor-fold>//GEN-END:initComponents
 
     private void DataUpdateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DataUpdateBtnActionPerformed
-        String name = nameTxt.getText();
+        String name = nameTxt.getText().trim();
         Float price = null;
-        if (!priceTxt.getText().isEmpty()) {
-            try {
-                price = Float.valueOf(priceTxt.getText());
+        Integer discount;
+        try {
+            if (!priceTxt.getText().trim().isEmpty()) {
+                price = Float.parseFloat(priceTxt.getText().trim());
                 if (price < 1) {
                     javax.swing.JOptionPane.showMessageDialog(this, "El precio no puede ser menor que $1. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
                     priceTxt.requestFocus();
                     return;
                 }
-            } catch (Exception e) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Ingrese el precio correctamente. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
-                priceTxt.requestFocus();
-                return;
             }
+
+            discount = (discountTxt.getText().trim().isEmpty() || Integer.parseInt(discountTxt.getText().trim()) < 1) ? null : Integer.valueOf(discountTxt.getText().trim());
+
+        } catch (NumberFormatException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, ingrese solo números en los campos de precio y descuento. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
-        String description = descriptionTxt.getText().isEmpty() ? null : descriptionTxt.getText();
-        Integer discount = (discountTxt.getText().isEmpty() || Integer.valueOf(discountTxt.getText()) <= 1) ? null : Integer.valueOf(discountTxt.getText());
+        String description = descriptionTxt.getText().trim().isEmpty() ? null : descriptionTxt.getText().trim();
+
         Integer idBrand = brandCmb.getSelectedIndex() == -1 ? null : brandCmb.getSelectedIndex() + 1;
         Integer idCategory = categoryCmb.getSelectedIndex() == -1 ? null : categoryCmb.getSelectedIndex() + 1;
-        Integer idType = typeCmb.getSelectedIndex() == -1 ? null : typeCmb.getSelectedIndex() + 1;
+        Integer idType = typeCmb.getSelectedIndex() == -1 || typeCmb.getSelectedIndex() == 0 ? null : typeCmb.getSelectedIndex();
 
         boolean incorrectData = name.isEmpty() || price == null || idBrand == null || idCategory == null;
 
         if (incorrectData) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Debe llenar todos los campos. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(this, "Debe llenar todos los campos correctamente. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
             nameTxt.requestFocus();
             return;
         }

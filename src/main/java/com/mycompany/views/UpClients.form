@@ -41,38 +41,41 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" attributes="0">
-                  <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
-                  <Component id="title" pref="0" max="32767" attributes="0"/>
-                  <EmptySpace min="-2" pref="637" max="-2" attributes="0"/>
-              </Group>
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" pref="78" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <Component id="cellphoneLbl" max="32767" attributes="0"/>
-                          <EmptySpace min="380" pref="380" max="-2" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="cellphoneLbl" max="32767" attributes="0"/>
+                                  <EmptySpace min="-2" pref="380" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="cityLbl" max="32767" attributes="0"/>
+                                  <EmptySpace min="-2" pref="390" max="-2" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="directionLbl" max="32767" attributes="0"/>
+                                  <EmptySpace min="-2" pref="377" max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="nameTxt" alignment="0" max="32767" attributes="0"/>
+                              <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="nameLbl" max="32767" attributes="0"/>
+                                  <EmptySpace min="-2" pref="384" max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="cityCmb" alignment="0" max="32767" attributes="0"/>
+                              <Component id="cellphoneTxt" alignment="0" max="32767" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
+                          <Component id="DataUpdateBtn" max="32767" attributes="0"/>
+                          <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
                       </Group>
-                      <Group type="102" alignment="0" attributes="0">
-                          <Component id="cityLbl" max="32767" attributes="0"/>
-                          <EmptySpace min="390" pref="390" max="-2" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <Component id="title" pref="0" max="32767" attributes="0"/>
+                          <EmptySpace min="-2" pref="637" max="-2" attributes="0"/>
                       </Group>
-                      <Group type="102" alignment="0" attributes="0">
-                          <Component id="directionLbl" max="32767" attributes="0"/>
-                          <EmptySpace min="377" pref="377" max="-2" attributes="0"/>
-                      </Group>
-                      <Component id="nameTxt" max="32767" attributes="0"/>
-                      <Component id="jScrollPane1" max="32767" attributes="0"/>
-                      <Group type="102" alignment="0" attributes="0">
-                          <Component id="nameLbl" max="32767" attributes="0"/>
-                          <EmptySpace min="384" pref="384" max="-2" attributes="0"/>
-                      </Group>
-                      <Component id="cellphoneTxt" alignment="0" max="32767" attributes="0"/>
-                      <Component id="cityTxt" alignment="0" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                  <Component id="DataUpdateBtn" max="32767" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -81,21 +84,21 @@
               <Group type="102" attributes="0">
                   <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
                   <Component id="title" max="32767" attributes="0"/>
-                  <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="nameLbl" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                  <Component id="nameLbl" max="32767" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Component id="nameTxt" min="-2" pref="35" max="-2" attributes="0"/>
-                  <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                  <Component id="cellphoneLbl" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                  <Component id="cellphoneLbl" max="32767" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Component id="cellphoneTxt" min="-2" pref="35" max="-2" attributes="0"/>
-                  <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                  <Component id="cityLbl" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                  <Component id="cityLbl" max="32767" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Component id="cityTxt" min="-2" pref="35" max="-2" attributes="0"/>
-                  <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                  <Component id="directionLbl" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="cityCmb" min="-2" pref="35" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                  <Component id="directionLbl" max="32767" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
                       <Component id="jScrollPane1" min="-2" pref="80" max="-2" attributes="0"/>
                       <Component id="DataUpdateBtn" min="-2" pref="43" max="-2" attributes="0"/>
@@ -123,12 +126,12 @@
         </Component>
         <Component class="javax.swing.JLabel" name="cityLbl">
           <Properties>
-            <Property name="text" type="java.lang.String" value="CIudad:"/>
+            <Property name="text" type="java.lang.String" value="Ciudad:"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="directionLbl">
           <Properties>
-            <Property name="text" type="java.lang.String" value="DIrecci&#xf3;n:"/>
+            <Property name="text" type="java.lang.String" value="Direcci&#xf3;n:"/>
           </Properties>
         </Component>
         <Container class="javax.swing.JScrollPane" name="jScrollPane1">
@@ -141,13 +144,14 @@
             <Component class="javax.swing.JTextArea" name="directionTxt">
               <Properties>
                 <Property name="columns" type="int" value="20"/>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Segoe UI" size="18" style="0"/>
+                </Property>
                 <Property name="rows" type="int" value="5"/>
               </Properties>
             </Component>
           </SubComponents>
         </Container>
-        <Component class="javax.swing.JTextField" name="cityTxt">
-        </Component>
         <Component class="javax.swing.JTextField" name="cellphoneTxt">
         </Component>
         <Component class="javax.swing.JTextField" name="nameTxt">
@@ -168,6 +172,18 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="DataUpdateBtnActionPerformed"/>
           </Events>
+        </Component>
+        <Component class="javax.swing.JComboBox" name="cityCmb">
+          <Properties>
+            <Property name="editable" type="boolean" value="true"/>
+            <Property name="maximumRowCount" type="int" value="10"/>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="0"/>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+          </AuxValues>
         </Component>
       </SubComponents>
     </Container>

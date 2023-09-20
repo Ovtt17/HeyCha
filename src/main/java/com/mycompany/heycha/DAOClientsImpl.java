@@ -6,8 +6,10 @@ import com.mycompany.models.ModelClients;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JComboBox;
 
 public class DAOClientsImpl extends Database implements DAOClients {
 
@@ -28,10 +30,10 @@ public class DAOClientsImpl extends Database implements DAOClients {
     }
 
     private void setClientFieldsToBD(PreparedStatement pst, ModelClients client) throws SQLException {
-            pst.setString(1, client.getName());
-            pst.setInt(2, client.getCellphone());
-            pst.setString(3, client.getCity());
-            pst.setString(4, client.getDirection());
+        pst.setString(1, client.getName());
+        pst.setInt(2, client.getCellphone());
+        pst.setString(3, client.getCity());
+        pst.setString(4, client.getDirection());
     }
 
     @Override
@@ -79,6 +81,29 @@ public class DAOClientsImpl extends Database implements DAOClients {
         client.setCellphone(rs.getInt("TELEFONO"));
         client.setCity(rs.getString("CIUDAD"));
         client.setDirection(rs.getString("DIRECCION"));
+    }
+
+    @Override
+    public void loadCmb(JComboBox<String> cityCmb) throws Exception {
+        try {
+            this.connectDB();
+            String query = "select nombre from ciudades;";
+            Statement st = this.connection.createStatement();
+            st.execute(query);
+            ResultSet resultSet = st.getResultSet();
+
+            while (resultSet.next()) {
+                cityCmb.addItem(resultSet.getString(1));
+            }
+
+            st.close();
+            resultSet.close();
+            cityCmb.setSelectedIndex(-1);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.closeDB();
+        }
     }
 
 }

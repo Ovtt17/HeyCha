@@ -5,6 +5,7 @@ import com.mycompany.interfaces.DAOClients;
 import com.mycompany.interfaces.Styleable;
 import com.mycompany.models.ModelClients;
 import java.awt.Color;
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 public class UpClients extends javax.swing.JPanel implements Styleable {
 
@@ -44,11 +45,17 @@ public class UpClients extends javax.swing.JPanel implements Styleable {
         cellphoneLbl.putClientProperty("FlatLaf.styleClass", "h2");
         cityLbl.putClientProperty("FlatLaf.styleClass", "h2");
         directionLbl.putClientProperty("FlatLaf.styleClass", "h2");
-
+        AutoCompleteDecorator.decorate(cityCmb);
         nameTxt.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del cliente.");
         cellphoneTxt.putClientProperty("JTextField.placeholderText", "Ingrese el telefono del cliente.");
-        cityTxt.putClientProperty("JTextField.placeholderText", "Ingrese la ciudad donde vive el cliente.");
+
         directionTxt.putClientProperty("JTextField.placeholderText", "Ingrese la dirección donde vive el cliente.");
+        try {
+            DAOClients dao = new DAOClientsImpl();
+            dao.loadCmb(cityCmb);
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
 
         if (isEditable) {
             title.setText("Editar producto.");
@@ -57,7 +64,7 @@ public class UpClients extends javax.swing.JPanel implements Styleable {
             if (clientEditable != null) {
                 nameTxt.setText(clientEditable.getName());
                 cellphoneTxt.setText(clientEditable.getCellphone().toString());
-                cityTxt.setText(clientEditable.getCity());
+//                cityTxt.setText(clientEditable.getCity());
                 directionTxt.setText(clientEditable.getDirection());
             }
         }
@@ -80,10 +87,10 @@ public class UpClients extends javax.swing.JPanel implements Styleable {
         directionLbl = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         directionTxt = new javax.swing.JTextArea();
-        cityTxt = new javax.swing.JTextField();
         cellphoneTxt = new javax.swing.JTextField();
         nameTxt = new javax.swing.JTextField();
         DataUpdateBtn = new javax.swing.JButton();
+        cityCmb = new javax.swing.JComboBox<>();
 
         setPreferredSize(new java.awt.Dimension(764, 436));
 
@@ -95,11 +102,12 @@ public class UpClients extends javax.swing.JPanel implements Styleable {
 
         cellphoneLbl.setText("Teléfono:");
 
-        cityLbl.setText("CIudad:");
+        cityLbl.setText("Ciudad:");
 
-        directionLbl.setText("DIrección:");
+        directionLbl.setText("Dirección:");
 
         directionTxt.setColumns(20);
+        directionTxt.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         directionTxt.setRows(5);
         jScrollPane1.setViewportView(directionTxt);
 
@@ -113,56 +121,60 @@ public class UpClients extends javax.swing.JPanel implements Styleable {
             }
         });
 
+        cityCmb.setEditable(true);
+        cityCmb.setMaximumRowCount(10);
+
         javax.swing.GroupLayout bgLayout = new javax.swing.GroupLayout(bg);
         bg.setLayout(bgLayout);
         bgLayout.setHorizontalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bgLayout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                .addGap(637, 637, 637))
-            .addGroup(bgLayout.createSequentialGroup()
-                .addGap(78, 78, 78)
                 .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(bgLayout.createSequentialGroup()
-                        .addComponent(cellphoneLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(380, 380, 380))
+                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(bgLayout.createSequentialGroup()
+                                .addComponent(cellphoneLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(380, 380, 380))
+                            .addGroup(bgLayout.createSequentialGroup()
+                                .addComponent(cityLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(390, 390, 390))
+                            .addGroup(bgLayout.createSequentialGroup()
+                                .addComponent(directionLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(377, 377, 377))
+                            .addComponent(nameTxt)
+                            .addComponent(jScrollPane1)
+                            .addGroup(bgLayout.createSequentialGroup()
+                                .addComponent(nameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(384, 384, 384))
+                            .addComponent(cityCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(cellphoneTxt))
+                        .addGap(45, 45, 45)
+                        .addComponent(DataUpdateBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(37, 37, 37))
                     .addGroup(bgLayout.createSequentialGroup()
-                        .addComponent(cityLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(390, 390, 390))
-                    .addGroup(bgLayout.createSequentialGroup()
-                        .addComponent(directionLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(377, 377, 377))
-                    .addComponent(nameTxt)
-                    .addComponent(jScrollPane1)
-                    .addGroup(bgLayout.createSequentialGroup()
-                        .addComponent(nameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(384, 384, 384))
-                    .addComponent(cellphoneTxt)
-                    .addComponent(cityTxt))
-                .addGap(18, 18, 18)
-                .addComponent(DataUpdateBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                        .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addGap(637, 637, 637))))
         );
         bgLayout.setVerticalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bgLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addComponent(nameLbl)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(nameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(nameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(cellphoneLbl)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cellphoneLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cellphoneTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(cityLbl)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cityLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cityTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(directionLbl)
+                .addComponent(cityCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(directionLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -183,10 +195,29 @@ public class UpClients extends javax.swing.JPanel implements Styleable {
     }// </editor-fold>//GEN-END:initComponents
 
     private void DataUpdateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DataUpdateBtnActionPerformed
-        String name = nameTxt.getText();
-        Integer cellphone = Integer.valueOf(cellphoneTxt.getText());
-        String city = cityTxt.getText();
-        String direction = directionTxt.getText();
+        String name = nameTxt.getText().trim();
+        Integer cellphone = null;
+        if (cellphoneTxt.getText().trim().length() != 8) {
+            javax.swing.JOptionPane.showMessageDialog(this, "El número de teléfono debe tener 8 digitos. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
+            cellphoneTxt.requestFocus();
+            return;
+        }
+        try {
+            cellphone = Integer.parseInt(cellphoneTxt.getText().trim());
+        } catch (NumberFormatException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "El número de teléfono debe incluir solamente números. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
+            cellphoneTxt.requestFocus();
+            return;
+        }
+        String city = cityCmb.getSelectedIndex() == -1 ? null : cityCmb.getSelectedItem().toString();
+        String direction = directionTxt.getText().trim();
+
+        boolean incorrectData = name.isEmpty() || cellphone == null || city == null || direction.isEmpty();
+        if (incorrectData) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Debe llenar todos los campos correctamente. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
+            nameTxt.requestFocus();
+            return;
+        }
 
         ModelClients client = isEditable ? clientEditable : new ModelClients();
         client.setName(name);
@@ -216,7 +247,7 @@ public class UpClients extends javax.swing.JPanel implements Styleable {
     private void emptyFields() {
         nameTxt.setText("");
         cellphoneTxt.setText("");
-        cityTxt.setText("");
+        cityCmb.setSelectedIndex(-1);
         directionTxt.setText("");
     }
 
@@ -225,8 +256,8 @@ public class UpClients extends javax.swing.JPanel implements Styleable {
     private javax.swing.JPanel bg;
     private javax.swing.JLabel cellphoneLbl;
     private javax.swing.JTextField cellphoneTxt;
+    private javax.swing.JComboBox<String> cityCmb;
     private javax.swing.JLabel cityLbl;
-    private javax.swing.JTextField cityTxt;
     private javax.swing.JLabel directionLbl;
     private javax.swing.JTextArea directionTxt;
     private javax.swing.JScrollPane jScrollPane1;

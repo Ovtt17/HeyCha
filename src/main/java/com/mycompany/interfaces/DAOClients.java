@@ -2,6 +2,7 @@ package com.mycompany.interfaces;
 
 import com.mycompany.models.ModelClients;
 import java.util.List;
+import javax.swing.JComboBox;
 
 public interface DAOClients {
 
@@ -13,6 +14,7 @@ public interface DAOClients {
     public void delete(ModelClients client) throws Exception;
 
     public List<ModelClients> consult(String name) throws Exception;
-
+    
+    public void loadCmb(JComboBox<String> cityCmb) throws Exception;
     
 }
