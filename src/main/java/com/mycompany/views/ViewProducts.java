@@ -25,7 +25,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         title.putClientProperty("FlatLaf.styleClass", "h1");
 
         productSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto a buscar.");
-        
+
         btnAdd.putClientProperty("JButton.buttonType", "roundRect");
         btnDelete.putClientProperty("JButton.buttonType", "roundRect");
         btnEdit.putClientProperty("JButton.buttonType", "roundRect");
@@ -49,6 +49,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             btnCleanField.putClientProperty("FlatLaf.style", "background: #1565C0");
         }
         btnDelete.setEnabled(true);
+        btnCleanField.setEnabled(true);
         BrandFilterCmb.setEnabled(true);
         CategoryFilterCmb.setEnabled(true);
     }
@@ -69,7 +70,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
     private void consultProducts(DAOProducts dao, DefaultTableModel model, String nameToFind, String brandSelected, String categorySelected) {
         try {
-            dao.consult(nameToFind, brandSelected, categorySelected).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType()}));
+            dao.consult(nameToFind, brandSelected, categorySelected).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType(), p.getBrandAvailable(), p.getTotalExistence(), p.getTotalPrice()}));
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -120,11 +121,11 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
             },
             new String [] {
-                "ID", "Nombre", "Precio", "Descripcion", "Descuento", "Marca", "Categoria", "Tipo"
+                "ID", "Nombre", "Precio", "Descripcion", "Descuento", "Marca", "Categoria", "Tipo", "Tallas Disponibles", "Total Existencia", "Valor Total"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -170,12 +171,14 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             }
         });
 
+        BrandFilterCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         BrandFilterCmb.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 BrandFilterCmbItemStateChanged(evt);
             }
         });
 
+        CategoryFilterCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         CategoryFilterCmb.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 CategoryFilterCmbItemStateChanged(evt);
@@ -286,7 +289,14 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             DAOProductSizes daoSize = new DAOProductsSizesImpl();
 
             int[] selectedRows = jTableProducts.getSelectedRows();
+            int continueDeleting;
             for (int i = selectedRows.length - 1; i >= 0; i--) {
+                if (i == selectedRows.length - 4) {
+                    continueDeleting = javax.swing.JOptionPane.showConfirmDialog(this, "¿Has eliminado 3 productos, deseas continuar eliminando el resto?\n", "CONFIMARCIÓN", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
+                    if (continueDeleting == javax.swing.JOptionPane.NO_OPTION) {
+                        return;
+                    }
+                }
                 try {
                     int selectedRow = selectedRows[i];
                     dao.delete((int) jTableProducts.getValueAt(selectedRow, 0));
@@ -338,6 +348,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
                 daoSizes.consult(productId).forEach((p) -> newModel.addRow(new Object[]{p.getIdProduct(), p.getNameProduct(), p.getNameSize(), p.getAmount()}));
                 jTableProducts.setModel(newModel);
                 btnDelete.setEnabled(false);
+                btnCleanField.setEnabled(false);
                 BrandFilterCmb.setEnabled(false);
                 CategoryFilterCmb.setEnabled(false);
                 productSearch.setText("");
@@ -348,7 +359,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     }//GEN-LAST:event_jTableProductsMouseClicked
 
     private void productSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_productSearchKeyReleased
-        if (!btnDelete.isEnabled() || !BrandFilterCmb.isEnabled() || !CategoryFilterCmb.isEnabled() && productSearch.getText().isEmpty()) {
+        if (!btnDelete.isEnabled() || !BrandFilterCmb.isEnabled() || !CategoryFilterCmb.isEnabled() || !btnCleanField.isEnabled() && productSearch.getText().isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(this, "No puede realizar búsqueda dentro de los detalles de un producto. \n", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
             productSearch.setText("");
             return;
@@ -366,16 +377,10 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     }//GEN-LAST:event_CategoryFilterCmbItemStateChanged
 
     private void btnCleanFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCleanFieldActionPerformed
-        if (!btnDelete.isEnabled() || !BrandFilterCmb.isEnabled() || !CategoryFilterCmb.isEnabled() && productSearch.getText().isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "No puede realizar búsqueda dentro de los detalles de un producto. \n", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
-            productSearch.setText("");
-            return;
-        } else {
-            productSearch.setText("");
-            BrandFilterCmb.setSelectedIndex(0);
-            CategoryFilterCmb.setSelectedIndex(0);
-            filterConsult();
-        }
+        productSearch.setText("");
+        BrandFilterCmb.setSelectedIndex(0);
+        CategoryFilterCmb.setSelectedIndex(0);
+        filterConsult();
     }//GEN-LAST:event_btnCleanFieldActionPerformed
 
     private void filterConsult() {
