@@ -7,14 +7,18 @@ public class ModelProducts {
     private Float price;
     private String description;
     private Integer discount;
-    
+
     private Integer IdBrand;
     private Integer IdCategory;
     private Integer IdType;
-    
+
     private String brand;
     private String category;
     private String type;
+
+    private String brandAvailable;
+    private Integer totalExistence;
+    private Float totalPrice;
 
     public int getId() {
         return id;
@@ -39,7 +43,7 @@ public class ModelProducts {
     public void setPrice(Float price) {
         this.price = price;
     }
-    
+
     public Integer getIdBrand() {
         return IdBrand;
     }
@@ -79,7 +83,7 @@ public class ModelProducts {
     public void setDiscount(Integer discount) {
         this.discount = discount;
     }
-    
+
     public String getBrand() {
         return brand;
     }
@@ -102,6 +106,30 @@ public class ModelProducts {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getBrandAvailable() {
+        return brandAvailable;
+    }
+
+    public void setBrandAvailable(String brandAvailable) {
+        this.brandAvailable = brandAvailable;
+    }
+
+    public Integer getTotalExistence() {
+        return totalExistence;
+    }
+
+    public void setTotalExistence(Integer totalExistence) {
+        this.totalExistence = totalExistence;
+    }
+
+    public Float getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(Float totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
 }

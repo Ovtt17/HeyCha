@@ -43,6 +43,7 @@ public class DAOClientsImpl extends Database implements DAOClients {
             String query = "call modifyClient(?,?,?,?,?);";
             PreparedStatement pst = this.connection.prepareStatement(query);
             setClientFieldsToModify(pst, client);
+            pst.executeQuery();
         } catch (Exception e) {
             throw e;
         } finally {
@@ -80,8 +81,25 @@ public class DAOClientsImpl extends Database implements DAOClients {
     }
 
     @Override
-    public void delete(ModelClients client) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void delete(int clientId) throws Exception {
+        try {
+            this.connectDB();
+            String deleteProduct = "call deleteClient(?);";
+            PreparedStatement pst = this.connection.prepareStatement(deleteProduct);
+            pst.setInt(1, clientId);
+            String sqlResetId = "ALTER TABLE PRODUCTOS AUTO_INCREMENT = ?;";
+            PreparedStatement pstAutoIncrement = this.connection.prepareStatement(sqlResetId);
+            pstAutoIncrement.setInt(1, clientId);
+
+            pst.executeUpdate();
+            pstAutoIncrement.executeUpdate();
+            pst.close();
+            pstAutoIncrement.close();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.closeDB();
+        }
     }
 
     @Override
@@ -89,7 +107,7 @@ public class DAOClientsImpl extends Database implements DAOClients {
         List<ModelClients> list = null;
         try {
             this.connectDB();
-            String query = "select * from clientes;";
+            String query = "select * from clientes where (nombre = '' or nombre like concat('%', '"+name+"','%')) and is_deleted = 0;";
             PreparedStatement pst = this.connection.prepareStatement(query);
             list = new ArrayList();
             ResultSet rs = pst.executeQuery();
@@ -120,7 +138,7 @@ public class DAOClientsImpl extends Database implements DAOClients {
     public void loadCmb(JComboBox<String> cityCmb) throws Exception {
         try {
             this.connectDB();
-            String query = "select nombre from ciudades;";
+            String query = "select nombre from ciudades order by nombre;";
             Statement st = this.connection.createStatement();
             st.execute(query);
             ResultSet resultSet = st.getResultSet();

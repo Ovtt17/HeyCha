@@ -21,7 +21,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
             this.connectDB();
             String query = "call insertProduct(?,?,?,?,?,?,?);";
             PreparedStatement st = this.connection.prepareStatement(query);
-            setProductFieldsToDB(st, product);
+            setProductFieldsToModify(st, product);
             // Ejecuta la sentencia SQL
             st.executeUpdate();
             ResultSet rs = st.getResultSet();
@@ -44,7 +44,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
         try {
             this.connectDB();
             PreparedStatement st = this.connection.prepareStatement("call modifyProduct(?, ?, ?, ?, ?, ?, ?, ?);");
-            setProductFieldsToDB(st, product);
+            setProductFieldsToModify(st, product);
             st.executeUpdate();
             st.close();
 
@@ -56,7 +56,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
         }
     }
 
-    private void setProductFieldsToDB(PreparedStatement st, ModelProducts product) throws SQLException {
+    private void setProductFieldsToModify(PreparedStatement st, ModelProducts product) throws SQLException {
         // Asigna los valores para los parámetros de la sentencia SQL
         st.setString(1, product.getName()); // Reemplaza con el método adecuado para obtener el nombre
         st.setFloat(2, product.getPrice());   // Reemplaza con el método adecuado para obtener el precio
@@ -120,7 +120,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
 
             while (rs.next()) {
                 ModelProducts product = new ModelProducts();
-                setProductFieldsFromDBForConsult(rs, product);
+                setProductFieldsToConsult(rs, product);
                 list.add(product);
             }
             rs.close();
@@ -133,7 +133,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
         return list;
     }
 
-    private void setProductFieldsFromDBForConsult(ResultSet rs, ModelProducts product) throws SQLException {
+    private void setProductFieldsToConsult(ResultSet rs, ModelProducts product) throws SQLException {
         product.setId(rs.getInt("ID"));
         product.setName(rs.getString("NOMBRE_PRODUCTO"));
         product.setPrice(rs.getFloat("PRECIO"));
@@ -151,6 +151,10 @@ public class DAOProductsImpl extends Database implements DAOProducts {
 
         String type = rs.getString("NOMBRE_TIPO");
         product.setType(rs.wasNull() ? null : type);
+        
+        product.setBrandAvailable(rs.getString("TALLAS_DISPONIBLES"));
+        product.setTotalExistence(rs.getInt("TOTAL_EXISTENCIA"));
+        product.setTotalPrice(rs.getFloat("VALOR_TOTAL"));
     }
 
     @Override
@@ -165,7 +169,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
-                setProductFieldsFromDBForConsult(rs, product);
+                setProductFieldsToConsult(rs, product);
             }
         } catch (Exception e) {
             throw e;

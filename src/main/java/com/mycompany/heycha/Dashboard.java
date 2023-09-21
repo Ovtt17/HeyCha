@@ -261,6 +261,7 @@ public class Dashboard extends javax.swing.JFrame {
         content.setLayout(new java.awt.BorderLayout());
 
         ModeBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon-sun.png"))); // NOI18N
+        ModeBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         ModeBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ModeBtnActionPerformed(evt);

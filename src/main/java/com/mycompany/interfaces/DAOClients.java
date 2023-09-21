@@ -11,7 +11,7 @@ public interface DAOClients {
     public void modify(ModelClients client) throws Exception;
     public ModelClients getClientById(int clientId) throws Exception;
 
-    public void delete(ModelClients client) throws Exception;
+    public void delete(int clientId) throws Exception;
 
     public List<ModelClients> consult(String name) throws Exception;
     

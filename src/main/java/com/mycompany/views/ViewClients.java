@@ -12,6 +12,7 @@ import javax.swing.table.DefaultTableModel;
 public class ViewClients extends javax.swing.JPanel implements Styleable {
 
     boolean lightOrDarkMode;
+
     public ViewClients(boolean isDarkModeEnabled) {
         initComponents();
         updateStyles(isDarkModeEnabled);
@@ -29,7 +30,7 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
         btnDelete.putClientProperty("JButton.buttonType", "roundRect");
         btnEdit.putClientProperty("JButton.buttonType", "roundRect");
         btnCleanField.putClientProperty("JButton.buttonType", "roundRect");
-        
+
         if (isDarkModeEnabled) {
             title.setForeground(Color.white);
             background_clients.putClientProperty("FlatLaf.style", "background: #172030");
@@ -50,6 +51,7 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
     private void loadClients() {
         DAOClients dao = new DAOClientsImpl();
         DefaultTableModel model = (DefaultTableModel) JTableClients.getModel();
+        model.setRowCount(0);
         String nameToFind = "";
         consultClients(dao, model, nameToFind);
     }
@@ -142,10 +144,16 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
         btnDelete.setForeground(new java.awt.Color(255, 255, 255));
         btnDelete.setText("Eliminar");
         btnDelete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         btnCleanField.setBackground(new java.awt.Color(21, 101, 192));
         btnCleanField.setForeground(new java.awt.Color(255, 255, 255));
         btnCleanField.setText("Limpiar Búsqueda");
+        btnCleanField.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnCleanField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCleanFieldActionPerformed(evt);
@@ -220,17 +228,17 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void clientSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_clientSearchKeyReleased
-//        if (!btnDelete.isEnabled() || !BrandFilterCmb.isEnabled() || !CategoryFilterCmb.isEnabled() && productSearch.getText().isEmpty()) {
-//            javax.swing.JOptionPane.showMessageDialog(this, "No puede realizar búsqueda dentro de los detalles de un producto. \n", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
-//            productSearch.setText("");
-//            return;
-//        } else {
-//            filterConsult();
-//        }
+        DAOClients dao = new DAOClientsImpl();
+        DefaultTableModel model = (DefaultTableModel) JTableClients.getModel();
+        model.setRowCount(0);
+        String nameToFind = clientSearch.getText().trim();
+        consultClients(dao, model, nameToFind);
+        clientSearch.setText(nameToFind);
     }//GEN-LAST:event_clientSearchKeyReleased
 
     private void btnCleanFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCleanFieldActionPerformed
         clientSearch.setText("");
+        loadClients();
     }//GEN-LAST:event_btnCleanFieldActionPerformed
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
@@ -243,10 +251,50 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
                 javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
         } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto a editar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-
+            javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un cliente a editar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_btnEditActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        DefaultTableModel model = (DefaultTableModel) JTableClients.getModel();
+
+        int rows = model.getRowCount();
+        if (rows == 0) {
+            javax.swing.JOptionPane.showMessageDialog(this, "No hay cliente para eliminar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            btnAdd.requestFocus();
+            return;
+        } else if (JTableClients.getSelectedRows().length < 1) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar uno o más clientes para borrar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        int confirmed = javax.swing.JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar estos datos? \n", "CONFIMARCIÓN", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
+        if (confirmed == javax.swing.JOptionPane.YES_OPTION) {
+            DAOClients dao = new DAOClientsImpl();
+
+            int[] selectedRows = JTableClients.getSelectedRows();
+            int continueDeleting;
+            for (int i = selectedRows.length - 1; i >= 0; i--) {
+
+                if (i == selectedRows.length - 4) {
+                    continueDeleting = javax.swing.JOptionPane.showConfirmDialog(this, "¿Has eliminado 3 clientes, deseas continuar eliminando el resto?\n", "CONFIMARCIÓN", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
+                    if (continueDeleting == javax.swing.JOptionPane.NO_OPTION) {
+                        return;
+                    }
+                }
+                try {
+                    int selectedRow = selectedRows[i];
+                    dao.delete((int) JTableClients.getValueAt(selectedRow, 0));
+                    model.removeRow(selectedRow);
+                } catch (Exception e) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+                }
+
+            }
+
+            javax.swing.JOptionPane.showMessageDialog(this, "Los datos se han eliminado correctamente. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

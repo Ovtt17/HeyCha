@@ -72,8 +72,8 @@
                           <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" attributes="0">
-                          <Component id="title" pref="0" max="32767" attributes="0"/>
-                          <EmptySpace min="-2" pref="637" max="-2" attributes="0"/>
+                          <Component id="title" max="32767" attributes="0"/>
+                          <EmptySpace min="-2" pref="240" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -83,24 +83,24 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
                   <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
-                  <Component id="title" max="32767" attributes="0"/>
+                  <Component id="title" pref="19" max="32767" attributes="0"/>
                   <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                  <Component id="nameLbl" max="32767" attributes="0"/>
+                  <Component id="nameLbl" pref="19" max="32767" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Component id="nameTxt" min="-2" pref="35" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                  <Component id="cellphoneLbl" max="32767" attributes="0"/>
+                  <Component id="cellphoneLbl" pref="19" max="32767" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Component id="cellphoneTxt" min="-2" pref="35" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                  <Component id="cityLbl" max="32767" attributes="0"/>
+                  <Component id="cityLbl" pref="21" max="32767" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Component id="cityCmb" min="-2" pref="35" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                  <Component id="directionLbl" max="32767" attributes="0"/>
+                  <Component id="directionLbl" pref="23" max="32767" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
-                      <Component id="jScrollPane1" min="-2" pref="80" max="-2" attributes="0"/>
+                      <Component id="jScrollPane1" pref="83" max="32767" attributes="0"/>
                       <Component id="DataUpdateBtn" min="-2" pref="43" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="59" max="-2" attributes="0"/>
@@ -168,6 +168,9 @@
               <Color blue="ff" green="ff" red="ff" type="rgb"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Subir"/>
+            <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
+              <Color id="Hand Cursor"/>
+            </Property>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="DataUpdateBtnActionPerformed"/>
