@@ -225,7 +225,6 @@ public class DAOProductsImpl extends Database implements DAOProducts {
             fillComboBox(CategoryFilterCmb, queryCategory); 
             BrandFilterCmb.setSelectedIndex(0);
             CategoryFilterCmb.setSelectedIndex(0);
-
         } catch (Exception e) {
             throw e;
         } finally {

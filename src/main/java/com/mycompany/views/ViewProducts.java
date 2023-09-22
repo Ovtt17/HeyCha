@@ -7,6 +7,7 @@ import com.mycompany.interfaces.DAOProductSizes;
 import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.interfaces.Styleable;
 import java.awt.Color;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 public class ViewProducts extends javax.swing.JPanel implements Styleable {
@@ -17,6 +18,10 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         initComponents();
         updateStyles(isDarkModeEnabled);
         loadProducts();
+    }
+
+    public ViewProducts() {
+        
     }
 
     @Override
@@ -58,9 +63,9 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         DAOProducts dao = new DAOProductsImpl();
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
         String nameToFind = "";
-        String brandSeleted = "NINGUNO";
+        String brandSelected = "NINGUNO";
         String categorySelected = "NINGUNO";
-        consultProducts(dao, model, nameToFind, brandSeleted, categorySelected);
+        consultProducts(dao, model, nameToFind, brandSelected, categorySelected);
         try {
             dao.loadFilterCmb(BrandFilterCmb, CategoryFilterCmb);
         } catch (Exception e) {
@@ -328,35 +333,39 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
     private void jTableProductsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableProductsMouseClicked
         if (evt.getClickCount() == 2) {
-            try {
-                DAOProductSizes daoSizes = new DAOProductsSizesImpl();
-                if (jTableProducts.getSelectedRow() < 0) {
-                    javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto para ver sus detalles. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
-
-                int selectedRows = jTableProducts.getSelectedRow();
-                int productId = (int) jTableProducts.getValueAt(selectedRows, 0);
-
-                DefaultTableModel newModel = new DefaultTableModel();
-                jTableProducts.setDefaultEditor(Object.class, null);
-                newModel.addColumn("ID del producto");
-                newModel.addColumn("Nombre del producto");
-                newModel.addColumn("Talla");
-                newModel.addColumn("Cantidad");
-
-                daoSizes.consult(productId).forEach((p) -> newModel.addRow(new Object[]{p.getIdProduct(), p.getNameProduct(), p.getNameSize(), p.getAmount()}));
-                jTableProducts.setModel(newModel);
-                btnDelete.setEnabled(false);
-                btnCleanField.setEnabled(false);
-                BrandFilterCmb.setEnabled(false);
-                CategoryFilterCmb.setEnabled(false);
-                productSearch.setText("");
-            } catch (Exception e) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
-            }
+            loadProductSizes(jTableProducts);
+            btnDelete.setEnabled(false);
+            btnCleanField.setEnabled(false);
+            BrandFilterCmb.setEnabled(false);
+            CategoryFilterCmb.setEnabled(false);
+            productSearch.setText("");
         }
     }//GEN-LAST:event_jTableProductsMouseClicked
+    public void loadProductSizes(JTable table) {
+        try {
+            DAOProductSizes daoSizes = new DAOProductsSizesImpl();
+            if (table.getSelectedRow() < 0) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto para ver sus detalles. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            int selectedRows = table.getSelectedRow();
+            int productId = (int) table.getValueAt(selectedRows, 0);
+
+            DefaultTableModel newModel = new DefaultTableModel();
+            table.setDefaultEditor(Object.class, null);
+            newModel.addColumn("ID del producto");
+            newModel.addColumn("Nombre del producto");
+            newModel.addColumn("Talla");
+            newModel.addColumn("Cantidad");
+
+            daoSizes.consult(productId).forEach((p) -> newModel.addRow(new Object[]{p.getIdProduct(), p.getNameProduct(), p.getNameSize(), p.getAmount()}));
+            table.setModel(newModel);
+
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     private void productSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_productSearchKeyReleased
         if (!btnDelete.isEnabled() || !BrandFilterCmb.isEnabled() || !CategoryFilterCmb.isEnabled() || !btnCleanField.isEnabled() && productSearch.getText().isEmpty()) {

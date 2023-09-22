@@ -1,10 +1,8 @@
 package com.mycompany.views;
 
 import com.mycompany.heycha.DAOClientsImpl;
-import com.mycompany.heycha.DAOProductsImpl;
 import com.mycompany.heycha.Dashboard;
 import com.mycompany.interfaces.DAOClients;
-import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.interfaces.Styleable;
 import java.awt.Color;
 import javax.swing.table.DefaultTableModel;

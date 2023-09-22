@@ -1,7 +1,11 @@
 package com.mycompany.views;
 
+import com.mycompany.heycha.DAOSalesImpl;
+import com.mycompany.heycha.Dashboard;
+import com.mycompany.interfaces.DAOSales;
 import com.mycompany.interfaces.Styleable;
 import java.awt.Color;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -9,16 +13,16 @@ import java.awt.Color;
  */
 public class ViewSales extends javax.swing.JPanel implements Styleable {
 
-    /**
-     * Creates new form Sales
-     */
-    public ViewSales(boolean darkModeEnabled) {
+    boolean lightOrDarkMode;
+
+    public ViewSales(boolean isDarkModeEnabled) {
         initComponents();
-        updateStyles(darkModeEnabled);
+        updateStyles(isDarkModeEnabled);
+        initStyles();
+        loadSales();
     }
 
-    @Override
-    public void updateStyles(boolean isDarkModeEnabled) {
+    private void initStyles() {
         title.putClientProperty("FlatLaf.styleClass", "h1");
         title.setForeground(Color.black);
         saleSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto vendido a buscar.");
@@ -26,11 +30,15 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
         title.putClientProperty("FlatLaf.styleClass", "h1");
 
         saleSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto a buscar.");
-        
+
         btnAdd.putClientProperty("JButton.buttonType", "roundRect");
         btnDelete.putClientProperty("JButton.buttonType", "roundRect");
         btnEdit.putClientProperty("JButton.buttonType", "roundRect");
+    }
 
+    @Override
+    public void updateStyles(boolean isDarkModeEnabled) {
+        lightOrDarkMode = isDarkModeEnabled;
         if (isDarkModeEnabled) {
             title.setForeground(Color.white);
             background_sales.putClientProperty("FlatLaf.style", "background: #172030");
@@ -48,6 +56,21 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
         }
     }
 
+    private void loadSales() {
+        DAOSales dao = new DAOSalesImpl();
+        DefaultTableModel model = (DefaultTableModel) JTableSales.getModel();
+        String nameToFind = "";
+        consultSales(dao, model, nameToFind);
+    }
+
+    private void consultSales(DAOSales dao, DefaultTableModel model, String nameToFind) {
+        try {
+            dao.consult(nameToFind).forEach((s) -> model.addRow(new Object[]{s.getId(), s.getProductName(), s.getProductId(), s.getClientName(), s.getProductPrice(), s.getQuantitySold(), s.getTotalMoneySold(), s.getDate()}));
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -62,7 +85,7 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
         saleSearch = new javax.swing.JTextField();
         btnSearch = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        JTableSales = new javax.swing.JTable();
         btnAdd = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
@@ -89,31 +112,34 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
 
         jScrollPane1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        JTableSales.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "ID Venta", "Nombre de Producto", "ID Producto", "Nombre de Cliente", "Precio Unitario", "Cantidad", "Total", "Fecha"
+                "ID Venta", "Nombre Producto", "ID Producto", "Nombre Cliente", "Precio", "Cantidad Vendida", "Total", "Fecha"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, true, true
+                false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        jTable1.setMinimumSize(new java.awt.Dimension(90, 0));
-        jTable1.setPreferredSize(new java.awt.Dimension(450, 0));
-        jTable1.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(jTable1);
+        JTableSales.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(JTableSales);
 
         btnAdd.setBackground(new java.awt.Color(21, 101, 192));
         btnAdd.setForeground(new java.awt.Color(255, 255, 255));
         btnAdd.setText("Agregar");
         btnAdd.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
 
         btnEdit.setBackground(new java.awt.Color(255, 183, 44));
         btnEdit.setForeground(new java.awt.Color(255, 255, 255));
@@ -188,15 +214,19 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnSearchActionPerformed
 
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+        Dashboard.ShowPanel(new UpSales(lightOrDarkMode));
+    }//GEN-LAST:event_btnAddActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable JTableSales;
     private javax.swing.JPanel background_sales;
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnSearch;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTextField saleSearch;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
