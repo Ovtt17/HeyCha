@@ -24,7 +24,6 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
 
     private void initStyles() {
         title.putClientProperty("FlatLaf.styleClass", "h1");
-        title.setForeground(Color.black);
         saleSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto vendido a buscar.");
 
         title.putClientProperty("FlatLaf.styleClass", "h1");

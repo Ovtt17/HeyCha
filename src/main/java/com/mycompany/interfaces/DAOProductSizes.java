@@ -8,6 +8,7 @@ public interface DAOProductSizes {
     public boolean modify (ModelProductSizes productSize) throws Exception;
     public void delete (int productId) throws Exception;
     public List<ModelProductSizes> consult(int productId) throws Exception;
+//    public ModelProductSizes consultBySize(int productId, String productName, String productSize) throws Exception;
     public List<ModelProductSizes> getProductSizesById(int productId) throws Exception;
     public void deleteIfZero (ModelProductSizes productSize) throws Exception;
 
