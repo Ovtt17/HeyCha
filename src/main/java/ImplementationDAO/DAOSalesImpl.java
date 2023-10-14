@@ -54,14 +54,15 @@ public class DAOSalesImpl extends Database implements DAOSales {
     @Override
     public void delete(int saleId) throws Exception {
         try (Connection con = this.getConnection()) {
-            String sql = "call deleteSale(?);";
+            String sql = "call deleteSales(?);";
             final PreparedStatement ps = con.prepareStatement(sql);
             try (ps) {
                 ps.setInt(1, saleId);
                 ps.execute();
             }
         } catch (SQLException e) {
-
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de insercion en la base de datos", e);
+            throw e;
         }
     }
 
@@ -114,7 +115,7 @@ public class DAOSalesImpl extends Database implements DAOSales {
         } catch (SQLException e) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de cargar los ComboBox en la base de datos", e);
             throw e;
-        } 
+        }
     }
 
     @Override

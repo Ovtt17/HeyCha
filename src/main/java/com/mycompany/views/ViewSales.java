@@ -1,16 +1,18 @@
 package com.mycompany.views;
 
-import ImplementationDAO.DAOProductsImpl;
 import ImplementationDAO.DAOProductsSizesImpl;
 import ImplementationDAO.DAOSalesImpl;
 import ImplementationDAO.DAOSalesProductsImpl;
 import com.mycompany.heycha.Dashboard;
 import com.mycompany.interfaces.DAOProductSizes;
-import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.interfaces.DAOSales;
 import com.mycompany.interfaces.DAOSalesProducts;
 import com.mycompany.interfaces.Styleable;
+import com.mycompany.models.ModelProductSizes;
+import com.mycompany.models.ModelSalesProducts;
 import java.awt.Color;
+import java.util.List;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -39,6 +41,9 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
         btnAdd.putClientProperty("JButton.buttonType", "roundRect");
         btnDelete.putClientProperty("JButton.buttonType", "roundRect");
         btnEdit.putClientProperty("JButton.buttonType", "roundRect");
+
+        btnDelete.setEnabled(true);
+        btnEdit.setEnabled(true);
     }
 
     @Override
@@ -64,13 +69,12 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
     private void loadSales() {
         DAOSalesImpl dao = new DAOSalesImpl();
         DefaultTableModel model = (DefaultTableModel) JTableSales.getModel();
-        try (dao){
+        try (dao) {
             dao.consult().forEach((s) -> model.addRow(new Object[]{s.getId(), s.getClientId(), s.getClientName(), s.getDate(), s.getQuantitySold(), s.getTotalMoneySold()}));
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -130,6 +134,11 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
             }
         });
         JTableSales.getTableHeader().setReorderingAllowed(false);
+        JTableSales.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                JTableSalesMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(JTableSales);
 
         btnAdd.setBackground(new java.awt.Color(21, 101, 192));
@@ -239,8 +248,6 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
 
         int confirmed = javax.swing.JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar estos datos? \n", "CONFIMARCIÓN", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
         if (confirmed == javax.swing.JOptionPane.YES_OPTION) {
-            DAOSales daoSale = new DAOSalesImpl();
-            DAOSalesProducts daoSalesDetails = new DAOSalesProductsImpl();
 
             int[] selectedRows = JTableSales.getSelectedRows();
             int continueDeleting;
@@ -251,12 +258,17 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
                         return;
                     }
                 }
-                
+
                 // TODO
                 try {
+                    DAOSales daoSale = new DAOSalesImpl();
+                    DAOSalesProducts daoSalesDetails = new DAOSalesProductsImpl();
+
                     int selectedRow = selectedRows[i];
+
                     daoSale.delete((int) JTableSales.getValueAt(selectedRow, 0));
                     daoSalesDetails.delete((int) JTableSales.getValueAt(selectedRow, 0));
+
                     model.removeRow(selectedRow);
                 } catch (Exception e) {
                     javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -267,6 +279,42 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
+    private void JTableSalesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTableSalesMouseClicked
+        if (evt.getClickCount() == 2) {
+            loadSalesProducts(JTableSales);
+            btnDelete.setEnabled(false);
+            btnEdit.setEnabled(false);
+        }
+    }//GEN-LAST:event_JTableSalesMouseClicked
+    private void loadSalesProducts(JTable table) {
+        List<ModelSalesProducts> salesProductsList = null;
+        try {
+
+            DAOSalesProducts dao = new DAOSalesProductsImpl();
+            if (table.getSelectedRow() < 0) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto para ver sus detalles. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            int selectedRows = table.getSelectedRow();
+            int productId = (int) table.getValueAt(selectedRows, 0);
+
+            DefaultTableModel newModel = new DefaultTableModel();
+            table.setDefaultEditor(Object.class, null);
+            newModel.addColumn("ID de venta");
+            newModel.addColumn("ID del producto");
+            newModel.addColumn("Nombre del producto");
+            newModel.addColumn("Precio Unidad");
+            newModel.addColumn("Cantidad");
+            newModel.addColumn("Subtotal");
+
+            salesProductsList = dao.consult(productId);
+            salesProductsList.forEach((p) -> newModel.addRow(new Object[]{p.getSaleId(), p.getProductId(), p.getProductName(), p.getPriceUnity(), p.getAmount(), p.getSubtotal()}));
+            table.setModel(newModel);
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable JTableSales;

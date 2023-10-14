@@ -83,11 +83,13 @@
                   <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
                   <Component id="title" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="BtnAddProduct" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
-                      <Component id="BtnDeleteProduct" alignment="3" min="-2" pref="34" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="clientLbl" alignment="1" min="-2" pref="28" max="-2" attributes="0"/>
-                      <Component id="clientsCmb" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="BtnAddProduct" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
+                          <Component id="BtnDeleteProduct" alignment="3" min="-2" pref="34" max="-2" attributes="0"/>
+                          <Component id="clientsCmb" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                   <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                   <Component id="jScrollPane1" pref="191" max="32767" attributes="0"/>

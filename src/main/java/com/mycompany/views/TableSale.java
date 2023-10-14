@@ -48,8 +48,12 @@ public class TableSale extends javax.swing.JDialog {
                 modelProduct.addRow(new Object[]{p.getId(), p.getName(), p.getBrand(), p.getCategory(), p.getSizeAvailable(), p.getTotalExistence(), p.getPrice()});
                 
             });
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        try {
+            DAOProducts dao = new DAOProductsImpl();
             dao.loadFilterCmb(BrandFilterCmb, CategoryFilterCmb);
-
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }

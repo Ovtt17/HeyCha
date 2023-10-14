@@ -339,39 +339,17 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
     private void jTableProductsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableProductsMouseClicked
         if (evt.getClickCount() == 2) {
-            loadProductSize(jTableProducts);
-            btnDelete.setEnabled(false);
-            btnCleanField.setEnabled(false);
-            BrandFilterCmb.setEnabled(false);
-            CategoryFilterCmb.setEnabled(false);
-            productSearch.setText("");
+            DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
+            if (model.getColumnCount() > 4) {
+                loadProductSize(jTableProducts);
+                btnDelete.setEnabled(false);
+                btnCleanField.setEnabled(false);
+                BrandFilterCmb.setEnabled(false);
+                CategoryFilterCmb.setEnabled(false);
+                productSearch.setText("");
+            }
         }
     }//GEN-LAST:event_jTableProductsMouseClicked
-//    public void loadProductsDialog(JTable table) {
-//        try {
-//            DAOProducts dao = new DAOProductsImpl();
-//            if (table.getSelectedRow() < 0) {
-//                javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto para ver sus detalles. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-//                return;
-//            }
-//
-//            int selectedRows = table.getSelectedRow();
-//            String productName = (String) table.getValueAt(selectedRows, 1);
-//
-//            DefaultTableModel newModel = new DefaultTableModel();
-//            table.setDefaultEditor(Object.class, null);
-//            newModel.addColumn("ID del producto");
-//            newModel.addColumn("Nombre del producto");
-//            newModel.addColumn("Precio");
-//            newModel.addColumn("Talla");
-//            newModel.addColumn("Cantidad");
-//
-//            dao.consult(productName, "NINGUNO", "NINGUNO").forEach((p) -> newModel.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getSizeSelected(), p.getAmountSelected()}));
-//            table.setModel(newModel);
-//        } catch (Exception e) {
-//            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
 
     public void loadProductSize(JTable table) {
         List<ModelProductSizes> productSizeList = null;

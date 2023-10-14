@@ -2,15 +2,27 @@ package com.mycompany.models;
 
 public class ModelSalesProducts {
     private Integer id;
-    private Integer idSale;
-    private Integer idProduct;
+    private Integer saleId;
+    private Integer productId;
+    private String productName;
     private Float priceUnity;
     private int amount;
     private Float subtotal;
 
-    public ModelSalesProducts(Integer idSale, Integer idProduct, Float priceUnity, int amount, Float subtotal) {
-        this.idSale = idSale;
-        this.idProduct = idProduct;
+    //constructor to insert
+    public ModelSalesProducts(Integer saleId, Integer productId, Float priceUnity, int amount, Float subtotal) {
+        this.saleId = saleId;
+        this.productId = productId;
+        this.priceUnity = priceUnity;
+        this.amount = amount;
+        this.subtotal = subtotal;
+    }
+    
+    //constructor to consult
+    public ModelSalesProducts(Integer saleId, Integer productId, String productName, Float priceUnity, int amount, Float subtotal) {
+        this.saleId = saleId;
+        this.productId = productId;
+        this.productName = productName;
         this.priceUnity = priceUnity;
         this.amount = amount;
         this.subtotal = subtotal;
@@ -21,12 +33,12 @@ public class ModelSalesProducts {
         return id;
     }
 
-    public Integer getIdSale() {
-        return idSale;
+    public Integer getSaleId() {
+        return saleId;
     }
 
-    public Integer getIdProduct() {
-        return idProduct;
+    public Integer getProductId() {
+        return productId;
     }
 
     public int getAmount() {
@@ -39,6 +51,10 @@ public class ModelSalesProducts {
 
     public Float getSubtotal() {
         return subtotal;
+    }
+
+    public String getProductName() {
+        return productName;
     }
     
 }

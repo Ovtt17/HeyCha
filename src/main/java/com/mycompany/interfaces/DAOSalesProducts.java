@@ -8,6 +8,6 @@ public interface DAOSalesProducts {
     public void record (ModelSalesProducts sale) throws Exception;
     public void modify (ModelSalesProducts sale) throws Exception;
     public void delete (int saleId) throws Exception;
-    public List<ModelSalesProducts> consult(String name) throws Exception;
+    public List<ModelSalesProducts> consult(int saleId) throws Exception;
     public ModelSalesProducts getSaleById(int saleId) throws Exception;
 }

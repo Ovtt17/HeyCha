@@ -64,7 +64,7 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
     @Override
     public void delete(int productId) throws Exception {
         try {
-            String query = "DELETE FROM PRODUCTOS_TALLAS WHERE ID_PRODUCTO = ?;";
+            String query = "deleteProductSize(?);";
             final PreparedStatement pst = this.getConnection().prepareStatement(query);
             try (pst) {
                 pst.setInt(1, productId);
@@ -84,7 +84,7 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
                     + "from productos_tallas pt \n"
                     + "inner join productos p on p.ID = pt.ID_Producto\n"
                     + "inner join tallas t on t.id = pt.ID_Talla\n"
-                    + "where pt.ID_Producto = ?\n"
+                    + "where pt.ID_Producto = ? and pt.is_deleted = 0\n"
                     + "order by p.nombre, pt.ID_Producto desc;";
             final PreparedStatement st = this.getConnection().prepareStatement(query);
             try (st) {
