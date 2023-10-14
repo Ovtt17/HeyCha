@@ -4,6 +4,7 @@ import com.mycompany.db.Database;
 import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.models.ModelProductSizes;
 import com.mycompany.models.ModelProducts;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,33 +12,36 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JComboBox;
 
 public class DAOProductsImpl extends Database implements DAOProducts {
 
     @Override
     public void record(ModelProducts product, ModelProductSizes pSizes) throws Exception {
-        try {
-            this.connectDB();
+        try (Connection con = this.getConnection()) {
             String query = "call insertProduct(?,?,?,?,?,?,?);";
-            PreparedStatement st = this.connection.prepareStatement(query);
-            setProductFields(st, product);
-            // Ejecuta la sentencia SQL
-            st.executeUpdate();
-            ResultSet rs = st.getResultSet();
-            if (rs.next()) {
-                //haciendo una consulta dentro del procedure para obtener el ultimo id insertado
-                int idProducto = rs.getInt("idProduct");
-                pSizes.setIdProduct(idProducto);
+            final PreparedStatement st = con.prepareStatement(query);
+            try (st) {
+                setProductFields(st, product);
+                // Ejecuta la sentencia SQL
+                st.executeUpdate();
+                final ResultSet rs = st.getResultSet();
+                try (rs) {
+                    if (rs.next()) {
+                        //haciendo una consulta dentro del procedure para obtener el ultimo id insertado
+                        int idProducto = rs.getInt("idProduct");
+                        pSizes.setIdProduct(idProducto);
+                    }
+                }
             }
-            st.close();
-            rs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de insercion en la base de datos", e);
             throw e;
-        } finally {
-            this.closeDB();
         }
     }
+
     private void setProductFields(PreparedStatement st, ModelProducts product) throws SQLException {
         // Asigna los valores para los parámetros de la sentencia SQL
         st.setString(1, product.getName()); // Reemplaza con el método adecuado para obtener el nombre
@@ -65,68 +69,65 @@ public class DAOProductsImpl extends Database implements DAOProducts {
 
     @Override
     public void modify(ModelProducts product, ModelProductSizes pSizes) throws Exception {
-        try {
-            this.connectDB();
-            PreparedStatement st = this.connection.prepareStatement("call modifyProduct(?, ?, ?, ?, ?, ?, ?, ?);");
-            setProductFields(st, product);
-            st.setInt(8, product.getId());
-            st.executeUpdate();
-            st.close();
-            pSizes.setIdProduct(product.getId());
-        } catch (Exception e) {
+        try (Connection con = this.getConnection()) {
+            final PreparedStatement st = con.prepareStatement("call modifyProduct(?, ?, ?, ?, ?, ?, ?, ?);");
+            try (st) {
+                setProductFields(st, product);
+                st.setInt(8, product.getId());
+                st.executeUpdate();
+                pSizes.setIdProduct(product.getId());
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de modificacion en la base de datos", e);
             throw e;
-        } finally {
-            this.closeDB();
         }
     }
 
     @Override
     public void delete(int productId) throws Exception {
-        try {
-            this.connectDB();
+        try (Connection con = this.getConnection()) {
             String deleteProduct = "call deleteProduct(?);";
-            PreparedStatement pst = this.connection.prepareStatement(deleteProduct);
+            final PreparedStatement pst = con.prepareStatement(deleteProduct);
+            try (pst) {
+                pst.setInt(1, productId);
+                pst.executeUpdate();
+            }
 
             String sqlResetId = "ALTER TABLE PRODUCTOS AUTO_INCREMENT = ?;";
-            PreparedStatement pstAutoIncrement = this.connection.prepareStatement(sqlResetId);
-            pst.setInt(1, productId);
-            pstAutoIncrement.setInt(1, productId);
+            final PreparedStatement pstAutoIncrement = this.getConnection().prepareStatement(sqlResetId);
+            try (pstAutoIncrement) {
+                pstAutoIncrement.setInt(1, productId);
+                pstAutoIncrement.executeUpdate();
+            }
 
-            pst.executeUpdate();
-            pstAutoIncrement.executeUpdate();
-            pst.close();
-            pstAutoIncrement.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de eliminacion en la base de datos", e);
             throw e;
-        } finally {
-            this.closeDB();
         }
     }
 
     @Override
     public List<ModelProducts> consult(String name, String brand, String category) throws Exception {
         List<ModelProducts> list = null;
-        
-        try {
-            this.connectDB();
+        try (Connection con = this.getConnection()) {
             String query = "call consultProducts(?, ?, ?);";
-            PreparedStatement st = this.connection.prepareStatement(query);
-            st.setString(1, name);
-            st.setString(2, brand);
-            st.setString(3, category);
-            list = new ArrayList();
-            ResultSet rs = st.executeQuery();
-
-            while (rs.next()) {
-                ModelProducts product = setProductFieldsToConsult(rs);
-                list.add(product);
+            PreparedStatement st = con.prepareStatement(query);
+            try (st) {
+                st.setString(1, name);
+                st.setString(2, brand);
+                st.setString(3, category);
+                list = new ArrayList();
+                final ResultSet rs = st.executeQuery();
+                try (rs) {
+                    while (rs.next()) {
+                        ModelProducts product = setProductFieldsToConsult(rs);
+                        list.add(product);
+                    }
+                }
             }
-            rs.close();
-            st.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de consulta en la base de datos", e);
             throw e;
-        } finally {
-            this.closeDB();
         }
         return list;
     }
@@ -138,40 +139,41 @@ public class DAOProductsImpl extends Database implements DAOProducts {
         // hacer estas validaciones para evitar que muestre datos que no ordene
         String description = rs.getString("DESCRIPCION");
         description = rs.wasNull() ? null : description;
-        
+
         Integer discount = rs.getInt("DESCUENTO");
         discount = rs.wasNull() ? null : discount;
         String brand = rs.getString("NOMBRE_MARCA");
         String category = rs.getString("NOMBRE_CATEGORIA");
         String type = rs.getString("NOMBRE_TIPO");
         type = rs.wasNull() ? null : type;
-        
+
         String brandAvailable = rs.getString("TALLAS_DISPONIBLES");
         Integer totalExistence = rs.getInt("TOTAL_EXISTENCIA");
         Float totalPrice = rs.getFloat("VALOR_TOTAL");
-        
+
         return new ModelProducts(id, name, price, description, discount, brand, category, type, brandAvailable, totalExistence, totalPrice);
-        
+
     }
 
     @Override
     public ModelProducts getProductById(int productId) throws Exception {
         ModelProducts product = null;
 
-        try {
-            this.connectDB();
+        try (Connection con = this.getConnection()) {
             String query = "call consultByProductId(?);";
-            PreparedStatement st = this.connection.prepareStatement(query);
-            st.setInt(1, productId);
-            ResultSet rs = st.executeQuery();
-
-            while (rs.next()) {
-                product = setProductFieldsToConsult(rs);
+            final PreparedStatement st = con.prepareStatement(query);
+            try (st) {
+                st.setInt(1, productId);
+                final ResultSet rs = st.executeQuery();
+                try (rs) {
+                    while (rs.next()) {
+                        product = setProductFieldsToConsult(rs);
+                    }
+                }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación obtener producto por id en la base de datos", e);
             throw e;
-        } finally {
-            this.closeDB();
         }
         return product;
     }
@@ -179,53 +181,48 @@ public class DAOProductsImpl extends Database implements DAOProducts {
     @Override
     public void loadCmb(JComboBox<String> brandCmb, JComboBox<String> categoryCmb, JComboBox<String> typeCmb) throws Exception {
 
-        try {
-            this.connectDB();
+        try (Connection con = this.getConnection()) {
             String queryBrand = "select nombre from marcas;";
             String queryCategory = "select nombre from categorias;";
             String queryType = "select nombre from tipo;";
-            fillComboBox(brandCmb, queryBrand);
+            fillComboBox(con, brandCmb, queryBrand);
             brandCmb.setSelectedIndex(-1);
-            fillComboBox(categoryCmb, queryCategory);
+            fillComboBox(con, categoryCmb, queryCategory);
             categoryCmb.setSelectedIndex(-1);
-            fillComboBox(typeCmb, queryType);
+            fillComboBox(con, typeCmb, queryType);
             typeCmb.setSelectedIndex(-1);
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de cargar los ComboBox de agregar o modificar en la base de datos", e);
             throw e;
-        } finally {
-            this.closeDB();
         }
     }
 
     @Override
-    public void fillComboBox(JComboBox<String> comboBox, String query) throws SQLException {
-        Statement statement = this.connection.createStatement();
-        statement.execute(query);
-        ResultSet resultSet = statement.getResultSet();
-
-        while (resultSet.next()) {
-            comboBox.addItem(resultSet.getString(1));
+    public void fillComboBox(Connection con, JComboBox<String> comboBox, String query) throws SQLException {
+        final Statement statement = con.createStatement();
+        try (statement) {
+            statement.execute(query);
+            final ResultSet resultSet = statement.getResultSet();
+            try (resultSet) {
+                while (resultSet.next()) {
+                    comboBox.addItem(resultSet.getString(1));
+                }
+                comboBox.setSelectedIndex(0);
+            }
         }
 
-        statement.close();
-        resultSet.close();
-        comboBox.setSelectedIndex(0);
     }
 
     @Override
     public void loadFilterCmb(JComboBox<String> BrandFilterCmb, JComboBox<String> CategoryFilterCmb) throws Exception {
-        try {
-            this.connectDB();
+        try (Connection con = this.getConnection()) {
             String queryBrand = "select nombre from marcas;";
             String queryCategory = "select nombre from categorias;";
-
-            fillComboBox(BrandFilterCmb, queryBrand);
-            fillComboBox(CategoryFilterCmb, queryCategory);
-
-        } catch (Exception e) {
+            fillComboBox(con, BrandFilterCmb, queryBrand);
+            fillComboBox(con, CategoryFilterCmb, queryCategory);
+        } catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de cargar los ComboBox de los filtros en la base de datos", e);
             throw e;
-        } finally {
-            this.closeDB();
         }
     }
 

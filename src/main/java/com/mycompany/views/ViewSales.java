@@ -1,8 +1,14 @@
 package com.mycompany.views;
 
+import ImplementationDAO.DAOProductsImpl;
+import ImplementationDAO.DAOProductsSizesImpl;
 import ImplementationDAO.DAOSalesImpl;
+import ImplementationDAO.DAOSalesProductsImpl;
 import com.mycompany.heycha.Dashboard;
+import com.mycompany.interfaces.DAOProductSizes;
+import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.interfaces.DAOSales;
+import com.mycompany.interfaces.DAOSalesProducts;
 import com.mycompany.interfaces.Styleable;
 import java.awt.Color;
 import javax.swing.table.DefaultTableModel;
@@ -56,18 +62,15 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
     }
 
     private void loadSales() {
-        DAOSales dao = new DAOSalesImpl();
+        DAOSalesImpl dao = new DAOSalesImpl();
         DefaultTableModel model = (DefaultTableModel) JTableSales.getModel();
-        consultSales(dao, model);
-    }
-
-    private void consultSales(DAOSales dao, DefaultTableModel model) {
-        try {
+        try (dao){
             dao.consult().forEach((s) -> model.addRow(new Object[]{s.getId(), s.getClientId(), s.getClientName(), s.getDate(), s.getQuantitySold(), s.getTotalMoneySold()}));
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -148,6 +151,11 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
         btnDelete.setForeground(new java.awt.Color(255, 255, 255));
         btnDelete.setText("Eliminar");
         btnDelete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout background_salesLayout = new javax.swing.GroupLayout(background_sales);
         background_sales.setLayout(background_salesLayout);
@@ -215,6 +223,49 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         Dashboard.ShowPanel(new UpSales(lightOrDarkMode));
     }//GEN-LAST:event_btnAddActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        DefaultTableModel model = (DefaultTableModel) JTableSales.getModel();
+
+        int rows = model.getRowCount();
+        if (rows == 0) {
+            javax.swing.JOptionPane.showMessageDialog(this, "No hay venta para eliminar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            btnAdd.requestFocus();
+            return;
+        } else if (JTableSales.getSelectedRows().length < 1) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar una o más ventas para borrar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        int confirmed = javax.swing.JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar estos datos? \n", "CONFIMARCIÓN", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
+        if (confirmed == javax.swing.JOptionPane.YES_OPTION) {
+            DAOSales daoSale = new DAOSalesImpl();
+            DAOSalesProducts daoSalesDetails = new DAOSalesProductsImpl();
+
+            int[] selectedRows = JTableSales.getSelectedRows();
+            int continueDeleting;
+            for (int i = selectedRows.length - 1; i >= 0; i--) {
+                if (i == selectedRows.length - 4) {
+                    continueDeleting = javax.swing.JOptionPane.showConfirmDialog(this, "¿Has eliminado 3 productos, deseas continuar eliminando el resto?\n", "CONFIMARCIÓN", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
+                    if (continueDeleting == javax.swing.JOptionPane.NO_OPTION) {
+                        return;
+                    }
+                }
+                
+                // TODO
+                try {
+                    int selectedRow = selectedRows[i];
+                    daoSale.delete((int) JTableSales.getValueAt(selectedRow, 0));
+                    daoSalesDetails.delete((int) JTableSales.getValueAt(selectedRow, 0));
+                    model.removeRow(selectedRow);
+                } catch (Exception e) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
+            javax.swing.JOptionPane.showMessageDialog(this, "Los datos se han eliminado correctamente. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -1,5 +1,6 @@
 package com.mycompany.interfaces;
 
+import com.mycompany.db.Database;
 import com.mycompany.models.ModelClients;
 import java.util.List;
 import javax.swing.JComboBox;

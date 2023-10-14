@@ -16,7 +16,6 @@ import java.util.Objects;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
-import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 public class UpSales extends javax.swing.JPanel implements Styleable {
 
@@ -80,6 +79,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
         try {
             newModel.setRowCount(0);
             totalPayment = 0f;
+            totalQuantity = 0;
             products.stream()
                     .filter(Objects::nonNull)
                     .forEach(p -> {
@@ -116,8 +116,14 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
         newModel.addColumn("Cantidad");
         newModel.addColumn("Precio Unitario");
         newModel.addColumn("Precio Total");
-        
-        AutoCompleteDecorator.decorate(clientsCmb);
+
+        try {
+            DAOSales dao = new DAOSalesImpl();
+            dao.loadClientsCmb(clientsCmb);
+
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -142,6 +148,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
         clientsCmb = new javax.swing.JComboBox<>();
 
         bg.setBackground(new java.awt.Color(255, 255, 255));
+        bg.setPreferredSize(new java.awt.Dimension(764, 436));
 
         title.setText("Subir Nueva Venta.");
 
@@ -197,36 +204,34 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
         bg.setLayout(bgLayout);
         bgLayout.setHorizontalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(bgLayout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(646, 646, 646))
-            .addGroup(bgLayout.createSequentialGroup()
-                .addGap(181, 181, 181)
-                .addComponent(btnDataUpdate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(185, 185, 185))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bgLayout.createSequentialGroup()
-                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(368, 486, Short.MAX_VALUE)
+                .addComponent(TotalLbl)
+                .addGap(37, 37, 37)
+                .addComponent(totalValueTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(147, 147, 147))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bgLayout.createSequentialGroup()
+                .addGap(90, 90, 90)
+                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(bgLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(TotalLbl)
-                        .addGap(37, 37, 37)
-                        .addComponent(totalValueTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(clientLbl)
+                        .addGap(18, 18, 18)
+                        .addComponent(clientsCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(69, 69, 69)
+                        .addComponent(BtnAddProduct)
+                        .addGap(18, 18, 18)
+                        .addComponent(BtnDeleteProduct))
+                    .addComponent(jScrollPane1))
+                .addGap(100, 100, 100))
+            .addGroup(bgLayout.createSequentialGroup()
+                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(bgLayout.createSequentialGroup()
-                        .addGap(57, 57, 57)
-                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(bgLayout.createSequentialGroup()
-                                .addComponent(clientLbl)
-                                .addGap(18, 18, 18)
-                                .addComponent(clientsCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(130, 130, 130)
-                                .addComponent(BtnAddProduct)
-                                .addGap(18, 18, 18)
-                                .addComponent(BtnDeleteProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(bgLayout.createSequentialGroup()
-                                .addComponent(jScrollPane1)
-                                .addGap(1, 1, 1)))))
-                .addGap(46, 46, 46))
+                        .addGap(18, 18, 18)
+                        .addComponent(title))
+                    .addGroup(bgLayout.createSequentialGroup()
+                        .addGap(165, 165, 165)
+                        .addComponent(btnDataUpdate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(201, 201, 201))
         );
         bgLayout.setVerticalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -240,14 +245,14 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
                     .addComponent(clientLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(clientsCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(TotalLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(totalValueTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(42, 42, 42)
+                .addGap(37, 37, 37)
                 .addComponent(btnDataUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(22, 22, 22))
+                .addGap(27, 27, 27))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -258,12 +263,14 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(bg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnDataUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDataUpdateActionPerformed
-        Integer clientId = null;
+        Integer clientId = clientsCmb.getSelectedIndex();
+        System.out.println(clientId);
+
         LocalDate date = LocalDate.now();
         Integer totalQuantitySold = totalQuantity;
         Float total = totalPayment;
@@ -289,11 +296,20 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
                             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
                         }
                     });
+            javax.swing.JOptionPane.showMessageDialog(this, "Datos guardado correctamente. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            emptyFields();
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnDataUpdateActionPerformed
-
+    private void emptyFields() {
+        clientsCmb.setSelectedIndex(0);
+        newModel.setRowCount(0);
+        totalValueTxt.setText("");
+        totalPayment = 0f;
+        totalQuantity = 0;
+        products.clear();
+    }
 
     private void BtnAddProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnAddProductActionPerformed
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
@@ -319,4 +335,5 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
     private javax.swing.JLabel title;
     private javax.swing.JTextField totalValueTxt;
     // End of variables declaration//GEN-END:variables
+
 }

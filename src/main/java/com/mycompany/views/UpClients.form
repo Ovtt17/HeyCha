@@ -47,7 +47,7 @@
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
-                                  <Component id="cellphoneLbl" max="32767" attributes="0"/>
+                                  <Component id="cellphoneLbl" pref="128" max="32767" attributes="0"/>
                                   <EmptySpace min="-2" pref="380" max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
@@ -68,7 +68,7 @@
                               <Component id="cellphoneTxt" alignment="0" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
-                          <Component id="DataUpdateBtn" max="32767" attributes="0"/>
+                          <Component id="DataUpdateBtn" pref="154" max="32767" attributes="0"/>
                           <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" attributes="0">

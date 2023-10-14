@@ -4,13 +4,15 @@ import com.mycompany.db.Database;
 import com.mycompany.interfaces.DAOSales;
 import com.mycompany.models.ModelSales;
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JComboBox;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
@@ -19,21 +21,19 @@ public class DAOSalesImpl extends Database implements DAOSales {
     @Override
     public Integer record(ModelSales sale) throws Exception {
         Integer idSale = null;
-        try {
-            this.connectDB();
+        try (Connection con = this.getConnection()) {
             String query = "{call insertSale(?, ?, ?, ?, ?)}";
-            CallableStatement cst = this.connection.prepareCall(query);
-            cst.registerOutParameter(1, java.sql.Types.INTEGER);  // Registrar el primer parámetro como OUT
-            setSalesFieldsToInsert(cst, sale);
-            cst.execute();
+            final CallableStatement cst = con.prepareCall(query);
+            try (cst) {
+                cst.registerOutParameter(1, java.sql.Types.INTEGER);  // Registrar el primer parámetro como OUT
+                setSalesFieldsToInsert(cst, sale);
+                cst.execute();
 
-            idSale = cst.getInt(1);  // Obtener el valor del primer parámetro
-
-            cst.close();
-        } catch (Exception e) {
+                idSale = cst.getInt(1);  // Obtener el valor del primer parámetro
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de insercion en la base de datos", e);
             throw e;
-        } finally {
-            this.closeDB();
         }
         return idSale;
     }
@@ -53,29 +53,38 @@ public class DAOSalesImpl extends Database implements DAOSales {
 
     @Override
     public void delete(int saleId) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try (Connection con = this.getConnection()) {
+            String sql = "call deleteSale(?);";
+            final PreparedStatement ps = con.prepareStatement(sql);
+            try (ps) {
+                ps.setInt(1, saleId);
+                ps.execute();
+            }
+        } catch (SQLException e) {
+
+        }
     }
 
     @Override
     public List<ModelSales> consult() throws Exception {
         List<ModelSales> list = null;
-        try {
-            this.connectDB();
+        try (Connection con = this.getConnection()) {
             String query = "call consultSales();";
-            PreparedStatement pst = this.connection.prepareStatement(query);
+            final PreparedStatement pst = con.prepareStatement(query);
+            try (pst) {
+                list = new ArrayList();
+                final ResultSet rs = pst.executeQuery();
+                try (rs) {
+                    while (rs.next()) {
+                        ModelSales sale = setSalesFieldsToConsult(rs);
+                        list.add(sale);
+                    }
+                }
 
-            list = new ArrayList();
-            ResultSet rs = pst.executeQuery();
-            while (rs.next()) {
-                ModelSales sale = setSalesFieldsToConsult(rs);
-                list.add(sale);
             }
-            pst.close();
-            rs.close();
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de consulta en la base de datos", e);
             throw e;
-        } finally {
-            this.closeDB();
         }
         return list;
     }
@@ -98,31 +107,29 @@ public class DAOSalesImpl extends Database implements DAOSales {
     }
 
     @Override
-    public void loadCmb(JComboBox<String> cmbProductsName, JComboBox<String> cmbClientsName) throws Exception {
-        try {
-            this.connectDB();
-            String queryProductsName = "select nombre from productos order by id;";
-            String queryClientName = "select nombre from clientes order by id;";
-            fillComboBox(cmbProductsName, queryProductsName);
-            fillComboBox(cmbClientsName, queryClientName);
-        } catch (Exception e) {
+    public void loadClientsCmb(JComboBox<String> cmbClients) throws Exception {
+        try (Connection con = this.getConnection()) {
+            String queryClientsName = "select nombre from clientes order by id;";
+            fillComboBox(con, cmbClients, queryClientsName);
+        } catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de cargar los ComboBox en la base de datos", e);
             throw e;
-        } finally {
-            this.closeDB();
-        }
+        } 
     }
 
     @Override
-    public void fillComboBox(JComboBox<String> comboBox, String query) throws SQLException {
-        PreparedStatement pst = this.connection.prepareStatement(query);
-        ResultSet rs = pst.executeQuery();
-        while (rs.next()) {
-            comboBox.addItem(rs.getString(1));
+    public void fillComboBox(Connection con, JComboBox<String> comboBox, String query) throws SQLException {
+        final PreparedStatement pst = con.prepareStatement(query);
+        try (pst) {
+            final ResultSet rs = pst.executeQuery();
+            try (rs) {
+                while (rs.next()) {
+                    comboBox.addItem(rs.getString(1));
+                }
+            }
+            comboBox.setSelectedIndex(-1);
+            AutoCompleteDecorator.decorate(comboBox);
         }
-        pst.close();
-        rs.close();
-        comboBox.setSelectedIndex(-1);
-        AutoCompleteDecorator.decorate(comboBox);
     }
 
 }

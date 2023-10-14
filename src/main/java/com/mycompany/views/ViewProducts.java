@@ -21,7 +21,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     public ViewProducts(boolean isDarkModeEnabled) {
         initComponents();
         updateStyles(isDarkModeEnabled);
-        ViewProducts.this.loadProducts();
+        loadProducts();
     }
 
     public ViewProducts() {
@@ -64,14 +64,20 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     }
 
     private void loadProducts() {
-        DAOProducts dao = new DAOProductsImpl();
+
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
         String nameToFind = "";
         String brandSelected = "NINGUNO";
         String categorySelected = "NINGUNO";
         try {
+            DAOProducts dao = new DAOProductsImpl();
             products = dao.consult(nameToFind, brandSelected, categorySelected);
             products.forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrand(), p.getCategory(), p.getType(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice(), p.getDescription()}));
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        try {
+            DAOProducts dao = new DAOProductsImpl();
             dao.loadFilterCmb(BrandFilterCmb, CategoryFilterCmb);
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -370,7 +376,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     public void loadProductSize(JTable table) {
         List<ModelProductSizes> productSizeList = null;
         try {
-            
+
             DAOProductSizes dao = new DAOProductsSizesImpl();
             if (table.getSelectedRow() < 0) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto para ver sus detalles. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
@@ -390,7 +396,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             productSizeList = dao.consult(productId);
             productSizeList.forEach((p) -> newModel.addRow(new Object[]{p.getIdProduct(), p.getNameProduct(), p.getNameSize(), p.getAmount()}));
             table.setModel(newModel);
-            
+
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }

@@ -3,6 +3,7 @@ package com.mycompany.interfaces;
 import com.mycompany.db.Database;
 import com.mycompany.models.ModelProductSizes;
 import com.mycompany.models.ModelProducts;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -25,6 +26,6 @@ public interface DAOProducts {
      */
     public void loadCmb(JComboBox<String> brandCmb, JComboBox<String> categoryCmb, JComboBox<String> typeCmb) throws Exception;
     public void loadFilterCmb(JComboBox<String> BrandFilterCmb, JComboBox<String> CategoryFilterCmb) throws Exception;
-    public void fillComboBox(JComboBox<String> comboBox, String query) throws SQLException;
+    public void fillComboBox(Connection con, JComboBox<String> comboBox, String query) throws SQLException;
 
 }
