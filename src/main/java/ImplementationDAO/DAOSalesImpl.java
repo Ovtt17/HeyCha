@@ -1,14 +1,15 @@
-package com.mycompany.heycha;
+package ImplementationDAO;
 
 import com.mycompany.db.Database;
 import com.mycompany.interfaces.DAOSales;
 import com.mycompany.models.ModelSales;
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.swing.JComboBox;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
@@ -16,22 +17,33 @@ import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 public class DAOSalesImpl extends Database implements DAOSales {
 
     @Override
-    public void record(ModelSales sale) throws Exception {
+    public Integer record(ModelSales sale) throws Exception {
+        Integer idSale = null;
         try {
             this.connectDB();
-            String query = "call insertSale(?,?,?,?);";
-            PreparedStatement pst = this.connection.prepareStatement(query);
-            setSalesFieldsToInsert(pst, sale);
+            String query = "{call insertSale(?, ?, ?, ?, ?)}";
+            CallableStatement cst = this.connection.prepareCall(query);
+            cst.registerOutParameter(1, java.sql.Types.INTEGER);  // Registrar el primer parámetro como OUT
+            setSalesFieldsToInsert(cst, sale);
+            cst.execute();
+
+            idSale = cst.getInt(1);  // Obtener el valor del primer parámetro
+
+            cst.close();
         } catch (Exception e) {
+            throw e;
         } finally {
+            this.closeDB();
         }
+        return idSale;
     }
 
-    private void setSalesFieldsToInsert(PreparedStatement pst, ModelSales sale) throws SQLException {
-        pst.setInt(1, sale.getProductId());
-        pst.setInt(2, sale.getClientId());
-        pst.setInt(3, sale.getQuantitySold());
-        LocalDate date = LocalDate.now();
+    private void setSalesFieldsToInsert(CallableStatement cst, ModelSales sale) throws SQLException {
+        cst.setInt(2, sale.getClientId() != null ? sale.getClientId() : 0);
+        cst.setDate(3, java.sql.Date.valueOf(sale.getDate()));
+        cst.setInt(4, sale.getQuantitySold());
+        cst.setFloat(5, sale.getTotalMoneySold());
+
     }
 
     @Override
@@ -45,18 +57,17 @@ public class DAOSalesImpl extends Database implements DAOSales {
     }
 
     @Override
-    public List<ModelSales> consult(String name) throws Exception {
+    public List<ModelSales> consult() throws Exception {
         List<ModelSales> list = null;
         try {
             this.connectDB();
-            String query = "call consultSales(?);";
+            String query = "call consultSales();";
             PreparedStatement pst = this.connection.prepareStatement(query);
-            pst.setString(1, name);
+
             list = new ArrayList();
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
-                ModelSales sale = new ModelSales();
-                setSalesFieldsToConsult(rs, sale);
+                ModelSales sale = setSalesFieldsToConsult(rs);
                 list.add(sale);
             }
             pst.close();
@@ -69,15 +80,16 @@ public class DAOSalesImpl extends Database implements DAOSales {
         return list;
     }
 
-    private void setSalesFieldsToConsult(ResultSet rs, ModelSales sale) throws SQLException {
-        sale.setId(rs.getInt("ID_VENTA"));
-        sale.setProductName(rs.getString("NOMBRE_PRODUCTO"));
-        sale.setProductId(rs.getInt("ID_PRODUCTO"));
-        sale.setClientName(rs.getString("NOMBRE_CLIENTE"));
-        sale.setProductPrice(rs.getFloat("PRECIO"));
-        sale.setQuantitySold(rs.getInt("CANTIDAD_VENDIDA"));
-        sale.setTotalMoneySold(rs.getFloat("TOTAL"));
-        sale.setDate(rs.getObject("FECHA", LocalDate.class));
+    private ModelSales setSalesFieldsToConsult(ResultSet rs) throws SQLException {
+        Integer saleId = rs.getInt("ID_VENTA");
+        Integer clientId = rs.getInt("ID_CLIENTE");
+        String clientName = rs.getString("NOMBRE_CLIENTE");
+        LocalDate date = rs.getObject("FECHA", LocalDate.class);
+        Integer quantitySold = rs.getInt("CANTIDAD_VENDIDA");
+        Float totalMoneySold = rs.getFloat("TOTAL");
+
+        return new ModelSales(saleId, clientId, clientName, quantitySold, totalMoneySold, date);
+
     }
 
     @Override
@@ -104,7 +116,7 @@ public class DAOSalesImpl extends Database implements DAOSales {
     public void fillComboBox(JComboBox<String> comboBox, String query) throws SQLException {
         PreparedStatement pst = this.connection.prepareStatement(query);
         ResultSet rs = pst.executeQuery();
-        while(rs.next()){
+        while (rs.next()) {
             comboBox.addItem(rs.getString(1));
         }
         pst.close();

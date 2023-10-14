@@ -1,9 +1,9 @@
 package com.mycompany.views;
 
-import com.mycompany.heycha.DAOProductsImpl;
+import ImplementationDAO.DAOProductsImpl;
 import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.models.ModelProducts;
-import com.mycompany.heycha.DAOProductsSizesImpl;
+import ImplementationDAO.DAOProductsSizesImpl;
 import com.mycompany.interfaces.DAOProductSizes;
 import com.mycompany.interfaces.Styleable;
 import com.mycompany.models.ModelProductSizes;
@@ -430,15 +430,7 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
             return;
         }
 
-        ModelProducts product = isEditable ? productEditable : new ModelProducts();
-        product.setName(name);
-        product.setPrice(price);
-        product.setDescription(description);
-        product.setDiscount(discount);
-        product.setIdBrand(idBrand);
-        product.setIdCategory(idCategory);
-        product.setIdType(idType);
-
+        ModelProducts product = isEditable ? productEditable : new ModelProducts(name, price, description, discount, idBrand, idCategory, idType);
         ModelProductSizes pSizes = new ModelProductSizes();
 
         spinnerMap.put("XS", spinnerSizeXS);

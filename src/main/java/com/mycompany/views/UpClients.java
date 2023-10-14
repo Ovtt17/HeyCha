@@ -1,6 +1,6 @@
 package com.mycompany.views;
 
-import com.mycompany.heycha.DAOClientsImpl;
+import ImplementationDAO.DAOClientsImpl;
 import com.mycompany.interfaces.DAOClients;
 import com.mycompany.interfaces.Styleable;
 import com.mycompany.models.ModelClients;

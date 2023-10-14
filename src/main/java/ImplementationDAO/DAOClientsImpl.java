@@ -1,4 +1,4 @@
-package com.mycompany.heycha;
+package ImplementationDAO;
 
 import com.mycompany.db.Database;
 import com.mycompany.interfaces.DAOClients;
@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JComboBox;
 
 public class DAOClientsImpl extends Database implements DAOClients {
@@ -29,11 +31,15 @@ public class DAOClientsImpl extends Database implements DAOClients {
         }
     }
 
-    private void setClientFieldsToInsert(PreparedStatement pst, ModelClients client) throws SQLException {
-        pst.setString(1, client.getName());
-        pst.setInt(2, client.getCellphone());
-        pst.setString(3, client.getCity());
-        pst.setString(4, client.getDirection());
+    private void setClientFieldsToInsert(PreparedStatement pst, ModelClients client) {
+        try {
+            pst.setString(1, client.getName());
+            pst.setInt(2, client.getCellphone());
+            pst.setString(3, client.getCity());
+            pst.setString(4, client.getDirection());
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOClientsImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
@@ -51,12 +57,16 @@ public class DAOClientsImpl extends Database implements DAOClients {
         }
     }
 
-    private void setClientFieldsToModify(PreparedStatement pst, ModelClients client) throws SQLException {
-        pst.setString(1, client.getName());
-        pst.setInt(2, client.getCellphone());
-        pst.setString(3, client.getCity());
-        pst.setString(4, client.getDirection());
-        pst.setInt(5, client.getId());
+    private void setClientFieldsToModify(PreparedStatement pst, ModelClients client) {
+        try {
+            pst.setString(1, client.getName());
+            pst.setInt(2, client.getCellphone());
+            pst.setString(3, client.getCity());
+            pst.setString(4, client.getDirection());
+            pst.setInt(5, client.getId());
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOClientsImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
@@ -103,8 +113,9 @@ public class DAOClientsImpl extends Database implements DAOClients {
     }
 
     @Override
-    public List<ModelClients> consult(String name) throws Exception {
+    public List<ModelClients> consult(String name) throws SQLException {
         List<ModelClients> list = null;
+        System.out.println("entramos a la consulta de cliente");
         try {
             this.connectDB();
             String query = "select * from clientes where (nombre = '' or nombre like concat('%', '"+name+"','%')) and is_deleted = 0;";
@@ -126,12 +137,16 @@ public class DAOClientsImpl extends Database implements DAOClients {
         return list;
     }
 
-    private void setClientFieldsToConsult(ResultSet rs, ModelClients client) throws SQLException {
-        client.setId(rs.getInt("ID"));
-        client.setName(rs.getString("NOMBRE"));
-        client.setCellphone(rs.getInt("TELEFONO"));
-        client.setCity(rs.getString("CIUDAD"));
-        client.setDirection(rs.getString("DIRECCION"));
+    private void setClientFieldsToConsult(ResultSet rs, ModelClients client) {
+        try {
+            client.setId(rs.getInt("ID"));
+            client.setName(rs.getString("NOMBRE"));
+            client.setCellphone(rs.getInt("TELEFONO"));
+            client.setCity(rs.getString("CIUDAD"));
+            client.setDirection(rs.getString("DIRECCION"));
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOClientsImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override

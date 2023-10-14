@@ -1,4 +1,4 @@
-package com.mycompany.heycha;
+package ImplementationDAO;
 
 import com.mycompany.db.Database;
 import com.mycompany.interfaces.DAOProductSizes;
@@ -163,36 +163,5 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
         pSize.setIdSize(rs.getInt("ID_TALLA"));
         pSize.setAmount(rs.getInt("CANTIDAD_INVENTARIO"));
     }
-
-//    @Override
-//    public ModelProductSizes consultBySize(int productId, String productName, String productSize) throws Exception {
-//        ModelProductSizes pSize = new ModelProductSizes();
-//        try {
-//            this.connectDB();
-//            String query = "select pt.id_producto, p.nombre, t.talla\n"
-//                    + "from productos_tallas pt \n"
-//                    + "inner join productos p on p.ID = pt.ID_Producto\n"
-//                    + "inner join tallas t on t.id = pt.ID_Talla\n"
-//                    + "where pt.ID_Producto = ? and p.nombre = ? and t.talla = ?\n"
-//                    + "limit 1;";
-//            PreparedStatement st = this.connection.prepareStatement(query);
-//            st.setInt(1, productId);
-//            st.setString(2, productName);
-//            st.setString(3, productSize);
-//            ResultSet rs = st.executeQuery();
-//            while (rs.next()) {
-//                pSize.setIdProduct(rs.getInt("ID_PRODUCTO"));
-//                pSize.setNameProduct(rs.getString("NOMBRE"));
-//                pSize.setNameSize(rs.getString("TALLA"));
-//            }
-//            rs.close();
-//            st.close();
-//        } catch (Exception e) {
-//            throw e;
-//        } finally {
-//            this.closeDB();
-//        }
-//        return pSize;
-//    }
 
 }

@@ -1,27 +1,31 @@
 package com.mycompany.views;
 
-import com.mycompany.heycha.DAOProductsImpl;
-import com.mycompany.heycha.DAOProductsSizesImpl;
+import ImplementationDAO.DAOProductsImpl;
+import ImplementationDAO.DAOProductsSizesImpl;
 import com.mycompany.heycha.Dashboard;
 import com.mycompany.interfaces.DAOProductSizes;
 import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.interfaces.Styleable;
+import com.mycompany.models.ModelProductSizes;
+import com.mycompany.models.ModelProducts;
 import java.awt.Color;
+import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
     boolean lightOrDarkMode;
+    List<ModelProducts> products;
 
     public ViewProducts(boolean isDarkModeEnabled) {
         initComponents();
         updateStyles(isDarkModeEnabled);
-        loadProducts();
+        ViewProducts.this.loadProducts();
     }
 
     public ViewProducts() {
-        
+
     }
 
     @Override
@@ -65,17 +69,10 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         String nameToFind = "";
         String brandSelected = "NINGUNO";
         String categorySelected = "NINGUNO";
-        consultProducts(dao, model, nameToFind, brandSelected, categorySelected);
         try {
+            products = dao.consult(nameToFind, brandSelected, categorySelected);
+            products.forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrand(), p.getCategory(), p.getType(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice(), p.getDescription()}));
             dao.loadFilterCmb(BrandFilterCmb, CategoryFilterCmb);
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void consultProducts(DAOProducts dao, DefaultTableModel model, String nameToFind, String brandSelected, String categorySelected) {
-        try {
-            dao.consult(nameToFind, brandSelected, categorySelected).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType(), p.getBrandAvailable(), p.getTotalExistence(), p.getTotalPrice()}));
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -120,17 +117,18 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         });
 
         jScrollPane1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        jScrollPane1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
         jTableProducts.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "ID", "Nombre", "Precio", "Descripcion", "Descuento", "Marca", "Categoria", "Tipo", "Tallas Disponibles", "Total Existencia", "Valor Total"
+                "ID", "Nombre", "Precio", "Marca", "Categoria", "Tipo", "Tallas Disponibles", "Total Existencia", "Valor Total", "Descripcion"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -176,6 +174,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             }
         });
 
+        BrandFilterCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NINGUNO" }));
         BrandFilterCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         BrandFilterCmb.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -183,6 +182,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             }
         });
 
+        CategoryFilterCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NINGUNO" }));
         CategoryFilterCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         CategoryFilterCmb.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -214,7 +214,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
                         .addGap(449, 449, 449)
                         .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(33, 33, 33)
-                        .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)
                         .addGap(33, 33, 33)
                         .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, background_productsLayout.createSequentialGroup()
@@ -333,7 +333,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
     private void jTableProductsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableProductsMouseClicked
         if (evt.getClickCount() == 2) {
-            loadProductSizes(jTableProducts);
+            loadProductSize(jTableProducts);
             btnDelete.setEnabled(false);
             btnCleanField.setEnabled(false);
             BrandFilterCmb.setEnabled(false);
@@ -341,9 +341,37 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             productSearch.setText("");
         }
     }//GEN-LAST:event_jTableProductsMouseClicked
-    public void loadProductSizes(JTable table) {
+//    public void loadProductsDialog(JTable table) {
+//        try {
+//            DAOProducts dao = new DAOProductsImpl();
+//            if (table.getSelectedRow() < 0) {
+//                javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto para ver sus detalles. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+//                return;
+//            }
+//
+//            int selectedRows = table.getSelectedRow();
+//            String productName = (String) table.getValueAt(selectedRows, 1);
+//
+//            DefaultTableModel newModel = new DefaultTableModel();
+//            table.setDefaultEditor(Object.class, null);
+//            newModel.addColumn("ID del producto");
+//            newModel.addColumn("Nombre del producto");
+//            newModel.addColumn("Precio");
+//            newModel.addColumn("Talla");
+//            newModel.addColumn("Cantidad");
+//
+//            dao.consult(productName, "NINGUNO", "NINGUNO").forEach((p) -> newModel.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getSizeSelected(), p.getAmountSelected()}));
+//            table.setModel(newModel);
+//        } catch (Exception e) {
+//            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+//        }
+//    }
+
+    public void loadProductSize(JTable table) {
+        List<ModelProductSizes> productSizeList = null;
         try {
-            DAOProductSizes daoSizes = new DAOProductsSizesImpl();
+            
+            DAOProductSizes dao = new DAOProductsSizesImpl();
             if (table.getSelectedRow() < 0) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto para ver sus detalles. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
                 return;
@@ -359,16 +387,17 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             newModel.addColumn("Talla");
             newModel.addColumn("Cantidad");
 
-            daoSizes.consult(productId).forEach((p) -> newModel.addRow(new Object[]{p.getIdProduct(), p.getNameProduct(), p.getNameSize(), p.getAmount()}));
+            productSizeList = dao.consult(productId);
+            productSizeList.forEach((p) -> newModel.addRow(new Object[]{p.getIdProduct(), p.getNameProduct(), p.getNameSize(), p.getAmount()}));
             table.setModel(newModel);
-
+            
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void productSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_productSearchKeyReleased
-        if (!btnDelete.isEnabled() || !BrandFilterCmb.isEnabled() || !CategoryFilterCmb.isEnabled() || !btnCleanField.isEnabled() && productSearch.getText().isEmpty()) {
+        if (!btnDelete.isEnabled() || !BrandFilterCmb.isEnabled() || !CategoryFilterCmb.isEnabled() || !btnCleanField.isEnabled() && !productSearch.getText().isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(this, "No puede realizar búsqueda dentro de los detalles de un producto. \n", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
             productSearch.setText("");
             return;
@@ -393,15 +422,19 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     }//GEN-LAST:event_btnCleanFieldActionPerformed
 
     private void filterConsult() {
-        DAOProducts dao = new DAOProductsImpl();
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
         model.setRowCount(0);
         String productNameToSearch = productSearch.getText();
         String productBrandToSearch = BrandFilterCmb.getSelectedItem() == null ? "NINGUNO" : BrandFilterCmb.getSelectedItem().toString();
         String productCategoryToSearch = CategoryFilterCmb.getSelectedItem() == null ? "NINGUNO" : CategoryFilterCmb.getSelectedItem().toString();
 
-        consultProducts(dao, model, productNameToSearch, productBrandToSearch, productCategoryToSearch);
-        productSearch.setText(productNameToSearch);
+        for (ModelProducts p : products) {
+            if (p.getName().toLowerCase().contains(productNameToSearch)
+                    && (productBrandToSearch.equals("NINGUNO") || p.getBrand().equals(productBrandToSearch))
+                    && (productCategoryToSearch.equals("NINGUNO") || p.getCategory().equals(productCategoryToSearch))) {
+                model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice()});
+            }
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

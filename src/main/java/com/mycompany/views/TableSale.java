@@ -1,55 +1,59 @@
 package com.mycompany.views;
 
-import com.mycompany.heycha.DAOProductsImpl;
-import com.mycompany.heycha.DAOProductsSizesImpl;
-import com.mycompany.heycha.Dashboard;
-import com.mycompany.interfaces.DAOProductSizes;
+import ImplementationDAO.DAOProductsImpl;
 import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.models.ModelProductSizes;
 import com.mycompany.models.ModelProducts;
-import javax.swing.JTable;
+import java.util.List;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 
-public class TableSale extends javax.swing.JFrame {
+public class TableSale extends javax.swing.JDialog {
 
     UpSales upSales;
-    DefaultTableModel modelProduct;
+    ViewProducts p = new ViewProducts();
+    List<ModelProducts> products;
+    Float productPrice;
+    
 
-    public TableSale() {
+    public TableSale(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
         initComponents();
         initTable();
     }
 
-    public TableSale(UpSales upSales) {
+    public TableSale(java.awt.Frame parent, boolean modal, UpSales upSales) {
+        super(parent, modal);
         initComponents();
         initTable();
         this.upSales = upSales;
     }
-    int i = 0;
+
+    private TableSale() {
+
+    }
 
     private void initTable() {
-        modelProduct = new DefaultTableModel();
-        jTable.setDefaultEditor(Object.class, null);
-        modelProduct.addColumn("ID");
-        modelProduct.addColumn("Nombre");
-        modelProduct.addColumn("Precio");
-        modelProduct.addColumn("Descripcion");
-        modelProduct.addColumn("Descuento");
-        modelProduct.addColumn("Marca");
-        modelProduct.addColumn("Categoria");
+        this.setLocationRelativeTo(null);
+        DefaultTableModel modelProduct = (DefaultTableModel) jTableProducts.getModel();
+        jTableProducts.setDefaultEditor(Object.class, null);
         modelProduct.setRowCount(0);
-        String nameToFind = search.getText();
+        String nameToFind = productSearch.getText();
         String brandSelected = "NINGUNO";
         String categorySelected = "NINGUNO";
-        System.out.println(i);i++;
         try {
-            DAOProducts daProducts = new DAOProductsImpl();
-            daProducts.consult(nameToFind, brandSelected, categorySelected).forEach((p) -> modelProduct.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory()}));
+            DAOProducts dao = new DAOProductsImpl();
+            products = dao.consult(nameToFind, brandSelected, categorySelected);
+            products.forEach((p) -> {
+                modelProduct.addRow(new Object[]{p.getId(), p.getName(), p.getBrand(), p.getCategory(), p.getSizeAvailable(), p.getTotalExistence(), p.getPrice()});
+                
+            });
+            dao.loadFilterCmb(BrandFilterCmb, CategoryFilterCmb);
+
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
-        jTable.setModel(modelProduct);
+        jTableProducts.setModel(modelProduct);
     }
 
     /**
@@ -61,162 +65,255 @@ public class TableSale extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        background_products = new javax.swing.JPanel();
+        title = new javax.swing.JLabel();
+        productSearch = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable = new javax.swing.JTable();
+        jTableProducts = new javax.swing.JTable();
         btnAdd = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        search = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
-        amountSpinner = new javax.swing.JSpinner();
+        BrandFilterCmb = new javax.swing.JComboBox<>();
+        CategoryFilterCmb = new javax.swing.JComboBox<>();
+        BrandLbl = new javax.swing.JLabel();
+        CategoryLbl = new javax.swing.JLabel();
+        btnCleanField = new javax.swing.JButton();
+        AmountSpinner = new javax.swing.JSpinner();
+        amountLbl = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        background_products.setBackground(new java.awt.Color(255, 255, 255));
+        background_products.setMaximumSize(new java.awt.Dimension(2147483647, 2147483647));
+        background_products.setPreferredSize(new java.awt.Dimension(764, 436));
 
-        jTable.setModel(new javax.swing.table.DefaultTableModel(
+        title.setText("Productos");
+
+        productSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                productSearchKeyReleased(evt);
+            }
+        });
+
+        jScrollPane1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        jScrollPane1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+
+        jTableProducts.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-
+                "ID", "Nombre", "Marca", "Categoria", "Tallas Disponibles", "Total Existencia", "Precio"
             }
-        ));
-        jTable.getTableHeader().setReorderingAllowed(false);
-        jTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jTableMouseClicked(evt);
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable);
+        jTableProducts.setRowHeight(30);
+        jTableProducts.getTableHeader().setReorderingAllowed(false);
+        jTableProducts.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTableProductsMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(jTableProducts);
 
-        btnAdd.setBackground(new java.awt.Color(0, 51, 255));
+        btnAdd.setBackground(new java.awt.Color(21, 101, 192));
         btnAdd.setForeground(new java.awt.Color(255, 255, 255));
         btnAdd.setText("Agregar");
+        btnAdd.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAddActionPerformed(evt);
             }
         });
 
-        jButton2.setBackground(new java.awt.Color(255, 255, 255));
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/arrow_left.png"))); // NOI18N
-        jButton2.setBorder(null);
-        jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        BrandFilterCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NINGUNO" }));
+        BrandFilterCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        BrandFilterCmb.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                BrandFilterCmbItemStateChanged(evt);
+            }
+        });
+
+        CategoryFilterCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NINGUNO" }));
+        CategoryFilterCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        CategoryFilterCmb.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                CategoryFilterCmbItemStateChanged(evt);
+            }
+        });
+
+        BrandLbl.setText("Marca:");
+
+        CategoryLbl.setText("Categoria:");
+
+        btnCleanField.setBackground(new java.awt.Color(21, 101, 192));
+        btnCleanField.setForeground(new java.awt.Color(255, 255, 255));
+        btnCleanField.setText("Limpiar Campos");
+        btnCleanField.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnCleanField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnCleanFieldActionPerformed(evt);
             }
         });
 
-        search.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                searchKeyReleased(evt);
-            }
-        });
+        AmountSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
 
-        jLabel1.setText("Cantidad:");
+        amountLbl.setText("Cantidad:");
 
-        amountSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(55, 55, 55)
-                        .addComponent(jScrollPane1))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                        .addGap(744, 744, 744)
-                        .addComponent(btnAdd))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(41, 41, 41)
-                        .addComponent(search)
-                        .addGap(33, 33, 33)
-                        .addComponent(jLabel1)
+        javax.swing.GroupLayout background_productsLayout = new javax.swing.GroupLayout(background_products);
+        background_products.setLayout(background_productsLayout);
+        background_productsLayout.setHorizontalGroup(
+            background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
+                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(background_productsLayout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(amountLbl)
                         .addGap(18, 18, 18)
-                        .addComponent(amountSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(129, 129, 129)))
-                .addGap(53, 53, 53))
+                        .addComponent(AmountSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(background_productsLayout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(background_productsLayout.createSequentialGroup()
+                                .addComponent(productSearch, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
+                                .addGap(18, 18, 18)
+                                .addComponent(BrandLbl)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(BrandFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(CategoryLbl)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(CategoryFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnCleanField))
+                            .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addGap(30, 30, 30))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(amountSpinner)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(search, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+        background_productsLayout.setVerticalGroup(
+            background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(background_productsLayout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(productSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(BrandFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CategoryFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(BrandLbl)
+                    .addComponent(CategoryLbl)
+                    .addComponent(btnCleanField, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE)
-                .addGap(8, 8, 8)
-                .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(15, 15, 15))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(AmountSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(amountLbl))
+                .addGap(23, 23, 23))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(background_products, javax.swing.GroupLayout.DEFAULT_SIZE, 1069, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(background_products, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void searchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchKeyReleased
-        initTable();
-    }//GEN-LAST:event_searchKeyReleased
-
-    private void jTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableMouseClicked
-        int row = jTable.rowAtPoint(evt.getPoint());
-        int col = jTable.columnAtPoint(evt.getPoint());
-        if (row >= 0 && col >= 0 && evt.getClickCount() == 2) {
-            int id = (int) jTable.getValueAt(row, 0);
-            ViewProducts p = new ViewProducts();
-            p.loadProductSizes(jTable);
-        } else if(row >= 0 && col >= 0 && evt.getClickCount() == 1){
-            int maxAmount = (int) jTable.getValueAt(row, 3);
-            SpinnerNumberModel spinnerModel = new SpinnerNumberModel(1, 1, maxAmount, 1); // Crear un nuevo modelo con el valor máximo
-            amountSpinner.setModel(spinnerModel); // Establecer el nuevo modelo en el JSpinner
+    private void productSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_productSearchKeyReleased
+        if (!BrandFilterCmb.isEnabled() || !CategoryFilterCmb.isEnabled() || !btnCleanField.isEnabled() && !productSearch.getText().isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "No puede realizar búsqueda dentro de los detalles de un producto. \n", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+            productSearch.setText("");
+            return;
+        } else {
+            filteredConsult();
         }
-    }//GEN-LAST:event_jTableMouseClicked
+    }//GEN-LAST:event_productSearchKeyReleased
+
+    private void jTableProductsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableProductsMouseClicked
+        DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
+        if (evt.getClickCount() == 1) {
+            int selectedRow = jTableProducts.getSelectedRow();
+            if (model.getColumnCount() < 7) {
+                String cellValue = model.getValueAt(selectedRow, 3).toString();
+                int maximumAmount = Integer.parseInt(cellValue);
+                SpinnerNumberModel spinnerModel = new SpinnerNumberModel(1, 1, maximumAmount, 1);
+                AmountSpinner.setModel(spinnerModel);
+            }
+        } else if (evt.getClickCount() == 2) {
+            //TODO
+            if (model.getColumnCount() > 4) {
+                int selectedRow = jTableProducts.getSelectedRow();
+                productPrice = (Float) jTableProducts.getValueAt(selectedRow, 6);
+                p.loadProductSize(jTableProducts);
+                
+                btnCleanField.setEnabled(false);
+                BrandFilterCmb.setEnabled(false);
+                CategoryFilterCmb.setEnabled(false);
+                productSearch.setText("");
+            }
+
+        }
+
+    }//GEN-LAST:event_jTableProductsMouseClicked
+
+    private void BrandFilterCmbItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_BrandFilterCmbItemStateChanged
+        filteredConsult();
+    }//GEN-LAST:event_BrandFilterCmbItemStateChanged
+
+    private void CategoryFilterCmbItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_CategoryFilterCmbItemStateChanged
+        filteredConsult();
+    }//GEN-LAST:event_CategoryFilterCmbItemStateChanged
+
+    private void btnCleanFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCleanFieldActionPerformed
+        productSearch.setText("");
+        BrandFilterCmb.setSelectedIndex(0);
+        CategoryFilterCmb.setSelectedIndex(0);
+        filteredConsult();
+    }//GEN-LAST:event_btnCleanFieldActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        if (jTable.getSelectedRow() > -1) {
-            try {
-                ModelProductSizes product = new ModelProductSizes();
-                int productId = (int) jTable.getValueAt(jTable.getSelectedRow(), 0);
-                String productName = (String) jTable.getValueAt(jTable.getSelectedRow(), 1);
-                String sizeSelected = (String) jTable.getValueAt(jTable.getSelectedRow(), 2);
-                int amount = (int) amountSpinner.getValue();
-                product.setIdProduct(productId);
-                product.setNameProduct(productName);
-                product.setNameSize(sizeSelected);
-                product.setAmount(amount);
-
-                upSales.addProduct(product);
-                this.dispose();
-            } catch (Exception e) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
-            }
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto a editar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        int selectedRow = jTableProducts.getSelectedRow();
+        if (selectedRow < 0) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Debe seleccionar un producto para agregarlo al carrito. \n", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
         }
+        Integer id = (Integer) jTableProducts.getValueAt(selectedRow, 0);
+        String name = (String) jTableProducts.getValueAt(selectedRow, 1);
+        String size = (String) jTableProducts.getValueAt(selectedRow, 2);
+        Integer amount = (Integer) AmountSpinner.getValue();
+
+        ModelProductSizes pSizes = new ModelProductSizes(id, amount, size, name, productPrice);
+        upSales.addProduct(pSizes);
+        javax.swing.JOptionPane.showMessageDialog(this, "El producto se ha agregado al carrito de compras. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        this.dispose();
     }//GEN-LAST:event_btnAddActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        this.dispose();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void filteredConsult() {
+        DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
+        model.setRowCount(0);
+        String productNameToSearch = productSearch.getText().toLowerCase();
+
+        for (ModelProducts p : products) {
+            if (p.getName().toLowerCase().contains(productNameToSearch)) {
+                model.addRow(new Object[]{p.getId(), p.getName(), p.getBrand(), p.getCategory(), p.getPrice()});
+            }
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -254,14 +351,19 @@ public class TableSale extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JSpinner amountSpinner;
+    private javax.swing.JSpinner AmountSpinner;
+    private javax.swing.JComboBox<String> BrandFilterCmb;
+    private javax.swing.JLabel BrandLbl;
+    private javax.swing.JComboBox<String> CategoryFilterCmb;
+    private javax.swing.JLabel CategoryLbl;
+    private javax.swing.JLabel amountLbl;
+    private javax.swing.JPanel background_products;
     private javax.swing.JButton btnAdd;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JButton btnCleanField;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable;
-    private javax.swing.JTextField search;
+    private javax.swing.JTable jTableProducts;
+    private javax.swing.JTextField productSearch;
+    private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
 
 }

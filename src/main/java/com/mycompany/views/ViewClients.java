@@ -1,15 +1,18 @@
 package com.mycompany.views;
 
-import com.mycompany.heycha.DAOClientsImpl;
+import ImplementationDAO.DAOClientsImpl;
 import com.mycompany.heycha.Dashboard;
 import com.mycompany.interfaces.DAOClients;
 import com.mycompany.interfaces.Styleable;
+import com.mycompany.models.ModelClients;
 import java.awt.Color;
+import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
 public class ViewClients extends javax.swing.JPanel implements Styleable {
 
     boolean lightOrDarkMode;
+    List<ModelClients> clients;
 
     public ViewClients(boolean isDarkModeEnabled) {
         initComponents();
@@ -51,12 +54,9 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
         DefaultTableModel model = (DefaultTableModel) JTableClients.getModel();
         model.setRowCount(0);
         String nameToFind = "";
-        consultClients(dao, model, nameToFind);
-    }
-
-    private void consultClients(DAOClients dao, DefaultTableModel model, String nameToFind) {
         try {
-            dao.consult(nameToFind).forEach((c) -> model.addRow(new Object[]{c.getId(), c.getName(), c.getCellphone(), c.getCity(), c.getDirection()}));
+            clients = dao.consult(nameToFind);
+            clients.forEach((c) -> model.addRow(new Object[]{c.getId(), c.getName(), c.getCellphone(), c.getCity(), c.getDirection()}));
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -226,12 +226,14 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void clientSearchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_clientSearchKeyReleased
-        DAOClients dao = new DAOClientsImpl();
         DefaultTableModel model = (DefaultTableModel) JTableClients.getModel();
         model.setRowCount(0);
         String nameToFind = clientSearch.getText().trim();
-        consultClients(dao, model, nameToFind);
-        clientSearch.setText(nameToFind);
+        for (ModelClients c : clients) {
+            if (c.getName().toLowerCase().contains(nameToFind)) {
+                model.addRow(new Object[]{c.getId(), c.getName(), c.getCellphone(), c.getCity(), c.getDirection()});
+            }
+        }
     }//GEN-LAST:event_clientSearchKeyReleased
 
     private void btnCleanFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCleanFieldActionPerformed

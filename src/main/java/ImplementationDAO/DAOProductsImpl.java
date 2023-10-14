@@ -1,4 +1,4 @@
-package com.mycompany.heycha;
+package ImplementationDAO;
 
 import com.mycompany.db.Database;
 import com.mycompany.interfaces.DAOProducts;
@@ -21,7 +21,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
             this.connectDB();
             String query = "call insertProduct(?,?,?,?,?,?,?);";
             PreparedStatement st = this.connection.prepareStatement(query);
-            setProductFieldsToModify(st, product);
+            setProductFields(st, product);
             // Ejecuta la sentencia SQL
             st.executeUpdate();
             ResultSet rs = st.getResultSet();
@@ -38,25 +38,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
             this.closeDB();
         }
     }
-
-    @Override
-    public void modify(ModelProducts product, ModelProductSizes pSizes) throws Exception {
-        try {
-            this.connectDB();
-            PreparedStatement st = this.connection.prepareStatement("call modifyProduct(?, ?, ?, ?, ?, ?, ?, ?);");
-            setProductFieldsToModify(st, product);
-            st.executeUpdate();
-            st.close();
-
-            pSizes.setIdProduct(product.getId());
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            this.closeDB();
-        }
-    }
-
-    private void setProductFieldsToModify(PreparedStatement st, ModelProducts product) throws SQLException {
+    private void setProductFields(PreparedStatement st, ModelProducts product) throws SQLException {
         // Asigna los valores para los parámetros de la sentencia SQL
         st.setString(1, product.getName()); // Reemplaza con el método adecuado para obtener el nombre
         st.setFloat(2, product.getPrice());   // Reemplaza con el método adecuado para obtener el precio
@@ -79,7 +61,23 @@ public class DAOProductsImpl extends Database implements DAOProducts {
         } else {
             st.setNull(7, Types.INTEGER);
         }
-        st.setInt(8, product.getId());
+    }
+
+    @Override
+    public void modify(ModelProducts product, ModelProductSizes pSizes) throws Exception {
+        try {
+            this.connectDB();
+            PreparedStatement st = this.connection.prepareStatement("call modifyProduct(?, ?, ?, ?, ?, ?, ?, ?);");
+            setProductFields(st, product);
+            st.setInt(8, product.getId());
+            st.executeUpdate();
+            st.close();
+            pSizes.setIdProduct(product.getId());
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.closeDB();
+        }
     }
 
     @Override
@@ -108,6 +106,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
     @Override
     public List<ModelProducts> consult(String name, String brand, String category) throws Exception {
         List<ModelProducts> list = null;
+        
         try {
             this.connectDB();
             String query = "call consultProducts(?, ?, ?);";
@@ -119,8 +118,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
-                ModelProducts product = new ModelProducts();
-                setProductFieldsToConsult(rs, product);
+                ModelProducts product = setProductFieldsToConsult(rs);
                 list.add(product);
             }
             rs.close();
@@ -133,33 +131,32 @@ public class DAOProductsImpl extends Database implements DAOProducts {
         return list;
     }
 
-    private void setProductFieldsToConsult(ResultSet rs, ModelProducts product) throws SQLException {
-        product.setId(rs.getInt("ID"));
-        product.setName(rs.getString("NOMBRE_PRODUCTO"));
-        product.setPrice(rs.getFloat("PRECIO"));
-
+    private ModelProducts setProductFieldsToConsult(ResultSet rs) throws SQLException {
+        Integer id = rs.getInt("ID");
+        String name = rs.getString("NOMBRE_PRODUCTO");
+        Float price = rs.getFloat("PRECIO");
         // hacer estas validaciones para evitar que muestre datos que no ordene
         String description = rs.getString("DESCRIPCION");
-        product.setDescription(rs.wasNull() ? null : description);
-
-        Integer discount = rs.getInt("DESCUENTO");
-        product.setDiscount(rs.wasNull() ? null : discount);
-
-        product.setBrand(rs.getString("NOMBRE_MARCA"));
-
-        product.setCategory(rs.getString("NOMBRE_CATEGORIA"));
-
-        String type = rs.getString("NOMBRE_TIPO");
-        product.setType(rs.wasNull() ? null : type);
+        description = rs.wasNull() ? null : description;
         
-        product.setBrandAvailable(rs.getString("TALLAS_DISPONIBLES"));
-        product.setTotalExistence(rs.getInt("TOTAL_EXISTENCIA"));
-        product.setTotalPrice(rs.getFloat("VALOR_TOTAL"));
+        Integer discount = rs.getInt("DESCUENTO");
+        discount = rs.wasNull() ? null : discount;
+        String brand = rs.getString("NOMBRE_MARCA");
+        String category = rs.getString("NOMBRE_CATEGORIA");
+        String type = rs.getString("NOMBRE_TIPO");
+        type = rs.wasNull() ? null : type;
+        
+        String brandAvailable = rs.getString("TALLAS_DISPONIBLES");
+        Integer totalExistence = rs.getInt("TOTAL_EXISTENCIA");
+        Float totalPrice = rs.getFloat("VALOR_TOTAL");
+        
+        return new ModelProducts(id, name, price, description, discount, brand, category, type, brandAvailable, totalExistence, totalPrice);
+        
     }
 
     @Override
     public ModelProducts getProductById(int productId) throws Exception {
-        ModelProducts product = new ModelProducts();
+        ModelProducts product = null;
 
         try {
             this.connectDB();
@@ -169,7 +166,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
             ResultSet rs = st.executeQuery();
 
             while (rs.next()) {
-                setProductFieldsToConsult(rs, product);
+                product = setProductFieldsToConsult(rs);
             }
         } catch (Exception e) {
             throw e;
@@ -188,9 +185,11 @@ public class DAOProductsImpl extends Database implements DAOProducts {
             String queryCategory = "select nombre from categorias;";
             String queryType = "select nombre from tipo;";
             fillComboBox(brandCmb, queryBrand);
+            brandCmb.setSelectedIndex(-1);
             fillComboBox(categoryCmb, queryCategory);
+            categoryCmb.setSelectedIndex(-1);
             fillComboBox(typeCmb, queryType);
-
+            typeCmb.setSelectedIndex(-1);
         } catch (Exception e) {
             throw e;
         } finally {
@@ -210,7 +209,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
 
         statement.close();
         resultSet.close();
-        comboBox.setSelectedIndex(-1);
+        comboBox.setSelectedIndex(0);
     }
 
     @Override
@@ -219,12 +218,10 @@ public class DAOProductsImpl extends Database implements DAOProducts {
             this.connectDB();
             String queryBrand = "select nombre from marcas;";
             String queryCategory = "select nombre from categorias;";
-            BrandFilterCmb.addItem("NINGUNO");
-            CategoryFilterCmb.addItem("NINGUNO");
+
             fillComboBox(BrandFilterCmb, queryBrand);
-            fillComboBox(CategoryFilterCmb, queryCategory); 
-            BrandFilterCmb.setSelectedIndex(0);
-            CategoryFilterCmb.setSelectedIndex(0);
+            fillComboBox(CategoryFilterCmb, queryCategory);
+
         } catch (Exception e) {
             throw e;
         } finally {

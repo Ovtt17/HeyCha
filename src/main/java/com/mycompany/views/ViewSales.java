@@ -1,6 +1,6 @@
 package com.mycompany.views;
 
-import com.mycompany.heycha.DAOSalesImpl;
+import ImplementationDAO.DAOSalesImpl;
 import com.mycompany.heycha.Dashboard;
 import com.mycompany.interfaces.DAOSales;
 import com.mycompany.interfaces.Styleable;
@@ -58,13 +58,12 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
     private void loadSales() {
         DAOSales dao = new DAOSalesImpl();
         DefaultTableModel model = (DefaultTableModel) JTableSales.getModel();
-        String nameToFind = "";
-        consultSales(dao, model, nameToFind);
+        consultSales(dao, model);
     }
 
-    private void consultSales(DAOSales dao, DefaultTableModel model, String nameToFind) {
+    private void consultSales(DAOSales dao, DefaultTableModel model) {
         try {
-            dao.consult(nameToFind).forEach((s) -> model.addRow(new Object[]{s.getId(), s.getProductName(), s.getProductId(), s.getClientName(), s.getProductPrice(), s.getQuantitySold(), s.getTotalMoneySold(), s.getDate()}));
+            dao.consult().forEach((s) -> model.addRow(new Object[]{s.getId(), s.getClientId(), s.getClientName(), s.getDate(), s.getQuantitySold(), s.getTotalMoneySold()}));
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -116,11 +115,11 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
 
             },
             new String [] {
-                "ID Venta", "Nombre Producto", "ID Producto", "Nombre Cliente", "Precio", "Cantidad Vendida", "Total", "Fecha"
+                "ID Venta", "ID Cliente", "Nombre Cliente", "Fecha", "Cantidad Vendida", "Total"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {

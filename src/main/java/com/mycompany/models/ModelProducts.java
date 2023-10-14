@@ -11,14 +11,58 @@ public class ModelProducts {
     private Integer IdBrand;
     private Integer IdCategory;
     private Integer IdType;
-
+    
     private String brand;
     private String category;
     private String type;
 
-    private String brandAvailable;
+    private String sizeAvailable;
     private Integer totalExistence;
     private Float totalPrice;
+    
+    private int amountSelected;
+    private String sizeSelected;
+
+    public ModelProducts() {
+    }
+    
+    // save new product
+    public ModelProducts(String name, Float price, String description, Integer discount, Integer IdBrand, Integer IdCategory, Integer IdType) {
+        this.name = name;
+        this.price = price;
+        this.description = description;
+        this.discount = discount;
+        this.IdBrand = IdBrand;
+        this.IdCategory = IdCategory;
+        this.IdType = IdType;
+    }
+
+    //consult product
+    public ModelProducts(Integer id, String name, Float price, String description, Integer discount, String brand, String category, String type, String brandAvailable, Integer totalExistence, Float totalPrice) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.description = description;
+        this.discount = discount;
+        this.brand = brand;
+        this.category = category;
+        this.type = type;
+        this.sizeAvailable = brandAvailable;
+        this.totalExistence = totalExistence;
+        this.totalPrice = totalPrice;
+    }
+
+    public ModelProducts(int id, String name, Float price, String sizeSelected, int amountSelected) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.sizeSelected = sizeSelected;
+        this.amountSelected = amountSelected;
+    }
+    
+    
+    
+    
 
     public int getId() {
         return id;
@@ -108,12 +152,12 @@ public class ModelProducts {
         this.type = type;
     }
 
-    public String getBrandAvailable() {
-        return brandAvailable;
+    public String getSizeAvailable() {
+        return sizeAvailable;
     }
 
-    public void setBrandAvailable(String brandAvailable) {
-        this.brandAvailable = brandAvailable;
+    public void setSizeAvailable(String sizeAvailable) {
+        this.sizeAvailable = sizeAvailable;
     }
 
     public Integer getTotalExistence() {
@@ -132,4 +176,13 @@ public class ModelProducts {
         this.totalPrice = totalPrice;
     }
 
+    public int getAmountSelected() {
+        return amountSelected;
+    }
+
+    public String getSizeSelected() {
+        return sizeSelected;
+    }
+    
+    
 }
