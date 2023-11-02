@@ -1,24 +1,17 @@
 package com.mycompany.views;
 
-import ImplementationDAO.DAOProductsSizesImpl;
 import ImplementationDAO.DAOSalesImpl;
 import ImplementationDAO.DAOSalesProductsImpl;
 import com.mycompany.heycha.Dashboard;
-import com.mycompany.interfaces.DAOProductSizes;
 import com.mycompany.interfaces.DAOSales;
 import com.mycompany.interfaces.DAOSalesProducts;
 import com.mycompany.interfaces.Styleable;
-import com.mycompany.models.ModelProductSizes;
 import com.mycompany.models.ModelSalesProducts;
 import java.awt.Color;
 import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-/**
- *
- * @author Ovett
- */
 public class ViewSales extends javax.swing.JPanel implements Styleable {
 
     boolean lightOrDarkMode;
@@ -155,6 +148,11 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
         btnEdit.setForeground(new java.awt.Color(255, 255, 255));
         btnEdit.setText("Editar");
         btnEdit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
         btnDelete.setBackground(new java.awt.Color(255, 51, 51));
         btnDelete.setForeground(new java.awt.Color(255, 255, 255));
@@ -258,7 +256,6 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
                         return;
                     }
                 }
-
                 // TODO
                 try {
                     DAOSales daoSale = new DAOSalesImpl();
@@ -267,7 +264,7 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
                     int selectedRow = selectedRows[i];
 
                     daoSale.delete((int) JTableSales.getValueAt(selectedRow, 0));
-                    daoSalesDetails.delete((int) JTableSales.getValueAt(selectedRow, 0));
+                    daoSalesDetails.deleteAll((int) JTableSales.getValueAt(selectedRow, 0));
 
                     model.removeRow(selectedRow);
                 } catch (Exception e) {
@@ -286,6 +283,22 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
             btnEdit.setEnabled(false);
         }
     }//GEN-LAST:event_JTableSalesMouseClicked
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        if (JTableSales.getSelectedRow() > -1) {
+            try {
+                int saleId = (int) JTableSales.getValueAt(JTableSales.getSelectedRow(), 0);
+                
+                DAOSales daoSizes = new DAOSalesImpl();
+                DAOSalesProducts daoSizesProducts = new DAOSalesProductsImpl();
+                Dashboard.ShowPanel(new UpSales(daoSizes.getSaleById(saleId), daoSizesProducts.consult(saleId),lightOrDarkMode));
+            } catch (Exception e) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar una venta a editar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_btnEditActionPerformed
     private void loadSalesProducts(JTable table) {
         List<ModelSalesProducts> salesProductsList = null;
         try {
@@ -304,12 +317,13 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
             newModel.addColumn("ID de venta");
             newModel.addColumn("ID del producto");
             newModel.addColumn("Nombre del producto");
+            newModel.addColumn("Talla");
             newModel.addColumn("Precio Unidad");
             newModel.addColumn("Cantidad");
             newModel.addColumn("Subtotal");
 
             salesProductsList = dao.consult(productId);
-            salesProductsList.forEach((p) -> newModel.addRow(new Object[]{p.getSaleId(), p.getProductId(), p.getProductName(), p.getPriceUnity(), p.getAmount(), p.getSubtotal()}));
+            salesProductsList.forEach((p) -> newModel.addRow(new Object[]{p.getSaleId(), p.getProductId(), p.getProductName(), p.getSizeName(), p.getPriceUnity(), p.getAmount(), p.getSubtotal()}));
             table.setModel(newModel);
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);

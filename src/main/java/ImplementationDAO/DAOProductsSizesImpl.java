@@ -6,6 +6,7 @@ import com.mycompany.models.ModelProductSizes;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -55,7 +56,7 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
             }
             st.close();
         } catch (SQLException e) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de insercion en la base de datos", e);
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de modificacion en la base de datos", e);
             throw e;
         }
         return isModified;
@@ -80,7 +81,7 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
     public List<ModelProductSizes> consult(int productId) throws Exception {
         List<ModelProductSizes> list = null;
         try {
-            String query = "select pt.id_producto, p.nombre, t.talla, cantidad_inventario\n"
+            String query = "select pt.id, pt.id_producto, p.nombre, t.talla, cantidad_inventario\n"
                     + "from productos_tallas pt \n"
                     + "inner join productos p on p.ID = pt.ID_Producto\n"
                     + "inner join tallas t on t.id = pt.ID_Talla\n"
@@ -107,6 +108,7 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
     }
 
     private void setProductSizesForConsult(ResultSet rs, ModelProductSizes pSize) throws SQLException {
+        pSize.setId(rs.getInt("ID"));
         pSize.setIdProduct(rs.getInt("ID_PRODUCTO"));
         pSize.setNameProduct(rs.getString("NOMBRE"));
         pSize.setNameSize(rs.getString("TALLA"));

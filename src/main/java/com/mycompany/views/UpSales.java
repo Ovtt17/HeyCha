@@ -11,6 +11,7 @@ import com.mycompany.models.ModelSalesProducts;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import javax.swing.JFrame;
@@ -19,7 +20,11 @@ import javax.swing.table.DefaultTableModel;
 
 public class UpSales extends javax.swing.JPanel implements Styleable {
 
-    private List<ModelProductSizes> products;
+    boolean isEditable = false;
+    private ModelSales saleEditable;
+    private List<ModelSalesProducts> products;
+    HashMap<String, Integer> clientHashMap;
+
     private DefaultTableModel newModel = new DefaultTableModel();
     private Float totalPayment = 0f;
     private Integer totalQuantity = 0;
@@ -34,47 +39,24 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
     public UpSales() {
     }
 
-    public void addProduct(ModelProductSizes product) {
+    public UpSales(ModelSales sale, List<ModelSalesProducts> salesDetailsEditable, boolean isDarkModeEnabled) {
+        initComponents();
+        isEditable = true;
+        updateStyles(isDarkModeEnabled);
+        initStyles();
+        this.saleEditable = sale;
+        clientHashMap = new HashMap<>();
+        clientHashMap.put(saleEditable.getClientName(), saleEditable.getClientId());
+        clientsCmb.addItem(saleEditable.getClientName());
+        this.products = salesDetailsEditable;
+        updateTable();
+    }
+
+    public void addProduct(ModelSalesProducts product) {
         this.products.add(product);
         updateTable();
     }
 
-//    public void updateProductQuantityInTable(Integer productId, JTable table) {
-//        DefaultTableModel model = new DefaultTableModel();
-//        table.setDefaultEditor(Object.class, null);
-//        newModel.addColumn("ID del producto");
-//        newModel.addColumn("Nombre del producto");
-//        newModel.addColumn("Talla");
-//        newModel.addColumn("Cantidad");
-//        String size = productIndexes.get(productId);
-//        System.out.println(size);
-//        if (size != null) {
-//            // Aquí buscas la fila del producto en la tabla
-//            for (int i = 0; i < model.getRowCount(); i++) {
-//                System.out.println("iterando");
-//                if (model.getValueAt(i, 0).equals(productId) && model.getValueAt(i, 2).equals(size)) {
-//                    // Aquí obtienes la cantidad actual del producto en la tabla
-//                    int currentQuantity = Integer.parseInt(model.getValueAt(i, 3).toString());
-//
-//                    // Aquí obtienes el cambio de cantidad del producto en tu lista de productos seleccionados
-//                    int quantityChange = products.stream()
-//                            .filter(p -> Objects.equals(p.getIdProduct(), productId) && p.getNameSize().equals(size))
-//                            .mapToInt(ModelProductSizes::getAmount)
-//                            .sum();
-//
-//                    System.out.println(quantityChange);
-//                    // Aquí calculas la nueva cantidad
-//                    int newQuantity = currentQuantity - (int) quantityChange;
-//                    System.out.println(newQuantity);
-//                    // Y aquí actualizas la cantidad en la tabla
-//                    model.setValueAt(newQuantity, i, 3);
-//                    table.setModel(model);
-//                    break;
-//                }
-//            }
-//        }
-//        
-//    }
     private void updateTable() {
         try {
             newModel.setRowCount(0);
@@ -83,8 +65,12 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
             products.stream()
                     .filter(Objects::nonNull)
                     .forEach(p -> {
-                        newModel.addRow(new Object[]{p.getIdProduct(), p.getNameProduct(), p.getNameSize(), p.getAmount(), p.getPrice(), p.getTotalPrice()});
-                        totalPayment += p.getTotalPrice();
+                        if (isEditable) {
+                            newModel.addRow(new Object[]{p.getSaleId(), p.getProductId(), p.getProductName(), p.getProductSizeId(), p.getSizeName(), p.getPriceUnity(), p.getAmount(), p.getSubtotal()});
+                        } else {
+                            newModel.addRow(new Object[]{p.getProductId(), p.getProductName(), p.getProductSizeId(), p.getSizeName(), p.getPriceUnity(), p.getAmount(), p.getSubtotal()});
+                        }
+                        totalPayment += p.getSubtotal();
                         totalQuantity += p.getAmount();
                     });
             totalValueTxt.setText("$" + totalPayment);
@@ -110,20 +96,26 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
     private void initStyles() {
         title.putClientProperty("FlatLaf.styleClass", "h1");
         jTable1.setDefaultEditor(Object.class, null);
+        if (isEditable) {
+            title.setText("Editar venta");
+            btnDataUpdate.setText("Editar");
+            newModel.addColumn("Id de venta");
+        } else {
+            try {
+                DAOSales dao = new DAOSalesImpl();
+                dao.loadClientsCmb(clientsCmb);
+            } catch (Exception e) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
+        }
         newModel.addColumn("ID del producto");
         newModel.addColumn("Nombre del producto");
+        newModel.addColumn("ID Unico");
         newModel.addColumn("Talla");
-        newModel.addColumn("Cantidad");
         newModel.addColumn("Precio Unitario");
+        newModel.addColumn("Cantidad");
         newModel.addColumn("Precio Total");
 
-        try {
-            DAOSales dao = new DAOSalesImpl();
-            dao.loadClientsCmb(clientsCmb);
-
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
     }
 
     /**
@@ -193,6 +185,11 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
         BtnDeleteProduct.setText("Eliminar");
         BtnDeleteProduct.setContentAreaFilled(false);
         BtnDeleteProduct.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        BtnDeleteProduct.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnDeleteProductActionPerformed(evt);
+            }
+        });
 
         TotalLbl.setText("Total:");
 
@@ -204,25 +201,6 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
         bg.setLayout(bgLayout);
         bgLayout.setHorizontalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bgLayout.createSequentialGroup()
-                .addGap(368, 486, Short.MAX_VALUE)
-                .addComponent(TotalLbl)
-                .addGap(37, 37, 37)
-                .addComponent(totalValueTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(147, 147, 147))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bgLayout.createSequentialGroup()
-                .addGap(90, 90, 90)
-                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(bgLayout.createSequentialGroup()
-                        .addComponent(clientLbl)
-                        .addGap(18, 18, 18)
-                        .addComponent(clientsCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(69, 69, 69)
-                        .addComponent(BtnAddProduct)
-                        .addGap(18, 18, 18)
-                        .addComponent(BtnDeleteProduct))
-                    .addComponent(jScrollPane1))
-                .addGap(100, 100, 100))
             .addGroup(bgLayout.createSequentialGroup()
                 .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(bgLayout.createSequentialGroup()
@@ -232,6 +210,26 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
                         .addGap(165, 165, 165)
                         .addComponent(btnDataUpdate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGap(201, 201, 201))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bgLayout.createSequentialGroup()
+                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(bgLayout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(TotalLbl)
+                        .addGap(37, 37, 37)
+                        .addComponent(totalValueTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(bgLayout.createSequentialGroup()
+                        .addGap(90, 90, 90)
+                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(bgLayout.createSequentialGroup()
+                                .addComponent(clientLbl)
+                                .addGap(18, 18, 18)
+                                .addComponent(clientsCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(69, 69, 69)
+                                .addComponent(BtnAddProduct)
+                                .addGap(18, 18, 18)
+                                .addComponent(BtnDeleteProduct))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE))))
+                .addGap(100, 100, 100))
         );
         bgLayout.setVerticalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -269,8 +267,12 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnDataUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDataUpdateActionPerformed
-        Integer clientId = clientsCmb.getSelectedIndex();
-        System.out.println(clientId);
+        Integer clientId;
+        if (isEditable) {
+            clientId = clientHashMap.get(clientsCmb.getSelectedItem().toString());
+        } else {
+            clientId = clientsCmb.getSelectedIndex();
+        }
 
         LocalDate date = LocalDate.now();
         Integer totalQuantitySold = totalQuantity;
@@ -282,22 +284,34 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
             return;
         }
         try {
-            ModelSales sale = new ModelSales(clientId, totalQuantitySold, total, date);
-            DAOSales dao = new DAOSalesImpl();
 
-            Integer idSale = dao.record(sale);
+            ModelSales sale = isEditable ? saleEditable : new ModelSales();
+            sale.setClientId(clientId);
+            sale.setQuantitySold(totalQuantitySold);
+            sale.setTotalMoneySold(total);
+            sale.setDate(date);
+
+            DAOSales dao = new DAOSalesImpl();
+            Integer idSale = isEditable ? dao.modify(sale) : dao.record(sale);
+
             products.stream()
                     .filter(Objects::nonNull)
                     .forEach((p) -> {
-                        ModelSalesProducts salesProducts = new ModelSalesProducts(idSale, p.getIdProduct(), p.getPrice(), p.getAmount(), p.getTotalPrice());
                         try {
+                            p.setSaleId(idSale);
                             DAOSalesProducts daoSalesProducts = new DAOSalesProductsImpl();
-                            daoSalesProducts.record(salesProducts);
+
+                            if (isEditable) {
+                                daoSalesProducts.modify(p);
+                            } else {
+                                daoSalesProducts.record(p);
+                            }
+
                         } catch (Exception e) {
                             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
                         }
                     });
-            javax.swing.JOptionPane.showMessageDialog(this, "Datos guardado correctamente. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(this, "Datos guardados correctamente. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             emptyFields();
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -321,6 +335,83 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
     private void jTable1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jTable1PropertyChange
 
     }//GEN-LAST:event_jTable1PropertyChange
+
+    private void BtnDeleteProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnDeleteProductActionPerformed
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+
+        int rows = model.getRowCount();
+        if (rows == 0) {
+            javax.swing.JOptionPane.showMessageDialog(this, "No hay venta para eliminar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            return;
+        } else if (jTable1.getSelectedRows().length < 1) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar una o más ventas para borrar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        int confirmed = javax.swing.JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar estos datos? \n", "CONFIMARCIÓN", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
+        if (confirmed == javax.swing.JOptionPane.YES_OPTION) {
+
+            int[] selectedRows = jTable1.getSelectedRows();
+            int continueDeleting;
+            for (int i = selectedRows.length - 1; i >= 0; i--) {
+                if (i == selectedRows.length - 4) {
+                    continueDeleting = javax.swing.JOptionPane.showConfirmDialog(this, "¿Has eliminado 3 productos, deseas continuar eliminando el resto?\n", "CONFIMARCIÓN", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
+                    if (continueDeleting == javax.swing.JOptionPane.NO_OPTION) {
+                        return;
+                    }
+                }
+
+                // TODO
+                try {
+                    int selectedRow = selectedRows[i];
+                    DAOSalesProducts daoSalesDetails = new DAOSalesProductsImpl();
+                    int idIndex = 0, nameIndex = 0, sizeIndex = 0, priceIndex = 0, amountIndex = 0;
+                    if ((Integer) jTable1.getValueAt(selectedRow, 0) != null) {
+                        Integer saleId = (Integer) jTable1.getValueAt(selectedRow, 0);
+                        Integer productSizeId = (int) jTable1.getValueAt(selectedRow, 3);
+                        daoSalesDetails.delete(saleId, productSizeId);
+                        idIndex = 1;
+                        nameIndex = 2;
+                        sizeIndex = 4;
+                        priceIndex = 5;
+                        amountIndex = 6;
+                    } else {
+                        if (isEditable) {
+                            idIndex = 1;
+                            nameIndex = 2;
+                            sizeIndex = 4;
+                            priceIndex = 5;
+                            amountIndex = 6;
+                        } else {
+                            idIndex = 0;
+                            nameIndex = 1;
+                            sizeIndex = 3;
+                            priceIndex = 4;
+                            amountIndex = 5;
+                        }
+                    }
+                    Integer productId = (Integer) jTable1.getValueAt(selectedRow, idIndex);
+                    String productName = (String) jTable1.getValueAt(selectedRow, nameIndex);
+                    String sizeName = (String) jTable1.getValueAt(selectedRow, sizeIndex);
+                    Float price = (Float) jTable1.getValueAt(selectedRow, priceIndex);
+                    Integer amount = (Integer) jTable1.getValueAt(selectedRow, amountIndex);
+                    products.removeIf(p
+                            -> p.getProductId() == productId
+                            && p.getProductName().equals(productName)
+                            && p.getSizeName().equals(sizeName)
+                            && p.getPriceUnity().equals(price)
+                            && p.getAmount() == amount
+                    );
+
+                    model.removeRow(selectedRow);
+                } catch (Exception e) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+            javax.swing.JOptionPane.showMessageDialog(this, "Los datos se han eliminado correctamente. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_BtnDeleteProductActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -10,6 +10,8 @@ public class ModelSales {
     private Integer quantitySold;
     private Float totalMoneySold;
     private LocalDate date;  
+
+    
     
     public ModelSales() {}
 
@@ -29,8 +31,6 @@ public class ModelSales {
         this.totalMoneySold = totalMoneySold;
         this.date = date;
     }
-
-    
 
     public int getId() {
         return id;
@@ -55,7 +55,20 @@ public class ModelSales {
     public LocalDate getDate() {
         return date;
     }
-    
-    
+    public void setClientId(Integer clientId) {
+        this.clientId = clientId;
+    }
+
+    public void setQuantitySold(Integer quantitySold) {
+        this.quantitySold = quantitySold;
+    }
+
+    public void setTotalMoneySold(Float totalMoneySold) {
+        this.totalMoneySold = totalMoneySold;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }   
 
 }

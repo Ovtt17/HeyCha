@@ -225,7 +225,7 @@ public class UpClients extends javax.swing.JPanel implements Styleable {
         client.setCellphone(cellphone);
         client.setCity(city);
         client.setDirection(direction);
-
+        
         try {
             DAOClients dao = new DAOClientsImpl();
             if (!isEditable) {

@@ -1,15 +1,13 @@
 package com.mycompany.models;
 
 public class ModelProductSizes {
+    private Integer id;
     private Integer idProduct;
     private Integer idSize;
     private Integer amount;
     
     private String nameSize;
     private String nameProduct;
-    
-    private Float price;
-    private Float totalPrice;
 
     //save product sizes
     public ModelProductSizes(int idProduct, String nameProduct, String nameSize, int amount) {
@@ -17,20 +15,17 @@ public class ModelProductSizes {
         this.nameProduct = nameProduct;
         this.nameSize = nameSize;
         this.amount = amount;
-    }   
-    
-    // pass product size to sale
-    public ModelProductSizes(Integer idProduct, Integer amount, String nameSize, String nameProduct, Float price) {
-        this.idProduct = idProduct;
-        this.amount = amount;
-        this.nameSize = nameSize;
-        this.nameProduct = nameProduct;
-        this.price = price;
-        this.totalPrice = price * amount;
-    }
-    
+    }      
 
     public ModelProductSizes() {
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Integer getIdProduct() {
@@ -71,14 +66,6 @@ public class ModelProductSizes {
 
     public void setNameProduct(String nameProduct) {
         this.nameProduct = nameProduct;
-    }
-
-    public Float getPrice() {
-        return price;
-    }
-
-    public Float getTotalPrice() {
-        return totalPrice;
     }
     
 }

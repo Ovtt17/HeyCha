@@ -4,6 +4,7 @@ import ImplementationDAO.DAOProductsImpl;
 import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.models.ModelProductSizes;
 import com.mycompany.models.ModelProducts;
+import com.mycompany.models.ModelSalesProducts;
 import java.util.List;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
@@ -45,7 +46,7 @@ public class TableSale extends javax.swing.JDialog {
             DAOProducts dao = new DAOProductsImpl();
             products = dao.consult(nameToFind, brandSelected, categorySelected);
             products.forEach((p) -> {
-                modelProduct.addRow(new Object[]{p.getId(), p.getName(), p.getBrand(), p.getCategory(), p.getSizeAvailable(), p.getTotalExistence(), p.getPrice()});
+                modelProduct.addRow(new Object[]{p.getId(), p.getName(), p.getBrandName(), p.getCategoryName(), p.getSizeAvailable(), p.getTotalExistence(), p.getPrice()});
                 
             });
         } catch (Exception e) {
@@ -253,16 +254,17 @@ public class TableSale extends javax.swing.JDialog {
         if (evt.getClickCount() == 1) {
             int selectedRow = jTableProducts.getSelectedRow();
             if (model.getColumnCount() < 7) {
-                String cellValue = model.getValueAt(selectedRow, 3).toString();
+                String cellValue = model.getValueAt(selectedRow, 4).toString();
                 int maximumAmount = Integer.parseInt(cellValue);
                 SpinnerNumberModel spinnerModel = new SpinnerNumberModel(1, 1, maximumAmount, 1);
                 AmountSpinner.setModel(spinnerModel);
             }
         } else if (evt.getClickCount() == 2) {
             //TODO
-            if (model.getColumnCount() > 4) {
+            if (model.getColumnCount() > 5) {
                 int selectedRow = jTableProducts.getSelectedRow();
                 productPrice = (Float) jTableProducts.getValueAt(selectedRow, 6);
+                
                 p.loadProductSize(jTableProducts);
                 
                 btnCleanField.setEnabled(false);
@@ -296,13 +298,17 @@ public class TableSale extends javax.swing.JDialog {
             javax.swing.JOptionPane.showMessageDialog(this, "Debe seleccionar un producto para agregarlo al carrito. \n", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
             return;
         }
-        Integer id = (Integer) jTableProducts.getValueAt(selectedRow, 0);
-        String name = (String) jTableProducts.getValueAt(selectedRow, 1);
-        String size = (String) jTableProducts.getValueAt(selectedRow, 2);
+        
+        Integer productSizeId = (Integer) jTableProducts.getValueAt(selectedRow, 0);
+        Integer productId = (Integer) jTableProducts.getValueAt(selectedRow, 1);
+        String productName = (String) jTableProducts.getValueAt(selectedRow, 2);
+        String sizeName = (String) jTableProducts.getValueAt(selectedRow, 3);
+        
+        Float price = productPrice;
         Integer amount = (Integer) AmountSpinner.getValue();
 
-        ModelProductSizes pSizes = new ModelProductSizes(id, amount, size, name, productPrice);
-        upSales.addProduct(pSizes);
+        ModelSalesProducts salesDetails = new ModelSalesProducts(productSizeId, productId, productName, sizeName, price, amount);
+        upSales.addProduct(salesDetails);
         javax.swing.JOptionPane.showMessageDialog(this, "El producto se ha agregado al carrito de compras. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
         this.dispose();
     }//GEN-LAST:event_btnAddActionPerformed
@@ -314,7 +320,8 @@ public class TableSale extends javax.swing.JDialog {
 
         for (ModelProducts p : products) {
             if (p.getName().toLowerCase().contains(productNameToSearch)) {
-                model.addRow(new Object[]{p.getId(), p.getName(), p.getBrand(), p.getCategory(), p.getPrice()});
+                model.addRow(new Object[]{p.getId(), p.getName(), p.getBrandName(), p.getCategoryName(), p.getPrice()});
+                break;
             }
         }
     }

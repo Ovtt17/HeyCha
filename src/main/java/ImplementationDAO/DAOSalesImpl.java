@@ -47,8 +47,28 @@ public class DAOSalesImpl extends Database implements DAOSales {
     }
 
     @Override
-    public void modify(ModelSales sale) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Integer modify(ModelSales sale) throws Exception {
+        Integer saleId = null;
+        try (Connection con = this.getConnection()) {
+            String query = "call modificar_venta(?, ?, ?);";
+            final PreparedStatement ps = con.prepareStatement(query);
+            try (ps) {
+                setSalesFieldsToModify(ps, sale);
+                ps.executeUpdate();
+                saleId = sale.getId();
+            }
+        }
+        return saleId;
+    }
+
+    private void setSalesFieldsToModify(PreparedStatement cst, ModelSales sale) {
+        try {
+            cst.setInt(1, sale.getQuantitySold());
+            cst.setFloat(2, sale.getTotalMoneySold());
+            cst.setInt(3, sale.getId());
+        } catch (SQLException ex) {
+            Logger.getLogger(DAOSalesImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
@@ -104,7 +124,24 @@ public class DAOSalesImpl extends Database implements DAOSales {
 
     @Override
     public ModelSales getSaleById(int saleId) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        ModelSales sale = null;
+        try (Connection con = this.getConnection()) {
+            String sql = "call consultSalesById(?);";
+            final PreparedStatement ps = con.prepareStatement(sql);
+            try (ps) {
+                ps.setInt(1, saleId);
+                final ResultSet rs = ps.executeQuery();
+                try (rs) {
+                    while (rs.next()) {
+                        sale = setSalesFieldsToConsult(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de consulta en la base de datos", e);
+            throw e;
+        }
+        return sale;
     }
 
     @Override
@@ -128,7 +165,7 @@ public class DAOSalesImpl extends Database implements DAOSales {
                     comboBox.addItem(rs.getString(1));
                 }
             }
-            comboBox.setSelectedIndex(-1);
+            comboBox.setSelectedIndex(0);
             AutoCompleteDecorator.decorate(comboBox);
         }
     }

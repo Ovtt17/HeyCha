@@ -57,6 +57,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             btnEdit.putClientProperty("FlatLaf.style", "background: #FFB72C");
             btnCleanField.putClientProperty("FlatLaf.style", "background: #1565C0");
         }
+        btnEdit.setEnabled(true);
         btnDelete.setEnabled(true);
         btnCleanField.setEnabled(true);
         BrandFilterCmb.setEnabled(true);
@@ -72,7 +73,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         try {
             DAOProducts dao = new DAOProductsImpl();
             products = dao.consult(nameToFind, brandSelected, categorySelected);
-            products.forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrand(), p.getCategory(), p.getType(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice(), p.getDescription()}));
+            products.forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrandName(), p.getCategoryName(), p.getTypeName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice(), p.getDescription()}));
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -342,6 +343,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
             if (model.getColumnCount() > 4) {
                 loadProductSize(jTableProducts);
+                btnEdit.setEnabled(false);
                 btnDelete.setEnabled(false);
                 btnCleanField.setEnabled(false);
                 BrandFilterCmb.setEnabled(false);
@@ -366,13 +368,14 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
             DefaultTableModel newModel = new DefaultTableModel();
             table.setDefaultEditor(Object.class, null);
+            newModel.addColumn("ID");
             newModel.addColumn("ID del producto");
             newModel.addColumn("Nombre del producto");
             newModel.addColumn("Talla");
             newModel.addColumn("Cantidad");
 
             productSizeList = dao.consult(productId);
-            productSizeList.forEach((p) -> newModel.addRow(new Object[]{p.getIdProduct(), p.getNameProduct(), p.getNameSize(), p.getAmount()}));
+            productSizeList.forEach((p) -> newModel.addRow(new Object[]{p.getId(), p.getIdProduct(), p.getNameProduct(), p.getNameSize(), p.getAmount()}));
             table.setModel(newModel);
 
         } catch (Exception e) {
@@ -414,9 +417,9 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
         for (ModelProducts p : products) {
             if (p.getName().toLowerCase().contains(productNameToSearch)
-                    && (productBrandToSearch.equals("NINGUNO") || p.getBrand().equals(productBrandToSearch))
-                    && (productCategoryToSearch.equals("NINGUNO") || p.getCategory().equals(productCategoryToSearch))) {
-                model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrand(), p.getCategory(), p.getType(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice()});
+                    && (productBrandToSearch.equals("NINGUNO") || p.getBrandName().equals(productBrandToSearch))
+                    && (productCategoryToSearch.equals("NINGUNO") || p.getCategoryName().equals(productCategoryToSearch))) {
+                model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrandName(), p.getCategoryName(), p.getTypeName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice()});
             }
         }
     }

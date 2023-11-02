@@ -71,11 +71,12 @@ public class DAOProductsImpl extends Database implements DAOProducts {
     public void modify(ModelProducts product, ModelProductSizes pSizes) throws Exception {
         try (Connection con = this.getConnection()) {
             final PreparedStatement st = con.prepareStatement("call modifyProduct(?, ?, ?, ?, ?, ?, ?, ?);");
+
             try (st) {
                 setProductFields(st, product);
                 st.setInt(8, product.getId());
-                st.executeUpdate();
                 pSizes.setIdProduct(product.getId());
+                st.executeUpdate();
             }
         } catch (SQLException e) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de modificacion en la base de datos", e);
@@ -134,24 +135,27 @@ public class DAOProductsImpl extends Database implements DAOProducts {
 
     private ModelProducts setProductFieldsToConsult(ResultSet rs) throws SQLException {
         Integer id = rs.getInt("ID");
-        String name = rs.getString("NOMBRE_PRODUCTO");
+        String name = rs.getString("NOMBRE");
         Float price = rs.getFloat("PRECIO");
         // hacer estas validaciones para evitar que muestre datos que no ordene
         String description = rs.getString("DESCRIPCION");
         description = rs.wasNull() ? null : description;
-
         Integer discount = rs.getInt("DESCUENTO");
         discount = rs.wasNull() ? null : discount;
-        String brand = rs.getString("NOMBRE_MARCA");
-        String category = rs.getString("NOMBRE_CATEGORIA");
-        String type = rs.getString("NOMBRE_TIPO");
-        type = rs.wasNull() ? null : type;
+        Integer brandId = rs.getInt("ID_Marca");
+        Integer categoryId = rs.getInt("ID_Categoria");
+        Integer typeId = rs.getInt("ID_Tipo");
+
+        String brandName = rs.getString("NOMBRE_MARCA");
+        String categoryName = rs.getString("NOMBRE_CATEGORIA");
+        String typeName = rs.getString("NOMBRE_TIPO");
+        typeName = rs.wasNull() ? null : typeName;
 
         String brandAvailable = rs.getString("TALLAS_DISPONIBLES");
         Integer totalExistence = rs.getInt("TOTAL_EXISTENCIA");
         Float totalPrice = rs.getFloat("VALOR_TOTAL");
 
-        return new ModelProducts(id, name, price, description, discount, brand, category, type, brandAvailable, totalExistence, totalPrice);
+        return new ModelProducts(id, name, price, description, discount, brandId, categoryId, typeId, brandName, categoryName, typeName, brandAvailable, totalExistence, totalPrice);
 
     }
 

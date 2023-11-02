@@ -86,18 +86,11 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
                 Integer discount = productEditable.getDiscount() == null ? 0 : productEditable.getDiscount();
                 discountTxt.setText(discount.toString());
 
-                brandCmb.setSelectedItem(productEditable.getBrand());
+                brandCmb.setSelectedItem(productEditable.getBrandName());
 
-                categoryCmb.setSelectedItem(productEditable.getCategory());
+                categoryCmb.setSelectedItem(productEditable.getCategoryName());
 
-                String type = productEditable.getType();
-                if (type == null) {
-                    typeCmb.setSelectedIndex(-1);
-                } else {
-                    typeCmb.setSelectedItem(type);
-                }
-                typeCmb.setSelectedItem(type);
-
+                typeCmb.setSelectedIndex(productEditable.getIdType());
                 loadSizes();
             }
         }
@@ -401,7 +394,7 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         Integer discount;
         try {
             if (!priceTxt.getText().trim().isEmpty()) {
-                price = Float.parseFloat(priceTxt.getText().trim());
+                price = Float.valueOf(priceTxt.getText().trim());
                 if (price < 1) {
                     javax.swing.JOptionPane.showMessageDialog(this, "El precio no puede ser menor que $1. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
                     priceTxt.requestFocus();
@@ -420,7 +413,7 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
 
         Integer idBrand = brandCmb.getSelectedIndex() == -1 ? null : brandCmb.getSelectedIndex() + 1;
         Integer idCategory = categoryCmb.getSelectedIndex() == -1 ? null : categoryCmb.getSelectedIndex() + 1;
-        Integer idType = typeCmb.getSelectedIndex() == -1 || typeCmb.getSelectedIndex() == 0 ? null : typeCmb.getSelectedIndex();
+        Integer idType = typeCmb.getSelectedIndex() == -1 || typeCmb.getSelectedIndex() == 0 ? null : typeCmb.getSelectedIndex() + 1;
 
         boolean incorrectData = name.isEmpty() || price == null || idBrand == null || idCategory == null;
 
@@ -429,8 +422,18 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
             nameTxt.requestFocus();
             return;
         }
-
-        ModelProducts product = isEditable ? productEditable : new ModelProducts(name, price, description, discount, idBrand, idCategory, idType);
+        
+        
+        
+        ModelProducts product = isEditable ? productEditable : new ModelProducts();
+        product.setName(name);
+        product.setPrice(price);
+        product.setDescription(description);
+        product.setDiscount(discount);
+        product.setIdBrand(idBrand);
+        product.setIdCategory(idCategory);
+        product.setIdType(idType);
+        
         ModelProductSizes pSizes = new ModelProductSizes();
 
         spinnerMap.put("XS", spinnerSizeXS);
