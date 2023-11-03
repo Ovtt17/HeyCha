@@ -1,14 +1,18 @@
 package com.mycompany.views;
 
-import ImplementationDAO.DAOSalesImpl;
-import ImplementationDAO.DAOSalesProductsImpl;
+import com.mycompany.exporters.JTableToExcelExporter;
+import com.mycompany.implementationDAO.DAOSalesImpl;
+import com.mycompany.implementationDAO.DAOSalesProductsImpl;
 import com.mycompany.heycha.Dashboard;
 import com.mycompany.interfaces.DAOSales;
 import com.mycompany.interfaces.DAOSalesProducts;
+import com.mycompany.interfaces.ExcelExporter;
 import com.mycompany.interfaces.Styleable;
 import com.mycompany.models.ModelSalesProducts;
 import java.awt.Color;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
@@ -26,15 +30,13 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
     private void initStyles() {
         title.putClientProperty("FlatLaf.styleClass", "h1");
         saleSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto vendido a buscar.");
-
         title.putClientProperty("FlatLaf.styleClass", "h1");
-
         saleSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto a buscar.");
-
         btnAdd.putClientProperty("JButton.buttonType", "roundRect");
         btnDelete.putClientProperty("JButton.buttonType", "roundRect");
         btnEdit.putClientProperty("JButton.buttonType", "roundRect");
-
+        btnSearch.putClientProperty("JButton.buttonType", "roundRect");
+        btnExport.putClientProperty("JButton.buttonType", "roundRect");
         btnDelete.setEnabled(true);
         btnEdit.setEnabled(true);
     }
@@ -49,6 +51,7 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
             btnAdd.putClientProperty("FlatLaf.style", "background: #0c9294");
             btnDelete.putClientProperty("FlatLaf.style", "background: #0c9294");
             btnEdit.putClientProperty("FlatLaf.style", "background: #0c9294");
+            btnExport.putClientProperty("FlatLaf.style", "background: #0c9294");
         } else {
             title.setForeground(Color.black);
             background_sales.putClientProperty("FlatLaf.style", "background: #FFFFFF");
@@ -56,6 +59,7 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
             btnAdd.putClientProperty("FlatLaf.style", "background: #1565C0");
             btnDelete.putClientProperty("FlatLaf.style", "background: #FF3333");
             btnEdit.putClientProperty("FlatLaf.style", "background: #FFB72C");
+            btnExport.putClientProperty("FlatLaf.style", "background: #159734");
         }
     }
 
@@ -87,6 +91,7 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
         btnAdd = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
+        btnExport = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(764, 436));
 
@@ -164,6 +169,16 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
             }
         });
 
+        btnExport.setBackground(new java.awt.Color(21, 151, 52));
+        btnExport.setForeground(new java.awt.Color(255, 255, 255));
+        btnExport.setText("Exportar");
+        btnExport.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnExport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExportActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout background_salesLayout = new javax.swing.GroupLayout(background_sales);
         background_sales.setLayout(background_salesLayout);
         background_salesLayout.setHorizontalGroup(
@@ -179,7 +194,8 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
                                 .addGap(56, 56, 56)
                                 .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_salesLayout.createSequentialGroup()
-                                .addGap(430, 430, 430)
+                                .addComponent(btnExport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(355, 355, 355)
                                 .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGap(33, 33, 33)
                                 .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -198,13 +214,14 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
                     .addComponent(saleSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(background_salesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(23, 23, 23))
+                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnExport, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(22, 22, 22))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -299,6 +316,15 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
             javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar una venta a editar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_btnEditActionPerformed
+
+    private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
+        ExcelExporter exporter = new JTableToExcelExporter();
+        try {
+            exporter.exportToExcel(JTableSales);
+        } catch (Exception ex) {
+            Logger.getLogger(ViewProducts.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnExportActionPerformed
     private void loadSalesProducts(JTable table) {
         List<ModelSalesProducts> salesProductsList = null;
         try {
@@ -336,6 +362,7 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnExport;
     private javax.swing.JButton btnSearch;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField saleSearch;

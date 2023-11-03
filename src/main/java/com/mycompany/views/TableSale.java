@@ -1,11 +1,14 @@
 package com.mycompany.views;
 
-import ImplementationDAO.DAOProductsImpl;
+import com.mycompany.implementationDAO.DAOProductsImpl;
 import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.models.ModelProductSizes;
 import com.mycompany.models.ModelProducts;
 import com.mycompany.models.ModelSalesProducts;
+import java.awt.Color;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 
@@ -17,24 +20,37 @@ public class TableSale extends javax.swing.JDialog {
     Float productPrice;
     
 
-    public TableSale(java.awt.Frame parent, boolean modal) {
+    public TableSale(java.awt.Frame parent, boolean modal, boolean  darkModeStatus) {
         super(parent, modal);
         initComponents();
-        initTable();
+        initTable(darkModeStatus);
     }
 
-    public TableSale(java.awt.Frame parent, boolean modal, UpSales upSales) {
+    public TableSale(java.awt.Frame parent, boolean modal, UpSales upSales, boolean darkModeStatus) {
         super(parent, modal);
         initComponents();
-        initTable();
+        initTable(darkModeStatus);
         this.upSales = upSales;
     }
 
     private TableSale() {
-
     }
 
-    private void initTable() {
+    private void initTable(boolean darkModeStatus) {
+        if (darkModeStatus) {
+            title.setForeground(Color.white);
+            background_products.putClientProperty("FlatLaf.style", "background: #172030");
+            btnAdd.putClientProperty("FlatLaf.style", "background: #0c9294");
+            btnCleanField.putClientProperty("FlatLaf.style", "background: #0c9294");
+        } else {
+            title.setForeground(Color.black);
+            background_products.putClientProperty("FlatLaf.style", "background: #FFFFFF");
+            btnAdd.putClientProperty("FlatLaf.style", "background: #125AAD");
+            btnCleanField.putClientProperty("FlatLaf.style", "background: #125AAD");
+        }
+        btnAdd.putClientProperty("JButton.buttonType", "roundRect");
+        btnCleanField.putClientProperty("JButton.buttonType", "roundRect");
+        
         this.setLocationRelativeTo(null);
         DefaultTableModel modelProduct = (DefaultTableModel) jTableProducts.getModel();
         jTableProducts.setDefaultEditor(Object.class, null);
@@ -44,8 +60,7 @@ public class TableSale extends javax.swing.JDialog {
         String categorySelected = "NINGUNO";
         try {
             DAOProducts dao = new DAOProductsImpl();
-            products = dao.consult(nameToFind, brandSelected, categorySelected);
-            products.forEach((p) -> {
+            dao.consult(nameToFind, brandSelected, categorySelected).forEach((p) -> {
                 modelProduct.addRow(new Object[]{p.getId(), p.getName(), p.getBrandName(), p.getCategoryName(), p.getSizeAvailable(), p.getTotalExistence(), p.getPrice()});
                 
             });
@@ -314,15 +329,17 @@ public class TableSale extends javax.swing.JDialog {
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void filteredConsult() {
+        DAOProducts dao = new DAOProductsImpl();
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
         model.setRowCount(0);
-        String productNameToSearch = productSearch.getText().toLowerCase();
-
-        for (ModelProducts p : products) {
-            if (p.getName().toLowerCase().contains(productNameToSearch)) {
-                model.addRow(new Object[]{p.getId(), p.getName(), p.getBrandName(), p.getCategoryName(), p.getPrice()});
-                break;
-            }
+        String productNameToSearch = productSearch.getText();
+        String productBrandToSearch = BrandFilterCmb.getSelectedItem() == null ? "NINGUNO" : BrandFilterCmb.getSelectedItem().toString();
+        String productCategoryToSearch = CategoryFilterCmb.getSelectedItem() == null ? "NINGUNO" : CategoryFilterCmb.getSelectedItem().toString();
+        
+        try {
+            dao.consult(productNameToSearch, productBrandToSearch, productCategoryToSearch).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getBrandName(), p.getCategoryName(), p.getSizeAvailable(), p.getTotalExistence(), p.getPrice()}));
+        } catch (Exception ex) {
+            Logger.getLogger(ViewProducts.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

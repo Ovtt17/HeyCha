@@ -1,4 +1,4 @@
-package ImplementationDAO;
+package com.mycompany.implementationDAO;
 
 import com.mycompany.db.Database;
 import com.mycompany.interfaces.DAOProductSizes;
@@ -65,7 +65,7 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
     @Override
     public void delete(int productId) throws Exception {
         try {
-            String query = "deleteProductSize(?);";
+            String query = "call deleteProductSize(?);";
             final PreparedStatement pst = this.getConnection().prepareStatement(query);
             try (pst) {
                 pst.setInt(1, productId);

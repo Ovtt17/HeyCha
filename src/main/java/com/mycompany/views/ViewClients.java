@@ -1,12 +1,16 @@
 package com.mycompany.views;
 
-import ImplementationDAO.DAOClientsImpl;
+import com.mycompany.exporters.JTableToExcelExporter;
+import com.mycompany.implementationDAO.DAOClientsImpl;
 import com.mycompany.heycha.Dashboard;
 import com.mycompany.interfaces.DAOClients;
+import com.mycompany.interfaces.ExcelExporter;
 import com.mycompany.interfaces.Styleable;
 import com.mycompany.models.ModelClients;
 import java.awt.Color;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 
 public class ViewClients extends javax.swing.JPanel implements Styleable {
@@ -31,6 +35,7 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
         btnDelete.putClientProperty("JButton.buttonType", "roundRect");
         btnEdit.putClientProperty("JButton.buttonType", "roundRect");
         btnCleanField.putClientProperty("JButton.buttonType", "roundRect");
+        btnExport.putClientProperty("JButton.buttonType", "roundRect");
 
         if (isDarkModeEnabled) {
             title.setForeground(Color.white);
@@ -39,6 +44,7 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
             btnAdd.putClientProperty("FlatLaf.style", "background: #0c9294");
             btnDelete.putClientProperty("FlatLaf.style", "background: #0c9294");
             btnEdit.putClientProperty("FlatLaf.style", "background: #0c9294");
+            btnExport.putClientProperty("FlatLaf.style", "background: #0c9294");
         } else {
             title.setForeground(Color.black);
             background_clients.putClientProperty("FlatLaf.style", "background: #FFFFFF");
@@ -46,6 +52,7 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
             btnAdd.putClientProperty("FlatLaf.style", "background: #1565C0");
             btnDelete.putClientProperty("FlatLaf.style", "background: #FF3333");
             btnEdit.putClientProperty("FlatLaf.style", "background: #FFB72C");
+            btnExport.putClientProperty("FlatLaf.style", "background: #159734");
         }
     }
 
@@ -80,6 +87,7 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
         btnEdit = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnCleanField = new javax.swing.JButton();
+        btnExport = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(764, 436));
 
@@ -158,32 +166,42 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
             }
         });
 
+        btnExport.setBackground(new java.awt.Color(21, 151, 52));
+        btnExport.setForeground(new java.awt.Color(255, 255, 255));
+        btnExport.setText("Exportar");
+        btnExport.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnExport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExportActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout background_clientsLayout = new javax.swing.GroupLayout(background_clients);
         background_clients.setLayout(background_clientsLayout);
         background_clientsLayout.setHorizontalGroup(
             background_clientsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(background_clientsLayout.createSequentialGroup()
+                .addGap(20, 20, 20)
                 .addGroup(background_clientsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(background_clientsLayout.createSequentialGroup()
-                        .addGap(450, 450, 450)
-                        .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(33, 33, 33)
-                        .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(33, 33, 33)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(background_clientsLayout.createSequentialGroup()
-                        .addGap(20, 20, 20)
                         .addGroup(background_clientsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(background_clientsLayout.createSequentialGroup()
+                                .addComponent(btnExport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(355, 355, 355)
+                                .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(33, 33, 33)
+                                .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(33, 33, 33)
+                                .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(background_clientsLayout.createSequentialGroup()
                                 .addComponent(clientSearch)
                                 .addGap(41, 41, 41)
                                 .addComponent(btnCleanField))
-                            .addComponent(jScrollPane1))))
-                .addGap(30, 30, 30))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_clientsLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                            .addComponent(jScrollPane1))
+                        .addGap(30, 30, 30))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_clientsLayout.createSequentialGroup()
+                        .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
         background_clientsLayout.setVerticalGroup(
             background_clientsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -200,7 +218,8 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
                 .addGroup(background_clientsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(background_clientsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnExport, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(23, 23, 23))
         );
@@ -296,6 +315,15 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
+    private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
+        ExcelExporter exporter = new JTableToExcelExporter();
+        try {
+            exporter.exportToExcel(JTableClients);
+        } catch (Exception ex) {
+            Logger.getLogger(ViewProducts.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnExportActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable JTableClients;
@@ -304,6 +332,7 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
     private javax.swing.JButton btnCleanField;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnExport;
     private javax.swing.JTextField clientSearch;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel title;
