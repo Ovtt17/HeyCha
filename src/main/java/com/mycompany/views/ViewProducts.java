@@ -1,22 +1,27 @@
 package com.mycompany.views;
 
-import ImplementationDAO.DAOProductsImpl;
-import ImplementationDAO.DAOProductsSizesImpl;
+import com.mycompany.exporters.JTableToExcelExporter;
+import com.mycompany.implementationDAO.DAOProductsImpl;
+import com.mycompany.implementationDAO.DAOProductsSizesImpl;
 import com.mycompany.heycha.Dashboard;
 import com.mycompany.interfaces.DAOProductSizes;
 import com.mycompany.interfaces.DAOProducts;
+import com.mycompany.interfaces.ExcelExporter;
 import com.mycompany.interfaces.Styleable;
 import com.mycompany.models.ModelProductSizes;
-import com.mycompany.models.ModelProducts;
 import java.awt.Color;
+import java.io.File;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JTable;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
     boolean lightOrDarkMode;
-    List<ModelProducts> products;
 
     public ViewProducts(boolean isDarkModeEnabled) {
         initComponents();
@@ -32,30 +37,29 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     public void updateStyles(boolean isDarkModeEnabled) {
         lightOrDarkMode = isDarkModeEnabled;
         title.putClientProperty("FlatLaf.styleClass", "h1");
-
         productSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto a buscar.");
-
         btnAdd.putClientProperty("JButton.buttonType", "roundRect");
         btnDelete.putClientProperty("JButton.buttonType", "roundRect");
         btnEdit.putClientProperty("JButton.buttonType", "roundRect");
+        btnExport.putClientProperty("JButton.buttonType", "roundRect");
         btnCleanField.putClientProperty("JButton.buttonType", "roundRect");
 
         if (isDarkModeEnabled) {
             title.setForeground(Color.white);
             background_products.putClientProperty("FlatLaf.style", "background: #172030");
-
             btnAdd.putClientProperty("FlatLaf.style", "background: #0c9294");
             btnDelete.putClientProperty("FlatLaf.style", "background: #0c9294");
             btnEdit.putClientProperty("FlatLaf.style", "background: #0c9294");
             btnCleanField.putClientProperty("FlatLaf.style", "background: #0c9294");
+            btnExport.putClientProperty("FlatLaf.style", "background: #0c9294");
         } else {
             title.setForeground(Color.black);
             background_products.putClientProperty("FlatLaf.style", "background: #FFFFFF");
-
             btnAdd.putClientProperty("FlatLaf.style", "background: #1565C0");
             btnDelete.putClientProperty("FlatLaf.style", "background: #FF3333");
             btnEdit.putClientProperty("FlatLaf.style", "background: #FFB72C");
             btnCleanField.putClientProperty("FlatLaf.style", "background: #1565C0");
+            btnExport.putClientProperty("FlatLaf.style", "background: #159734");
         }
         btnEdit.setEnabled(true);
         btnDelete.setEnabled(true);
@@ -72,8 +76,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         String categorySelected = "NINGUNO";
         try {
             DAOProducts dao = new DAOProductsImpl();
-            products = dao.consult(nameToFind, brandSelected, categorySelected);
-            products.forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrandName(), p.getCategoryName(), p.getTypeName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice(), p.getDescription()}));
+            dao.consult(nameToFind, brandSelected, categorySelected).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrandName(), p.getCategoryName(), p.getTypeName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice(), p.getDescription()}));
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -107,6 +110,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         BrandLbl = new javax.swing.JLabel();
         CategoryLbl = new javax.swing.JLabel();
         btnCleanField = new javax.swing.JButton();
+        btnExport = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(764, 436));
 
@@ -211,36 +215,45 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             }
         });
 
+        btnExport.setBackground(new java.awt.Color(21, 151, 52));
+        btnExport.setForeground(new java.awt.Color(255, 255, 255));
+        btnExport.setText("Exportar");
+        btnExport.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnExport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExportActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout background_productsLayout = new javax.swing.GroupLayout(background_products);
         background_products.setLayout(background_productsLayout);
         background_productsLayout.setHorizontalGroup(
             background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
+                .addGap(20, 20, 20)
                 .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(background_productsLayout.createSequentialGroup()
-                        .addGap(449, 449, 449)
+                        .addComponent(btnExport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(356, 356, 356)
                         .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(33, 33, 33)
-                        .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)
+                        .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(33, 33, 33)
                         .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, background_productsLayout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(background_productsLayout.createSequentialGroup()
-                                .addComponent(productSearch)
-                                .addGap(18, 18, 18)
-                                .addComponent(BrandLbl)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(BrandFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(CategoryLbl)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(CategoryFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnCleanField))
-                            .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(productSearch)
+                        .addGap(18, 18, 18)
+                        .addComponent(BrandLbl)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(BrandFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(CategoryLbl)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(CategoryFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(19, 19, 19)
+                        .addComponent(btnCleanField))
+                    .addComponent(title, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(30, 30, 30))
         );
         background_productsLayout.setVerticalGroup(
@@ -262,7 +275,8 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
                 .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnExport, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(23, 23, 23))
         );
 
@@ -408,19 +422,27 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         filterConsult();
     }//GEN-LAST:event_btnCleanFieldActionPerformed
 
+    private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
+        ExcelExporter exporter = new JTableToExcelExporter();
+        try {
+            exporter.exportToExcel(jTableProducts);
+        } catch (Exception ex) {
+            Logger.getLogger(ViewProducts.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnExportActionPerformed
+
     private void filterConsult() {
+        DAOProducts dao = new DAOProductsImpl();
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
         model.setRowCount(0);
         String productNameToSearch = productSearch.getText();
         String productBrandToSearch = BrandFilterCmb.getSelectedItem() == null ? "NINGUNO" : BrandFilterCmb.getSelectedItem().toString();
         String productCategoryToSearch = CategoryFilterCmb.getSelectedItem() == null ? "NINGUNO" : CategoryFilterCmb.getSelectedItem().toString();
 
-        for (ModelProducts p : products) {
-            if (p.getName().toLowerCase().contains(productNameToSearch)
-                    && (productBrandToSearch.equals("NINGUNO") || p.getBrandName().equals(productBrandToSearch))
-                    && (productCategoryToSearch.equals("NINGUNO") || p.getCategoryName().equals(productCategoryToSearch))) {
-                model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getDescription(), p.getDiscount(), p.getBrandName(), p.getCategoryName(), p.getTypeName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice()});
-            }
+        try {
+            dao.consult(productNameToSearch, productBrandToSearch, productCategoryToSearch).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrandName(), p.getCategoryName(), p.getTypeName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice(), p.getDescription()}));
+        } catch (Exception ex) {
+            Logger.getLogger(ViewProducts.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -434,6 +456,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     private javax.swing.JButton btnCleanField;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnExport;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableProducts;
     private javax.swing.JTextField productSearch;

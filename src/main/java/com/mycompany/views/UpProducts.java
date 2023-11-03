@@ -1,9 +1,9 @@
 package com.mycompany.views;
 
-import ImplementationDAO.DAOProductsImpl;
+import com.mycompany.implementationDAO.DAOProductsImpl;
 import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.models.ModelProducts;
-import ImplementationDAO.DAOProductsSizesImpl;
+import com.mycompany.implementationDAO.DAOProductsSizesImpl;
 import com.mycompany.interfaces.DAOProductSizes;
 import com.mycompany.interfaces.Styleable;
 import com.mycompany.models.ModelProductSizes;

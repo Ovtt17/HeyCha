@@ -1,4 +1,4 @@
-package ImplementationDAO;
+package com.mycompany.implementationDAO;
 
 import com.mycompany.db.Database;
 import com.mycompany.interfaces.DAOProducts;

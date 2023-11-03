@@ -1,7 +1,7 @@
 package com.mycompany.views;
 
-import ImplementationDAO.DAOSalesImpl;
-import ImplementationDAO.DAOSalesProductsImpl;
+import com.mycompany.implementationDAO.DAOSalesImpl;
+import com.mycompany.implementationDAO.DAOSalesProductsImpl;
 import com.mycompany.interfaces.DAOSales;
 import com.mycompany.interfaces.DAOSalesProducts;
 import com.mycompany.interfaces.Styleable;
@@ -21,6 +21,7 @@ import javax.swing.table.DefaultTableModel;
 public class UpSales extends javax.swing.JPanel implements Styleable {
 
     boolean isEditable = false;
+    boolean darkModeStatus = false;
     private ModelSales saleEditable;
     private List<ModelSalesProducts> products;
     HashMap<String, Integer> clientHashMap;
@@ -31,6 +32,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
 
     public UpSales(boolean isDarkModeEnabled) {
         initComponents();
+        darkModeStatus = isDarkModeEnabled;
         updateStyles(isDarkModeEnabled);
         initStyles();
         this.products = new ArrayList<>();
@@ -82,15 +84,23 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
 
     @Override
     public void updateStyles(boolean isDarkModeEnabled) {
+        darkModeStatus = isDarkModeEnabled;
         if (isDarkModeEnabled) {
             title.setForeground(Color.white);
             bg.putClientProperty("FlatLaf.style", "background: #172030");
             btnDataUpdate.putClientProperty("FlatLaf.style", "background: #0c9294");
+            BtnAddProduct.putClientProperty("FlatLaf.style", "background: #0c9294");
+            BtnDeleteProduct.putClientProperty("FlatLaf.style", "background: #0c9294");
         } else {
             title.setForeground(Color.black);
             bg.putClientProperty("FlatLaf.style", "background: #FFFFFF");
             btnDataUpdate.putClientProperty("FlatLaf.style", "background: #125AAD");
+            BtnAddProduct.putClientProperty("FlatLaf.style", "background: #125AAD");
+            BtnDeleteProduct.putClientProperty("FlatLaf.style", "background: #125AAD");
         }
+        BtnAddProduct.putClientProperty("JButton.buttonType", "roundRect");
+        btnDataUpdate.putClientProperty("JButton.buttonType", "roundRect");
+        BtnDeleteProduct.putClientProperty("JButton.buttonType", "roundRect");
     }
 
     private void initStyles() {
@@ -171,9 +181,9 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
         });
         jScrollPane1.setViewportView(jTable1);
 
-        BtnAddProduct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/buscar-producto.png"))); // NOI18N
+        BtnAddProduct.setBackground(new java.awt.Color(18, 90, 173));
+        BtnAddProduct.setForeground(new java.awt.Color(255, 255, 255));
         BtnAddProduct.setText("Agregar");
-        BtnAddProduct.setContentAreaFilled(false);
         BtnAddProduct.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         BtnAddProduct.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -181,9 +191,9 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
             }
         });
 
-        BtnDeleteProduct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/trash.png"))); // NOI18N
+        BtnDeleteProduct.setBackground(new java.awt.Color(18, 90, 173));
+        BtnDeleteProduct.setForeground(new java.awt.Color(255, 255, 255));
         BtnDeleteProduct.setText("Eliminar");
-        BtnDeleteProduct.setContentAreaFilled(false);
         BtnDeleteProduct.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         BtnDeleteProduct.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -328,7 +338,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
 
     private void BtnAddProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnAddProductActionPerformed
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        TableSale t = new TableSale(parentFrame, true, this);
+        TableSale t = new TableSale(parentFrame, true, this, darkModeStatus);
         t.setVisible(true);
     }//GEN-LAST:event_BtnAddProductActionPerformed
 
@@ -396,7 +406,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
                     Float price = (Float) jTable1.getValueAt(selectedRow, priceIndex);
                     Integer amount = (Integer) jTable1.getValueAt(selectedRow, amountIndex);
                     products.removeIf(p
-                            -> p.getProductId() == productId
+                            -> Objects.equals(p.getProductId(), productId) // posible fail
                             && p.getProductName().equals(productName)
                             && p.getSizeName().equals(sizeName)
                             && p.getPriceUnity().equals(price)

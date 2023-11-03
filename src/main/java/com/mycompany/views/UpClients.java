@@ -1,6 +1,6 @@
 package com.mycompany.views;
 
-import ImplementationDAO.DAOClientsImpl;
+import com.mycompany.implementationDAO.DAOClientsImpl;
 import com.mycompany.interfaces.DAOClients;
 import com.mycompany.interfaces.Styleable;
 import com.mycompany.models.ModelClients;
