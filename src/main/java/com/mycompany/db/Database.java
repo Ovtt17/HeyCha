@@ -10,7 +10,7 @@ public class Database implements AutoCloseable {
 
     private Connection connection;
     private final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-    private final String DB_URL = "jdbc:mysql://192.168.1.14:3306/probando";
+    private final String DB_URL = "jdbc:mysql://192.168.1.14:3306/heycha";
     private final String USER = "Ana_Heyzell";
     private final String PASSWORD = "AnaHeyzell8812";
 

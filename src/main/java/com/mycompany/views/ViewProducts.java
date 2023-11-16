@@ -355,7 +355,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     private void jTableProductsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableProductsMouseClicked
         if (evt.getClickCount() == 2) {
             DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
-            if (model.getColumnCount() > 4) {
+            if (model.getColumnCount() > 5) {
                 loadProductSize(jTableProducts);
                 btnEdit.setEnabled(false);
                 btnDelete.setEnabled(false);
