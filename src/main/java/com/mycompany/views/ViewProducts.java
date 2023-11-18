@@ -10,13 +10,9 @@ import com.mycompany.interfaces.ExcelExporter;
 import com.mycompany.interfaces.Styleable;
 import com.mycompany.models.ModelProductSizes;
 import java.awt.Color;
-import java.io.File;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFileChooser;
-import javax.swing.JTable;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 public class ViewProducts extends javax.swing.JPanel implements Styleable {
@@ -37,6 +33,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     public void updateStyles(boolean isDarkModeEnabled) {
         lightOrDarkMode = isDarkModeEnabled;
         title.putClientProperty("FlatLaf.styleClass", "h1");
+        ProductDetailsTxt.putClientProperty("FlatLaf.styleClass", "h1");
         productSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto a buscar.");
         btnAdd.putClientProperty("JButton.buttonType", "roundRect");
         btnDelete.putClientProperty("JButton.buttonType", "roundRect");
@@ -44,8 +41,13 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         btnExport.putClientProperty("JButton.buttonType", "roundRect");
         btnCleanField.putClientProperty("JButton.buttonType", "roundRect");
 
+        jTableProducts.getTableHeader().setBackground(new Color(0, 0, 0));
+        TableDetails.getTableHeader().setBackground(new Color(0, 0, 0));
+        jTableProducts.getTableHeader().setForeground(new Color(255, 255, 255));
+        TableDetails.getTableHeader().setForeground(new Color(255, 255, 255));
         if (isDarkModeEnabled) {
             title.setForeground(Color.white);
+            ProductDetailsTxt.setForeground(Color.white);
             background_products.putClientProperty("FlatLaf.style", "background: #172030");
             btnAdd.putClientProperty("FlatLaf.style", "background: #0c9294");
             btnDelete.putClientProperty("FlatLaf.style", "background: #0c9294");
@@ -54,6 +56,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             btnExport.putClientProperty("FlatLaf.style", "background: #0c9294");
         } else {
             title.setForeground(Color.black);
+            ProductDetailsTxt.setForeground(Color.black);
             background_products.putClientProperty("FlatLaf.style", "background: #FFFFFF");
             btnAdd.putClientProperty("FlatLaf.style", "background: #1565C0");
             btnDelete.putClientProperty("FlatLaf.style", "background: #FF3333");
@@ -69,7 +72,6 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     }
 
     private void loadProducts() {
-
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
         String nameToFind = "";
         String brandSelected = "NINGUNO";
@@ -77,11 +79,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         try {
             DAOProducts dao = new DAOProductsImpl();
             dao.consult(nameToFind, brandSelected, categorySelected).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrandName(), p.getCategoryName(), p.getTypeName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice(), p.getDescription()}));
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
-        try {
-            DAOProducts dao = new DAOProductsImpl();
+            dao = new DAOProductsImpl();
             dao.loadFilterCmb(BrandFilterCmb, CategoryFilterCmb);
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -111,13 +109,16 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         CategoryLbl = new javax.swing.JLabel();
         btnCleanField = new javax.swing.JButton();
         btnExport = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        TableDetails = new javax.swing.JTable();
+        ProductDetailsTxt = new javax.swing.JLabel();
 
-        setPreferredSize(new java.awt.Dimension(764, 436));
+        setPreferredSize(new java.awt.Dimension(764, 540));
 
         background_products.setBackground(new java.awt.Color(255, 255, 255));
         background_products.setMaximumSize(new java.awt.Dimension(2147483647, 2147483647));
         background_products.setMinimumSize(new java.awt.Dimension(0, 0));
-        background_products.setPreferredSize(new java.awt.Dimension(764, 436));
+        background_products.setPreferredSize(new java.awt.Dimension(764, 540));
 
         title.setText("Productos");
 
@@ -127,7 +128,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             }
         });
 
-        jScrollPane1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        jScrollPane1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jScrollPane1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
         jTableProducts.setModel(new javax.swing.table.DefaultTableModel(
@@ -146,7 +147,9 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
                 return canEdit [columnIndex];
             }
         });
+        jTableProducts.setGridColor(new java.awt.Color(153, 153, 153));
         jTableProducts.setRowHeight(30);
+        jTableProducts.setShowGrid(true);
         jTableProducts.getTableHeader().setReorderingAllowed(false);
         jTableProducts.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -154,6 +157,13 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             }
         });
         jScrollPane1.setViewportView(jTableProducts);
+        if (jTableProducts.getColumnModel().getColumnCount() > 0) {
+            jTableProducts.getColumnModel().getColumn(5).setHeaderValue("Tipo");
+            jTableProducts.getColumnModel().getColumn(6).setHeaderValue("Tallas Disponibles");
+            jTableProducts.getColumnModel().getColumn(7).setHeaderValue("Total Existencia");
+            jTableProducts.getColumnModel().getColumn(8).setHeaderValue("Valor Total");
+            jTableProducts.getColumnModel().getColumn(9).setHeaderValue("Descripcion");
+        }
 
         btnAdd.setBackground(new java.awt.Color(21, 101, 192));
         btnAdd.setForeground(new java.awt.Color(255, 255, 255));
@@ -225,6 +235,38 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             }
         });
 
+        jScrollPane2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jScrollPane2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+
+        TableDetails.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID", "ID del Producto", "Nombre del Producto", "Talla", "Precio", "Cantidad"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        TableDetails.setGridColor(new java.awt.Color(153, 153, 153));
+        TableDetails.setRowHeight(30);
+        TableDetails.setShowGrid(true);
+        TableDetails.getTableHeader().setReorderingAllowed(false);
+        TableDetails.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TableDetailsMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(TableDetails);
+
+        ProductDetailsTxt.setText("Detalles de Producto");
+
         javax.swing.GroupLayout background_productsLayout = new javax.swing.GroupLayout(background_products);
         background_products.setLayout(background_productsLayout);
         background_productsLayout.setHorizontalGroup(
@@ -232,6 +274,8 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_productsLayout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(ProductDetailsTxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(background_productsLayout.createSequentialGroup()
                         .addComponent(btnExport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(356, 356, 356)
@@ -270,14 +314,18 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
                     .addComponent(CategoryLbl)
                     .addComponent(btnCleanField, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(ProductDetailsTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(14, 14, 14)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnExport, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(23, 23, 23))
+                .addGap(32, 32, 32))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -288,7 +336,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(background_products, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(background_products, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -298,7 +346,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
-
+        DefaultTableModel modelDetails = (DefaultTableModel) TableDetails.getModel();
         int rows = model.getRowCount();
         if (rows == 0) {
             javax.swing.JOptionPane.showMessageDialog(this, "No hay productos para eliminar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
@@ -328,6 +376,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
                     dao.delete((int) jTableProducts.getValueAt(selectedRow, 0));
                     daoSize.delete((int) jTableProducts.getValueAt(selectedRow, 0));
                     model.removeRow(selectedRow);
+                    modelDetails.setRowCount(0);
                 } catch (Exception e) {
                     javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
                 }
@@ -353,44 +402,28 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void jTableProductsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableProductsMouseClicked
-        if (evt.getClickCount() == 2) {
-            DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
-            if (model.getColumnCount() > 5) {
-                loadProductSize(jTableProducts);
-                btnEdit.setEnabled(false);
-                btnDelete.setEnabled(false);
-                btnCleanField.setEnabled(false);
-                BrandFilterCmb.setEnabled(false);
-                CategoryFilterCmb.setEnabled(false);
-                productSearch.setText("");
-            }
-        }
+        loadProductSize();
+        productSearch.setText("");
     }//GEN-LAST:event_jTableProductsMouseClicked
 
-    public void loadProductSize(JTable table) {
+    public void loadProductSize() {
         List<ModelProductSizes> productSizeList = null;
         try {
-
             DAOProductSizes dao = new DAOProductsSizesImpl();
-            if (table.getSelectedRow() < 0) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto para ver sus detalles. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
+//            if (table.getSelectedRow() < 0) {
+//                javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto para ver sus detalles. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+//                return;
+//            }
 
-            int selectedRows = table.getSelectedRow();
-            int productId = (int) table.getValueAt(selectedRows, 0);
+            int selectedRows = jTableProducts.getSelectedRow();
+            int productId = (int) jTableProducts.getValueAt(selectedRows, 0);
 
-            DefaultTableModel newModel = new DefaultTableModel();
-            table.setDefaultEditor(Object.class, null);
-            newModel.addColumn("ID");
-            newModel.addColumn("ID del producto");
-            newModel.addColumn("Nombre del producto");
-            newModel.addColumn("Talla");
-            newModel.addColumn("Cantidad");
+            DefaultTableModel model = (DefaultTableModel) TableDetails.getModel();
+            model.setRowCount(0);
 
             productSizeList = dao.consult(productId);
-            productSizeList.forEach((p) -> newModel.addRow(new Object[]{p.getId(), p.getIdProduct(), p.getNameProduct(), p.getNameSize(), p.getAmount()}));
-            table.setModel(newModel);
+            productSizeList.forEach((p) -> model.addRow(new Object[]{p.getId(), p.getIdProduct(), p.getNameProduct(), p.getNameSize(), p.getPrice(), p.getAmount()}));
+            TableDetails.setModel(model);
 
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -431,6 +464,10 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         }
     }//GEN-LAST:event_btnExportActionPerformed
 
+    private void TableDetailsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TableDetailsMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TableDetailsMouseClicked
+
     private void filterConsult() {
         DAOProducts dao = new DAOProductsImpl();
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
@@ -451,6 +488,8 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     private javax.swing.JLabel BrandLbl;
     private javax.swing.JComboBox<String> CategoryFilterCmb;
     private javax.swing.JLabel CategoryLbl;
+    private javax.swing.JLabel ProductDetailsTxt;
+    private javax.swing.JTable TableDetails;
     private javax.swing.JPanel background_products;
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnCleanField;
@@ -458,6 +497,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnExport;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTableProducts;
     private javax.swing.JTextField productSearch;
     private javax.swing.JLabel title;

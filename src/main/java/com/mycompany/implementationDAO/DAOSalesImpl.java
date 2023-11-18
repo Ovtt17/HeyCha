@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.sql.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -87,12 +88,13 @@ public class DAOSalesImpl extends Database implements DAOSales {
     }
 
     @Override
-    public List<ModelSales> consult() throws Exception {
+    public List<ModelSales> consult(Date date) throws Exception {
         List<ModelSales> list = null;
         try (Connection con = this.getConnection()) {
-            String query = "call consultSales();";
+            String query = "call consultSales(?);";
             final PreparedStatement pst = con.prepareStatement(query);
             try (pst) {
+                pst.setDate(1, date); 
                 list = new ArrayList();
                 final ResultSet rs = pst.executeQuery();
                 try (rs) {
@@ -147,7 +149,7 @@ public class DAOSalesImpl extends Database implements DAOSales {
     @Override
     public void loadClientsCmb(JComboBox<String> cmbClients) throws Exception {
         try (Connection con = this.getConnection()) {
-            String queryClientsName = "select nombre from clientes order by id;";
+            String queryClientsName = "select nombre from clientes where is_deleted = 0 order by id;";
             fillComboBox(con, cmbClients, queryClientsName);
         } catch (SQLException e) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de cargar los ComboBox en la base de datos", e);

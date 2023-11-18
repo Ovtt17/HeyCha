@@ -81,7 +81,7 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
     public List<ModelProductSizes> consult(int productId) throws Exception {
         List<ModelProductSizes> list = null;
         try {
-            String query = "select pt.id, pt.id_producto, p.nombre, t.talla, cantidad_inventario\n"
+            String query = "select pt.id, pt.id_producto, p.nombre, t.talla, p.precio, cantidad_inventario\n"
                     + "from productos_tallas pt \n"
                     + "inner join productos p on p.ID = pt.ID_Producto\n"
                     + "inner join tallas t on t.id = pt.ID_Talla\n"
@@ -112,6 +112,7 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
         pSize.setIdProduct(rs.getInt("ID_PRODUCTO"));
         pSize.setNameProduct(rs.getString("NOMBRE"));
         pSize.setNameSize(rs.getString("TALLA"));
+        pSize.setPrice(rs.getInt("PRECIO"));
         pSize.setAmount(rs.getInt("CANTIDAD_INVENTARIO"));
     }
 

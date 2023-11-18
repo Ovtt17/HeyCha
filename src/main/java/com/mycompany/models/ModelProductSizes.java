@@ -4,6 +4,7 @@ public class ModelProductSizes {
     private Integer id;
     private Integer idProduct;
     private Integer idSize;
+    private Integer price;
     private Integer amount;
     
     private String nameSize;
@@ -66,6 +67,14 @@ public class ModelProductSizes {
 
     public void setNameProduct(String nameProduct) {
         this.nameProduct = nameProduct;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
     }
     
 }

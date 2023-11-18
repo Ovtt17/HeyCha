@@ -26,6 +26,9 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
 
     @Override
     public void updateStyles(boolean isDarkModeEnabled) {
+        JTableClients.getTableHeader().setBackground(new Color(0, 0, 0));
+        JTableClients.getTableHeader().setForeground(new Color(255, 255, 255));
+        
         lightOrDarkMode = isDarkModeEnabled;
         title.putClientProperty("FlatLaf.styleClass", "h1");
         title.setForeground(Color.black);
@@ -122,7 +125,9 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
                 return canEdit [columnIndex];
             }
         });
+        JTableClients.setGridColor(new java.awt.Color(153, 153, 153));
         JTableClients.setRowHeight(30);
+        JTableClients.setShowGrid(true);
         JTableClients.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(JTableClients);
 
