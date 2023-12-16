@@ -17,7 +17,7 @@ public class DAOSalesProductsImpl extends Database implements DAOSalesProducts {
     @Override
     public void record(ModelSalesProducts salesProducts) throws Exception {
         try (Connection con = this.getConnection()) {
-            String sql = "call insertSalesProducts(?, ?, ?, ?, ?);";
+            String sql = "call insertSalesProducts(?, ?, ?, ?, ?, ?);";
             final PreparedStatement st = con.prepareStatement(sql);
             try (st) {
                 setFieldsToInsert(st, salesProducts);
@@ -35,6 +35,7 @@ public class DAOSalesProductsImpl extends Database implements DAOSalesProducts {
         st.setFloat(3, salesProducts.getPriceUnity());
         st.setInt(4, salesProducts.getAmount());
         st.setFloat(5, salesProducts.getSubtotal());
+        st.setInt(6, salesProducts.getProductId());
     }
 
     @Override
@@ -52,7 +53,7 @@ public class DAOSalesProductsImpl extends Database implements DAOSalesProducts {
         }
     }
 
-    private void setSalesFieldsToModify(PreparedStatement ps, ModelSalesProducts sale) {
+    private void setSalesFieldsToModify(PreparedStatement ps, ModelSalesProducts sale) throws SQLException {
         try {
             ps.setInt(1, sale.getSaleId());
             ps.setInt(2, sale.getProductSizeId());
