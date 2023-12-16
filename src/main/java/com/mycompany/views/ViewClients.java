@@ -1,6 +1,6 @@
 package com.mycompany.views;
 
-import com.mycompany.exporters.JTableToExcelExporter;
+import com.mycompany.exporters.ExcelExporterImpl;
 import com.mycompany.implementationDAO.DAOClientsImpl;
 import com.mycompany.heycha.Dashboard;
 import com.mycompany.interfaces.DAOClients;
@@ -322,9 +322,9 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
-        ExcelExporter exporter = new JTableToExcelExporter();
+        ExcelExporter exporter = new ExcelExporterImpl();
         try {
-            exporter.exportToExcel(JTableClients);
+            exporter.export(JTableClients);
         } catch (Exception ex) {
             Logger.getLogger(ViewProducts.class.getName()).log(Level.SEVERE, null, ex);
         }

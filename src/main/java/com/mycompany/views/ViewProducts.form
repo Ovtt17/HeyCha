@@ -144,17 +144,15 @@
             <Component class="javax.swing.JTable" name="jTableProducts">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="10" rowCount="0">
+                  <Table columnCount="8" rowCount="0">
                     <Column editable="false" title="ID" type="java.lang.Object"/>
                     <Column editable="false" title="Nombre" type="java.lang.Object"/>
                     <Column editable="false" title="Precio" type="java.lang.Object"/>
                     <Column editable="false" title="Marca" type="java.lang.Object"/>
                     <Column editable="false" title="Categoria" type="java.lang.Object"/>
-                    <Column editable="false" title="Tipo" type="java.lang.Object"/>
                     <Column editable="false" title="Tallas Disponibles" type="java.lang.Object"/>
                     <Column editable="false" title="Total Existencia" type="java.lang.Object"/>
                     <Column editable="false" title="Valor Total" type="java.lang.Object"/>
-                    <Column editable="false" title="Descripcion" type="java.lang.Object"/>
                   </Table>
                 </Property>
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -185,27 +183,17 @@
                       <Renderer/>
                     </Column>
                     <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title value="Tipo"/>
+                      <Title/>
                       <Editor/>
                       <Renderer/>
                     </Column>
                     <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title value="Tallas Disponibles"/>
+                      <Title/>
                       <Editor/>
                       <Renderer/>
                     </Column>
                     <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title value="Total Existencia"/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title value="Valor Total"/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title value="Descripcion"/>
+                      <Title/>
                       <Editor/>
                       <Renderer/>
                     </Column>

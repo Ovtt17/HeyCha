@@ -167,6 +167,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
             }
         });
 
+        jTable1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -175,6 +176,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
 
             }
         ));
+        jTable1.setRowHeight(30);
         jTable1.setShowGrid(true);
         jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {

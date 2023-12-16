@@ -122,6 +122,7 @@ public class TableSale extends javax.swing.JDialog {
 
         jScrollPane1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         jScrollPane1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jScrollPane1.setRowHeaderView(null);
 
         jTableProducts.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {

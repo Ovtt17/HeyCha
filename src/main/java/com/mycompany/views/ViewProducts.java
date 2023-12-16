@@ -1,6 +1,6 @@
 package com.mycompany.views;
 
-import com.mycompany.exporters.JTableToExcelExporter;
+import com.mycompany.exporters.ExcelExporterImpl;
 import com.mycompany.implementationDAO.DAOProductsImpl;
 import com.mycompany.implementationDAO.DAOProductsSizesImpl;
 import com.mycompany.heycha.Dashboard;
@@ -78,7 +78,9 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         String categorySelected = "NINGUNO";
         try {
             DAOProducts dao = new DAOProductsImpl();
-            dao.consult(nameToFind, brandSelected, categorySelected).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrandName(), p.getCategoryName(), p.getTypeName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice(), p.getDescription()}));
+            dao.consult(nameToFind, brandSelected, categorySelected)
+                    .forEach((p) -> 
+                            model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrandName(), p.getCategoryName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice()}));
             dao = new DAOProductsImpl();
             dao.loadFilterCmb(BrandFilterCmb, CategoryFilterCmb);
         } catch (Exception e) {
@@ -136,11 +138,11 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
             },
             new String [] {
-                "ID", "Nombre", "Precio", "Marca", "Categoria", "Tipo", "Tallas Disponibles", "Total Existencia", "Valor Total", "Descripcion"
+                "ID", "Nombre", "Precio", "Marca", "Categoria", "Tallas Disponibles", "Total Existencia", "Valor Total"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -157,13 +159,6 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             }
         });
         jScrollPane1.setViewportView(jTableProducts);
-        if (jTableProducts.getColumnModel().getColumnCount() > 0) {
-            jTableProducts.getColumnModel().getColumn(5).setHeaderValue("Tipo");
-            jTableProducts.getColumnModel().getColumn(6).setHeaderValue("Tallas Disponibles");
-            jTableProducts.getColumnModel().getColumn(7).setHeaderValue("Total Existencia");
-            jTableProducts.getColumnModel().getColumn(8).setHeaderValue("Valor Total");
-            jTableProducts.getColumnModel().getColumn(9).setHeaderValue("Descripcion");
-        }
 
         btnAdd.setBackground(new java.awt.Color(21, 101, 192));
         btnAdd.setForeground(new java.awt.Color(255, 255, 255));
@@ -410,10 +405,6 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         List<ModelProductSizes> productSizeList = null;
         try {
             DAOProductSizes dao = new DAOProductsSizesImpl();
-//            if (table.getSelectedRow() < 0) {
-//                javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto para ver sus detalles. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-//                return;
-//            }
 
             int selectedRows = jTableProducts.getSelectedRow();
             int productId = (int) jTableProducts.getValueAt(selectedRows, 0);
@@ -456,9 +447,9 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     }//GEN-LAST:event_btnCleanFieldActionPerformed
 
     private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
-        ExcelExporter exporter = new JTableToExcelExporter();
+        ExcelExporter exporter = new ExcelExporterImpl();
         try {
-            exporter.exportToExcel(jTableProducts);
+            exporter.export(jTableProducts);
         } catch (Exception ex) {
             Logger.getLogger(ViewProducts.class.getName()).log(Level.SEVERE, null, ex);
         }

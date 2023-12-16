@@ -130,7 +130,6 @@ public class DAOClientsImpl extends Database implements DAOClients {
                     }
                 }
             }
-            this.checkConnection();
         } catch (SQLException e) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de consulta en la base de datos", e);
             throw e;
