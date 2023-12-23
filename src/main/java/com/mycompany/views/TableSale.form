@@ -28,7 +28,7 @@
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="background_products" alignment="1" pref="549" max="32767" attributes="0"/>
+          <Component id="background_products" alignment="1" pref="596" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -77,6 +77,7 @@
                                   <Component id="btnCleanField" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Component id="title" alignment="0" max="32767" attributes="0"/>
+                              <Component id="jScrollPane2" alignment="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -89,7 +90,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
                   <Component id="title" min="-2" pref="24" max="-2" attributes="0"/>
-                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="productSearch" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
                       <Component id="BrandFilterCmb" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
@@ -99,8 +100,10 @@
                       <Component id="btnCleanField" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                  <Component id="jScrollPane1" pref="366" max="32767" attributes="0"/>
-                  <EmptySpace min="18" pref="18" max="-2" attributes="0"/>
+                  <Component id="jScrollPane1" pref="234" max="32767" attributes="0"/>
+                  <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                  <Component id="jScrollPane2" pref="126" max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="53" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="btnAdd" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
                       <Component id="AmountSpinner" alignment="3" min="-2" pref="37" max="-2" attributes="0"/>
@@ -131,6 +134,9 @@
             </Property>
             <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
               <Color id="Default Cursor"/>
+            </Property>
+            <Property name="rowHeaderView" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+              <ComponentRef name="null"/>
             </Property>
           </Properties>
 
@@ -291,6 +297,47 @@
             <Property name="text" type="java.lang.String" value="Cantidad:"/>
           </Properties>
         </Component>
+        <Container class="javax.swing.JScrollPane" name="jScrollPane2">
+          <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.BevelBorderInfo">
+                <BevelBorder/>
+              </Border>
+            </Property>
+            <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
+              <Color id="Default Cursor"/>
+            </Property>
+          </Properties>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+          <SubComponents>
+            <Component class="javax.swing.JTable" name="TableDetails">
+              <Properties>
+                <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
+                  <Table columnCount="6" rowCount="0">
+                    <Column editable="false" title="ID" type="java.lang.Object"/>
+                    <Column editable="false" title="ID del Producto" type="java.lang.Object"/>
+                    <Column editable="false" title="Nombre del Producto" type="java.lang.Object"/>
+                    <Column editable="false" title="Talla" type="java.lang.Object"/>
+                    <Column editable="false" title="Precio" type="java.lang.Object"/>
+                    <Column editable="false" title="Cantidad" type="java.lang.Object"/>
+                  </Table>
+                </Property>
+                <Property name="gridColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="99" green="99" red="99" type="rgb"/>
+                </Property>
+                <Property name="rowHeight" type="int" value="30"/>
+                <Property name="showGrid" type="boolean" value="true"/>
+                <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
+                  <TableHeader reorderingAllowed="false" resizingAllowed="true"/>
+                </Property>
+              </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="TableDetailsMouseClicked"/>
+              </Events>
+            </Component>
+          </SubComponents>
+        </Container>
       </SubComponents>
     </Container>
   </SubComponents>

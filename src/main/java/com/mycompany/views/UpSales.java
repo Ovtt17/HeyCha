@@ -5,7 +5,7 @@ import com.mycompany.implementationDAO.DAOSalesProductsImpl;
 import com.mycompany.interfaces.DAOSales;
 import com.mycompany.interfaces.DAOSalesProducts;
 import com.mycompany.interfaces.Styleable;
-import com.mycompany.models.ModelProductSizes;
+import com.mycompany.models.ProductSizes;
 import com.mycompany.models.ModelSales;
 import com.mycompany.models.ModelSalesProducts;
 import java.awt.Color;
@@ -104,6 +104,8 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
     }
 
     private void initStyles() {
+        jTable1.getTableHeader().setBackground(new Color(0, 0, 0));
+        jTable1.getTableHeader().setForeground(new Color(255, 255, 255));
         title.putClientProperty("FlatLaf.styleClass", "h1");
         jTable1.setDefaultEditor(Object.class, null);
         if (isEditable) {
@@ -165,6 +167,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
             }
         });
 
+        jTable1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -173,6 +176,8 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
 
             }
         ));
+        jTable1.setRowHeight(30);
+        jTable1.setShowGrid(true);
         jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
@@ -376,7 +381,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
                     int selectedRow = selectedRows[i];
                     DAOSalesProducts daoSalesDetails = new DAOSalesProductsImpl();
                     int idIndex = 0, nameIndex = 0, sizeIndex = 0, priceIndex = 0, amountIndex = 0;
-                    if ((Integer) jTable1.getValueAt(selectedRow, 0) != null) {
+                    if (isEditable) {
                         Integer saleId = (Integer) jTable1.getValueAt(selectedRow, 0);
                         Integer productSizeId = (int) jTable1.getValueAt(selectedRow, 3);
                         daoSalesDetails.delete(saleId, productSizeId);
@@ -386,20 +391,13 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
                         priceIndex = 5;
                         amountIndex = 6;
                     } else {
-                        if (isEditable) {
-                            idIndex = 1;
-                            nameIndex = 2;
-                            sizeIndex = 4;
-                            priceIndex = 5;
-                            amountIndex = 6;
-                        } else {
-                            idIndex = 0;
-                            nameIndex = 1;
-                            sizeIndex = 3;
-                            priceIndex = 4;
-                            amountIndex = 5;
-                        }
+                        idIndex = 0;
+                        nameIndex = 1;
+                        sizeIndex = 3;
+                        priceIndex = 4;
+                        amountIndex = 5;
                     }
+
                     Integer productId = (Integer) jTable1.getValueAt(selectedRow, idIndex);
                     String productName = (String) jTable1.getValueAt(selectedRow, nameIndex);
                     String sizeName = (String) jTable1.getValueAt(selectedRow, sizeIndex);

@@ -1,24 +1,28 @@
 package com.mycompany.views;
 
-import com.mycompany.exporters.JTableToExcelExporter;
+import com.mycompany.exporters.ExcelExporterImpl;
+import com.mycompany.exporters.PdfExporterImpl;
 import com.mycompany.implementationDAO.DAOSalesImpl;
 import com.mycompany.implementationDAO.DAOSalesProductsImpl;
 import com.mycompany.heycha.Dashboard;
 import com.mycompany.interfaces.DAOSales;
 import com.mycompany.interfaces.DAOSalesProducts;
 import com.mycompany.interfaces.ExcelExporter;
+import com.mycompany.interfaces.PdfExporter;
 import com.mycompany.interfaces.Styleable;
 import com.mycompany.models.ModelSalesProducts;
 import java.awt.Color;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 public class ViewSales extends javax.swing.JPanel implements Styleable {
 
     boolean lightOrDarkMode;
+    Integer count;
+    Float totalMoney;
 
     public ViewSales(boolean isDarkModeEnabled) {
         initComponents();
@@ -29,16 +33,21 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
 
     private void initStyles() {
         title.putClientProperty("FlatLaf.styleClass", "h1");
-        saleSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto vendido a buscar.");
+        SaleDetailsTxt.putClientProperty("FlatLaf.styleClass", "h1");
+
         title.putClientProperty("FlatLaf.styleClass", "h1");
-        saleSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto a buscar.");
+
         btnAdd.putClientProperty("JButton.buttonType", "roundRect");
         btnDelete.putClientProperty("JButton.buttonType", "roundRect");
         btnEdit.putClientProperty("JButton.buttonType", "roundRect");
-        btnSearch.putClientProperty("JButton.buttonType", "roundRect");
-        btnExport.putClientProperty("JButton.buttonType", "roundRect");
+
+        btnExcelExport.putClientProperty("JButton.buttonType", "roundRect");
         btnDelete.setEnabled(true);
         btnEdit.setEnabled(true);
+        JTableSales.getTableHeader().setBackground(new Color(0, 0, 0));
+        TableSaleDetails.getTableHeader().setBackground(new Color(0, 0, 0));
+        JTableSales.getTableHeader().setForeground(new Color(255, 255, 255));
+        TableSaleDetails.getTableHeader().setForeground(new Color(255, 255, 255));
     }
 
     @Override
@@ -46,28 +55,46 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
         lightOrDarkMode = isDarkModeEnabled;
         if (isDarkModeEnabled) {
             title.setForeground(Color.white);
+            SaleDetailsTxt.setForeground(Color.white);
             background_sales.putClientProperty("FlatLaf.style", "background: #172030");
-            btnSearch.putClientProperty("FlatLaf.style", "background: #0A677A");
             btnAdd.putClientProperty("FlatLaf.style", "background: #0c9294");
             btnDelete.putClientProperty("FlatLaf.style", "background: #0c9294");
             btnEdit.putClientProperty("FlatLaf.style", "background: #0c9294");
-            btnExport.putClientProperty("FlatLaf.style", "background: #0c9294");
+            btnExcelExport.putClientProperty("FlatLaf.style", "background: #0c9294");
+
         } else {
             title.setForeground(Color.black);
+            SaleDetailsTxt.setForeground(Color.black);
             background_sales.putClientProperty("FlatLaf.style", "background: #FFFFFF");
-            btnSearch.putClientProperty("FlatLaf.style", "background: #1565C0");
             btnAdd.putClientProperty("FlatLaf.style", "background: #1565C0");
             btnDelete.putClientProperty("FlatLaf.style", "background: #FF3333");
             btnEdit.putClientProperty("FlatLaf.style", "background: #FFB72C");
-            btnExport.putClientProperty("FlatLaf.style", "background: #159734");
+            btnExcelExport.putClientProperty("FlatLaf.style", "background: #159734");
         }
     }
 
     private void loadSales() {
-        DAOSalesImpl dao = new DAOSalesImpl();
-        DefaultTableModel model = (DefaultTableModel) JTableSales.getModel();
-        try (dao) {
-            dao.consult().forEach((s) -> model.addRow(new Object[]{s.getId(), s.getClientId(), s.getClientName(), s.getDate(), s.getQuantitySold(), s.getTotalMoneySold()}));
+        try {
+            DAOSales dao = new DAOSalesImpl();
+            DefaultTableModel model = (DefaultTableModel) JTableSales.getModel();
+            model.setRowCount(0);
+            DefaultTableModel modelDetail = (DefaultTableModel) TableSaleDetails.getModel();
+            modelDetail.setRowCount(0);
+            java.util.Date utilDate = (java.util.Date) DateSpinner.getValue();
+            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+            
+            count = 0; totalMoney = 0f;
+            dao.consult(sqlDate).forEach(
+                    (s) -> {
+                        model.addRow(new Object[]{s.getId(), s.getClientId(), s.getClientName(), s.getDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), s.getQuantitySold(), s.getTotalMoneySold()});
+                        count++;
+                        totalMoney += s.getTotalMoneySold();
+
+                    });
+            TotalSalesTxt.setText(count.toString());
+            TotalSalesTxt.setEditable(false);
+            TotalEarnedTxt.setText(totalMoney.toString());
+            TotalEarnedTxt.setEditable(false);
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -84,36 +111,31 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
 
         background_sales = new javax.swing.JPanel();
         title = new javax.swing.JLabel();
-        saleSearch = new javax.swing.JTextField();
-        btnSearch = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         JTableSales = new javax.swing.JTable();
         btnAdd = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
-        btnExport = new javax.swing.JButton();
+        btnExcelExport = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        TableSaleDetails = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        TotalSalesTxt = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        TotalEarnedTxt = new javax.swing.JTextField();
+        DateSpinner = new javax.swing.JSpinner();
+        SaleDetailsTxt = new javax.swing.JLabel();
+        btnPdfExport = new javax.swing.JButton();
 
-        setPreferredSize(new java.awt.Dimension(764, 436));
+        setPreferredSize(new java.awt.Dimension(764, 540));
 
         background_sales.setBackground(new java.awt.Color(255, 255, 255));
         background_sales.setMaximumSize(new java.awt.Dimension(2147483647, 2147483647));
-        background_sales.setPreferredSize(new java.awt.Dimension(764, 436));
+        background_sales.setPreferredSize(new java.awt.Dimension(764, 540));
 
         title.setText("Ventas");
 
-        saleSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
-
-        btnSearch.setBackground(new java.awt.Color(21, 101, 192));
-        btnSearch.setForeground(new java.awt.Color(255, 255, 255));
-        btnSearch.setText("Buscar");
-        btnSearch.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnSearch.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSearchActionPerformed(evt);
-            }
-        });
-
-        jScrollPane1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        jScrollPane1.setBorder(null);
 
         JTableSales.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -131,6 +153,9 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
                 return canEdit [columnIndex];
             }
         });
+        JTableSales.setGridColor(new java.awt.Color(153, 153, 153));
+        JTableSales.setRowHeight(30);
+        JTableSales.setShowGrid(true);
         JTableSales.getTableHeader().setReorderingAllowed(false);
         JTableSales.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -169,13 +194,68 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
             }
         });
 
-        btnExport.setBackground(new java.awt.Color(21, 151, 52));
-        btnExport.setForeground(new java.awt.Color(255, 255, 255));
-        btnExport.setText("Exportar");
-        btnExport.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnExport.addActionListener(new java.awt.event.ActionListener() {
+        btnExcelExport.setBackground(new java.awt.Color(21, 151, 52));
+        btnExcelExport.setForeground(new java.awt.Color(255, 255, 255));
+        btnExcelExport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IconExcel.png"))); // NOI18N
+        btnExcelExport.setContentAreaFilled(false);
+        btnExcelExport.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnExcelExport.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnExportActionPerformed(evt);
+                btnExcelExportActionPerformed(evt);
+            }
+        });
+
+        jScrollPane2.setBorder(null);
+
+        TableSaleDetails.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID Producto", "Nombre del Producto", "Talla", "Precio Unidad", "Cantidad", "Subtotal"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        TableSaleDetails.setGridColor(new java.awt.Color(153, 153, 153));
+        TableSaleDetails.setRowHeight(30);
+        TableSaleDetails.setShowGrid(true);
+        TableSaleDetails.getTableHeader().setReorderingAllowed(false);
+        TableSaleDetails.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TableSaleDetailsMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(TableSaleDetails);
+
+        jLabel1.setText("Ventas Realizadas:");
+
+        jLabel2.setText("Total Ganado:");
+
+        DateSpinner.setModel(new javax.swing.SpinnerDateModel(new java.util.Date(), null, null, java.util.Calendar.MONTH));
+        DateSpinner.setEditor(new javax.swing.JSpinner.DateEditor(DateSpinner, "MM/yyyy"));
+        DateSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                DateSpinnerStateChanged(evt);
+            }
+        });
+
+        SaleDetailsTxt.setText("Detalles de Venta");
+
+        btnPdfExport.setBackground(new java.awt.Color(21, 151, 52));
+        btnPdfExport.setForeground(new java.awt.Color(255, 255, 255));
+        btnPdfExport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconPdf.png"))); // NOI18N
+        btnPdfExport.setContentAreaFilled(false);
+        btnPdfExport.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnPdfExport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPdfExportActionPerformed(evt);
             }
         });
 
@@ -187,21 +267,32 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
                 .addGap(20, 20, 20)
                 .addGroup(background_salesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(background_salesLayout.createSequentialGroup()
-                        .addGroup(background_salesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_salesLayout.createSequentialGroup()
+                        .addGroup(background_salesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(SaleDetailsTxt, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, background_salesLayout.createSequentialGroup()
+                                .addComponent(DateSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(TotalSalesTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(TotalEarnedTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 154, Short.MAX_VALUE))
                             .addGroup(background_salesLayout.createSequentialGroup()
-                                .addComponent(saleSearch)
-                                .addGap(56, 56, 56)
-                                .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, background_salesLayout.createSequentialGroup()
-                                .addComponent(btnExport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(355, 355, 355)
-                                .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnExcelExport, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnPdfExport, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(265, 265, 265)
+                                .addComponent(btnAdd, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
                                 .addGap(33, 33, 33)
-                                .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
                                 .addGap(33, 33, 33)
-                                .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(jScrollPane1))
+                                .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING))
                         .addGap(30, 30, 30))))
         );
         background_salesLayout.setVerticalGroup(
@@ -209,19 +300,28 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
             .addGroup(background_salesLayout.createSequentialGroup()
                 .addGap(14, 14, 14)
                 .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(background_salesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(saleSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(16, 16, 16)
+                .addGroup(background_salesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(TotalSalesTxt, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(TotalEarnedTxt, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+                    .addComponent(DateSpinner, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(background_salesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnExport, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(22, 22, 22))
+                .addComponent(SaleDetailsTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(9, 9, 9)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addGroup(background_salesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(background_salesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnExcelExport, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnPdfExport, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(46, 46, 46))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -234,15 +334,11 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 436, Short.MAX_VALUE)
+            .addGap(0, 540, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(background_sales, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         Dashboard.ShowPanel(new UpSales(lightOrDarkMode));
@@ -250,6 +346,7 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         DefaultTableModel model = (DefaultTableModel) JTableSales.getModel();
+        DefaultTableModel modelDetails = (DefaultTableModel) TableSaleDetails.getModel();
 
         int rows = model.getRowCount();
         if (rows == 0) {
@@ -282,8 +379,8 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
 
                     daoSale.delete((int) JTableSales.getValueAt(selectedRow, 0));
                     daoSalesDetails.deleteAll((int) JTableSales.getValueAt(selectedRow, 0));
-
                     model.removeRow(selectedRow);
+                    modelDetails.setRowCount(0);
                 } catch (Exception e) {
                     javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
                 }
@@ -294,21 +391,31 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void JTableSalesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTableSalesMouseClicked
-        if (evt.getClickCount() == 2) {
-            loadSalesProducts(JTableSales);
-            btnDelete.setEnabled(false);
-            btnEdit.setEnabled(false);
-        }
+        loadSalesProducts();
     }//GEN-LAST:event_JTableSalesMouseClicked
+    private void loadSalesProducts() {
+        List<ModelSalesProducts> salesProductsList;
+        try {
+            DAOSalesProducts dao = new DAOSalesProductsImpl();
+            int selectedRows = JTableSales.getSelectedRow();
+            int productId = (int) JTableSales.getValueAt(selectedRows, 0);
 
+            DefaultTableModel newModel = (DefaultTableModel) TableSaleDetails.getModel();
+            newModel.setRowCount(0);
+            salesProductsList = dao.consult(productId);
+            salesProductsList.forEach((p) -> newModel.addRow(new Object[]{p.getProductId(), p.getProductName(), p.getSizeName(), p.getPriceUnity(), p.getAmount(), p.getSubtotal()}));
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
         if (JTableSales.getSelectedRow() > -1) {
             try {
                 int saleId = (int) JTableSales.getValueAt(JTableSales.getSelectedRow(), 0);
-                
+
                 DAOSales daoSizes = new DAOSalesImpl();
                 DAOSalesProducts daoSizesProducts = new DAOSalesProductsImpl();
-                Dashboard.ShowPanel(new UpSales(daoSizes.getSaleById(saleId), daoSizesProducts.consult(saleId),lightOrDarkMode));
+                Dashboard.ShowPanel(new UpSales(daoSizes.getSaleById(saleId), daoSizesProducts.consult(saleId), lightOrDarkMode));
             } catch (Exception e) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
@@ -317,55 +424,50 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
         }
     }//GEN-LAST:event_btnEditActionPerformed
 
-    private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
-        ExcelExporter exporter = new JTableToExcelExporter();
+    private void btnExcelExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcelExportActionPerformed
+        ExcelExporter exporter = new ExcelExporterImpl();
         try {
-            exporter.exportToExcel(JTableSales);
+            exporter.export(JTableSales);
         } catch (Exception ex) {
             Logger.getLogger(ViewProducts.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_btnExportActionPerformed
-    private void loadSalesProducts(JTable table) {
-        List<ModelSalesProducts> salesProductsList = null;
+    }//GEN-LAST:event_btnExcelExportActionPerformed
+
+    private void TableSaleDetailsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TableSaleDetailsMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TableSaleDetailsMouseClicked
+
+    private void DateSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_DateSpinnerStateChanged
+        loadSales();
+    }//GEN-LAST:event_DateSpinnerStateChanged
+
+    private void btnPdfExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPdfExportActionPerformed
+        PdfExporter exporter = new PdfExporterImpl();
         try {
-
-            DAOSalesProducts dao = new DAOSalesProductsImpl();
-            if (table.getSelectedRow() < 0) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto para ver sus detalles. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-
-            int selectedRows = table.getSelectedRow();
-            int productId = (int) table.getValueAt(selectedRows, 0);
-
-            DefaultTableModel newModel = new DefaultTableModel();
-            table.setDefaultEditor(Object.class, null);
-            newModel.addColumn("ID de venta");
-            newModel.addColumn("ID del producto");
-            newModel.addColumn("Nombre del producto");
-            newModel.addColumn("Talla");
-            newModel.addColumn("Precio Unidad");
-            newModel.addColumn("Cantidad");
-            newModel.addColumn("Subtotal");
-
-            salesProductsList = dao.consult(productId);
-            salesProductsList.forEach((p) -> newModel.addRow(new Object[]{p.getSaleId(), p.getProductId(), p.getProductName(), p.getSizeName(), p.getPriceUnity(), p.getAmount(), p.getSubtotal()}));
-            table.setModel(newModel);
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+            exporter.export(JTableSales, count, totalMoney);
+        } catch (Exception ex) {
+            Logger.getLogger(ViewProducts.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
+    }//GEN-LAST:event_btnPdfExportActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JSpinner DateSpinner;
     private javax.swing.JTable JTableSales;
+    private javax.swing.JLabel SaleDetailsTxt;
+    private javax.swing.JTable TableSaleDetails;
+    private javax.swing.JTextField TotalEarnedTxt;
+    private javax.swing.JTextField TotalSalesTxt;
     private javax.swing.JPanel background_sales;
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
-    private javax.swing.JButton btnExport;
-    private javax.swing.JButton btnSearch;
+    private javax.swing.JButton btnExcelExport;
+    private javax.swing.JButton btnPdfExport;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField saleSearch;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
 

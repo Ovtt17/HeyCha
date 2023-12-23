@@ -1,8 +1,10 @@
 package com.mycompany.views;
 
 import com.mycompany.implementationDAO.DAOProductsImpl;
+import com.mycompany.implementationDAO.DAOProductsSizesImpl;
+import com.mycompany.interfaces.DAOProductSizes;
 import com.mycompany.interfaces.DAOProducts;
-import com.mycompany.models.ModelProductSizes;
+import com.mycompany.models.ProductSizes;
 import com.mycompany.models.ModelProducts;
 import com.mycompany.models.ModelSalesProducts;
 import java.awt.Color;
@@ -18,9 +20,8 @@ public class TableSale extends javax.swing.JDialog {
     ViewProducts p = new ViewProducts();
     List<ModelProducts> products;
     Float productPrice;
-    
 
-    public TableSale(java.awt.Frame parent, boolean modal, boolean  darkModeStatus) {
+    public TableSale(java.awt.Frame parent, boolean modal, boolean darkModeStatus) {
         super(parent, modal);
         initComponents();
         initTable(darkModeStatus);
@@ -37,6 +38,10 @@ public class TableSale extends javax.swing.JDialog {
     }
 
     private void initTable(boolean darkModeStatus) {
+        jTableProducts.getTableHeader().setBackground(new Color(0, 0, 0));
+        TableDetails.getTableHeader().setBackground(new Color(0, 0, 0));
+        jTableProducts.getTableHeader().setForeground(new Color(255, 255, 255));
+        TableDetails.getTableHeader().setForeground(new Color(255, 255, 255));
         if (darkModeStatus) {
             title.setForeground(Color.white);
             background_products.putClientProperty("FlatLaf.style", "background: #172030");
@@ -50,7 +55,7 @@ public class TableSale extends javax.swing.JDialog {
         }
         btnAdd.putClientProperty("JButton.buttonType", "roundRect");
         btnCleanField.putClientProperty("JButton.buttonType", "roundRect");
-        
+
         this.setLocationRelativeTo(null);
         DefaultTableModel modelProduct = (DefaultTableModel) jTableProducts.getModel();
         jTableProducts.setDefaultEditor(Object.class, null);
@@ -62,7 +67,7 @@ public class TableSale extends javax.swing.JDialog {
             DAOProducts dao = new DAOProductsImpl();
             dao.consult(nameToFind, brandSelected, categorySelected).forEach((p) -> {
                 modelProduct.addRow(new Object[]{p.getId(), p.getName(), p.getBrandName(), p.getCategoryName(), p.getSizeAvailable(), p.getTotalExistence(), p.getPrice()});
-                
+
             });
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -98,6 +103,8 @@ public class TableSale extends javax.swing.JDialog {
         btnCleanField = new javax.swing.JButton();
         AmountSpinner = new javax.swing.JSpinner();
         amountLbl = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        TableDetails = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -115,6 +122,7 @@ public class TableSale extends javax.swing.JDialog {
 
         jScrollPane1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         jScrollPane1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jScrollPane1.setRowHeaderView(null);
 
         jTableProducts.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -185,6 +193,36 @@ public class TableSale extends javax.swing.JDialog {
 
         amountLbl.setText("Cantidad:");
 
+        jScrollPane2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jScrollPane2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+
+        TableDetails.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID", "ID del Producto", "Nombre del Producto", "Talla", "Precio", "Cantidad"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        TableDetails.setGridColor(new java.awt.Color(153, 153, 153));
+        TableDetails.setRowHeight(30);
+        TableDetails.setShowGrid(true);
+        TableDetails.getTableHeader().setReorderingAllowed(false);
+        TableDetails.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TableDetailsMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(TableDetails);
+
         javax.swing.GroupLayout background_productsLayout = new javax.swing.GroupLayout(background_products);
         background_products.setLayout(background_productsLayout);
         background_productsLayout.setHorizontalGroup(
@@ -214,7 +252,8 @@ public class TableSale extends javax.swing.JDialog {
                                 .addComponent(CategoryFilterCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(btnCleanField))
-                            .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2))))
                 .addGap(30, 30, 30))
         );
         background_productsLayout.setVerticalGroup(
@@ -231,8 +270,10 @@ public class TableSale extends javax.swing.JDialog {
                     .addComponent(CategoryLbl)
                     .addComponent(btnCleanField, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 366, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
+                .addGap(53, 53, 53)
                 .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(AmountSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -248,7 +289,7 @@ public class TableSale extends javax.swing.JDialog {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(background_products, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
+            .addComponent(background_products, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 596, Short.MAX_VALUE)
         );
 
         pack();
@@ -265,33 +306,32 @@ public class TableSale extends javax.swing.JDialog {
     }//GEN-LAST:event_productSearchKeyReleased
 
     private void jTableProductsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableProductsMouseClicked
-        DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
-        if (evt.getClickCount() == 1) {
-            int selectedRow = jTableProducts.getSelectedRow();
-            if (model.getColumnCount() < 7) {
-                String cellValue = model.getValueAt(selectedRow, 4).toString();
-                int maximumAmount = Integer.parseInt(cellValue);
-                SpinnerNumberModel spinnerModel = new SpinnerNumberModel(1, 1, maximumAmount, 1);
-                AmountSpinner.setModel(spinnerModel);
-            }
-        } else if (evt.getClickCount() == 2) {
-            //TODO
-            if (model.getColumnCount() > 5) {
-                int selectedRow = jTableProducts.getSelectedRow();
-                productPrice = (Float) jTableProducts.getValueAt(selectedRow, 6);
-                
-                p.loadProductSize(jTableProducts);
-                
-                btnCleanField.setEnabled(false);
-                BrandFilterCmb.setEnabled(false);
-                CategoryFilterCmb.setEnabled(false);
-                productSearch.setText("");
-            }
-
-        }
-
+        loadProductSize();
     }//GEN-LAST:event_jTableProductsMouseClicked
+    private void loadProductSize() {
+        List<ProductSizes> productSizeList;
+        try {
+            DAOProductSizes dao = new DAOProductsSizesImpl();
+//            if (table.getSelectedRow() < 0) {
+//                javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto para ver sus detalles. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+//                return;
+//            }
 
+            int selectedRow = jTableProducts.getSelectedRow();
+            int productId = (int) jTableProducts.getValueAt(selectedRow, 0);
+
+            DefaultTableModel model = (DefaultTableModel) TableDetails.getModel();
+            model.setRowCount(0);
+
+            productPrice = (Float) jTableProducts.getValueAt(selectedRow, 6);
+            productSizeList = dao.consult(productId);
+            productSizeList.forEach((p) -> model.addRow(new Object[]{p.getId(), p.getProductId(), p.getProductName(), p.getSizeName(), p.getPrice(), p.getAmount()}));
+            TableDetails.setModel(model);
+
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
     private void BrandFilterCmbItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_BrandFilterCmbItemStateChanged
         filteredConsult();
     }//GEN-LAST:event_BrandFilterCmbItemStateChanged
@@ -308,17 +348,17 @@ public class TableSale extends javax.swing.JDialog {
     }//GEN-LAST:event_btnCleanFieldActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        int selectedRow = jTableProducts.getSelectedRow();
+        int selectedRow = TableDetails.getSelectedRow();
         if (selectedRow < 0) {
             javax.swing.JOptionPane.showMessageDialog(this, "Debe seleccionar un producto para agregarlo al carrito. \n", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
-        Integer productSizeId = (Integer) jTableProducts.getValueAt(selectedRow, 0);
-        Integer productId = (Integer) jTableProducts.getValueAt(selectedRow, 1);
-        String productName = (String) jTableProducts.getValueAt(selectedRow, 2);
-        String sizeName = (String) jTableProducts.getValueAt(selectedRow, 3);
-        
+
+        Integer productSizeId = (Integer) TableDetails.getValueAt(selectedRow, 0);
+        Integer productId = (Integer) TableDetails.getValueAt(selectedRow, 1);
+        String productName = (String) TableDetails.getValueAt(selectedRow, 2);
+        String sizeName = (String) TableDetails.getValueAt(selectedRow, 3);
+
         Float price = productPrice;
         Integer amount = (Integer) AmountSpinner.getValue();
 
@@ -328,6 +368,15 @@ public class TableSale extends javax.swing.JDialog {
         this.dispose();
     }//GEN-LAST:event_btnAddActionPerformed
 
+    private void TableDetailsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TableDetailsMouseClicked
+        DefaultTableModel model = (DefaultTableModel) TableDetails.getModel();
+        int selectedRow = TableDetails.getSelectedRow();
+        String cellValue = model.getValueAt(selectedRow, 5).toString();
+        int maximumAmount = Integer.parseInt(cellValue);
+        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(1, 1, maximumAmount, 1);
+        AmountSpinner.setModel(spinnerModel);
+    }//GEN-LAST:event_TableDetailsMouseClicked
+
     private void filteredConsult() {
         DAOProducts dao = new DAOProductsImpl();
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
@@ -335,7 +384,7 @@ public class TableSale extends javax.swing.JDialog {
         String productNameToSearch = productSearch.getText();
         String productBrandToSearch = BrandFilterCmb.getSelectedItem() == null ? "NINGUNO" : BrandFilterCmb.getSelectedItem().toString();
         String productCategoryToSearch = CategoryFilterCmb.getSelectedItem() == null ? "NINGUNO" : CategoryFilterCmb.getSelectedItem().toString();
-        
+
         try {
             dao.consult(productNameToSearch, productBrandToSearch, productCategoryToSearch).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getBrandName(), p.getCategoryName(), p.getSizeAvailable(), p.getTotalExistence(), p.getPrice()}));
         } catch (Exception ex) {
@@ -384,11 +433,13 @@ public class TableSale extends javax.swing.JDialog {
     private javax.swing.JLabel BrandLbl;
     private javax.swing.JComboBox<String> CategoryFilterCmb;
     private javax.swing.JLabel CategoryLbl;
+    private javax.swing.JTable TableDetails;
     private javax.swing.JLabel amountLbl;
     private javax.swing.JPanel background_products;
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnCleanField;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTableProducts;
     private javax.swing.JTextField productSearch;
     private javax.swing.JLabel title;

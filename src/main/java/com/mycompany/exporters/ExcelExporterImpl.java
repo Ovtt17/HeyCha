@@ -10,10 +10,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JTable;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class JTableToExcelExporter implements ExcelExporter {
+public class ExcelExporterImpl implements ExcelExporter {
 
     @Override
-    public void exportToExcel(JTable table) throws Exception {
+    public void export(JTable table) throws Exception {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Especifique un archivo para guardar");
 
@@ -76,8 +76,7 @@ public class JTableToExcelExporter implements ExcelExporter {
                             } else if (value instanceof java.util.Date date) {
                                 cell.setCellValue(date);
                             } else {
-                                // Para cualquier otro tipo de objeto, usa toString()
-                                cell.setCellValue(value.toString());
+                                cell.setCellValue(String.valueOf(value));
                             }
                         }
                     }
@@ -92,8 +91,7 @@ public class JTableToExcelExporter implements ExcelExporter {
                     workbook.write(out);
                 }
             }
-
-            System.out.println("Datos exportados con éxito a " + filePath);
+            javax.swing.JOptionPane.showMessageDialog(null, "Archivo Excel creado exitosamente!\n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
         }
     }
 }
