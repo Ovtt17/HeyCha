@@ -6,8 +6,6 @@ import com.mycompany.interfaces.DAOProductSizes;
 import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.models.ModelProducts;
 import com.mycompany.interfaces.Styleable;
-import com.mycompany.models.Category;
-import com.mycompany.models.CategorySize;
 import com.mycompany.models.ProductSizes;
 import com.mycompany.models.Size;
 import java.awt.Color;
@@ -15,15 +13,14 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
-import javax.swing.JComboBox;
 import javax.swing.table.DefaultTableModel;
 
 public class UpProducts extends javax.swing.JPanel implements Styleable {
+    DAOProducts dao;
+    DAOProductSizes daoSize;
 
     boolean isEditable = false;
     ModelProducts productEditable;
@@ -89,7 +86,7 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         SizeTable.getTableHeader().setForeground(new Color(255, 255, 255));
 
         try {
-            DAOProducts dao = new DAOProductsImpl();
+            dao = new DAOProductsImpl();
             ItemListener[] itemListeners = categoryCmb.getListeners(ItemListener.class);
 
             for (ItemListener itemListener : itemListeners) {
@@ -496,8 +493,8 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         product.setIdType(idType);
 
         try {
-            DAOProducts dao = new DAOProductsImpl();
-            DAOProductSizes daoSize = new DAOProductsSizesImpl();
+            dao = new DAOProductsImpl();
+            daoSize = new DAOProductsSizesImpl();
             DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
 
             Integer productId = isEditable ? dao.modify(product) : dao.record(product);

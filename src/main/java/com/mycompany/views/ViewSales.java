@@ -19,7 +19,10 @@ import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 
 public class ViewSales extends javax.swing.JPanel implements Styleable {
-
+    
+    DAOSales dao;
+    DAOSalesProducts daoDetails;
+    
     boolean lightOrDarkMode;
     Integer count;
     Float totalMoney;
@@ -75,7 +78,7 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
 
     private void loadSales() {
         try {
-            DAOSales dao = new DAOSalesImpl();
+            dao = new DAOSalesImpl();
             DefaultTableModel model = (DefaultTableModel) JTableSales.getModel();
             model.setRowCount(0);
             DefaultTableModel modelDetail = (DefaultTableModel) TableSaleDetails.getModel();
@@ -396,13 +399,13 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
     private void loadSalesProducts() {
         List<ModelSalesProducts> salesProductsList;
         try {
-            DAOSalesProducts dao = new DAOSalesProductsImpl();
+            daoDetails = new DAOSalesProductsImpl();
             int selectedRows = JTableSales.getSelectedRow();
             int productId = (int) JTableSales.getValueAt(selectedRows, 0);
 
             DefaultTableModel newModel = (DefaultTableModel) TableSaleDetails.getModel();
             newModel.setRowCount(0);
-            salesProductsList = dao.consult(productId);
+            salesProductsList = daoDetails.consult(productId);
             salesProductsList.forEach((p) -> newModel.addRow(new Object[]{p.getProductId(), p.getProductName(), p.getSizeName(), p.getPriceUnity(), p.getAmount(), p.getSubtotal()}));
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -413,9 +416,9 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
             try {
                 int saleId = (int) JTableSales.getValueAt(JTableSales.getSelectedRow(), 0);
 
-                DAOSales daoSizes = new DAOSalesImpl();
-                DAOSalesProducts daoSizesProducts = new DAOSalesProductsImpl();
-                Dashboard.ShowPanel(new UpSales(daoSizes.getSaleById(saleId), daoSizesProducts.consult(saleId), lightOrDarkMode));
+                dao = new DAOSalesImpl();
+                daoDetails = new DAOSalesProductsImpl();
+                Dashboard.ShowPanel(new UpSales(dao.getSaleById(saleId), daoDetails.consult(saleId), lightOrDarkMode));
             } catch (Exception e) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
             }

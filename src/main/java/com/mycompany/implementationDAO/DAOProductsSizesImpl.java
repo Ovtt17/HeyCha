@@ -3,6 +3,7 @@ package com.mycompany.implementationDAO;
 import com.mycompany.db.Database;
 import com.mycompany.interfaces.DAOProductSizes;
 import com.mycompany.models.ProductSizes;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,9 +18,9 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
     @Override
     public boolean record(ProductSizes productSize) throws Exception {
         boolean isInserted = false;
-        try {
+        try (Connection conn = this.getConnection()) {
             String query = "INSERT INTO PRODUCTOS_TALLAS(ID_PRODUCTO, ID_TALLA, CANTIDAD_INVENTARIO) VALUES (?,?,?);";
-            final PreparedStatement st = this.getConnection().prepareStatement(query);
+            final PreparedStatement st = conn.prepareStatement(query);
             try (st) {
                 sendRecordedFields(st, productSize);
                 int rowsAffected = st.executeUpdate();
@@ -43,9 +44,9 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
     @Override
     public boolean modify(ProductSizes productSize) throws Exception {
         boolean isModified = false;
-        try {
+        try (Connection conn = this.getConnection()) {
             String query = "call modificar_productos_tallas(?,?,?);";
-            final PreparedStatement st = this.getConnection().prepareStatement(query);
+            final PreparedStatement st = conn.prepareStatement(query);
             try (st) {
                 sendModifiedFields(st, productSize);
                 int rowsAffected = st.executeUpdate();
@@ -67,9 +68,9 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
 
     @Override
     public void deleteAllSizes(int productId) throws Exception {
-        try {
+        try (Connection conn = this.getConnection()) {
             String query = "call deleteProductSize(?);";
-            final PreparedStatement pst = this.getConnection().prepareStatement(query);
+            final PreparedStatement pst = conn.prepareStatement(query);
             try (pst) {
                 pst.setInt(1, productId);
                 pst.executeUpdate();
@@ -83,14 +84,14 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
     @Override
     public List<ProductSizes> consult(int productId) throws Exception {
         List<ProductSizes> list = null;
-        try {
+        try (Connection conn = this.getConnection()) {
             String query = "select pt.id, pt.id_producto, p.nombre, t.talla, p.precio, cantidad_inventario\n"
                     + "from productos_tallas pt \n"
                     + "inner join productos p on p.ID = pt.ID_Producto\n"
                     + "inner join tallas t on t.id = pt.ID_Talla\n"
                     + "where pt.ID_Producto = ? and pt.is_deleted = 0\n"
                     + "order by t.id, pt.id desc;";
-            final PreparedStatement st = this.getConnection().prepareStatement(query);
+            final PreparedStatement st = conn.prepareStatement(query);
             try (st) {
                 st.setInt(1, productId);
                 list = new ArrayList();
@@ -121,9 +122,9 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
 
     @Override
     public void delete(ProductSizes productSize) throws Exception {
-        try {
+        try (Connection conn = this.getConnection()) {
             String query = "UPDATE PRODUCTOS_TALLAS SET is_deleted = 1 WHERE ID_PRODUCTO = ? AND ID_TALLA = ?;";
-            final PreparedStatement st = this.getConnection().prepareStatement(query);
+            final PreparedStatement st = conn.prepareStatement(query);
             try (st) {
                 st.setInt(1, productSize.getProductId());
                 st.setInt(2, productSize.getSizeId());
@@ -139,9 +140,9 @@ public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
     @Override
     public List<ProductSizes> getProductSizesById(int productId) throws Exception {
         List<ProductSizes> list = null;
-        try {
+        try (Connection conn = this.getConnection()) {
             String query = "SELECT pt.*, t.talla as nombre_talla FROM productos_tallas pt join tallas t on t.id = pt.ID_Talla where ID_Producto = ? and is_deleted = 0;";
-            final PreparedStatement st = this.getConnection().prepareStatement(query);
+            final PreparedStatement st = conn.prepareStatement(query);
             try (st) {
                 st.setInt(1, productId);
                 list = new ArrayList();

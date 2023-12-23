@@ -19,6 +19,9 @@ import javax.swing.table.DefaultTableModel;
 public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
     boolean lightOrDarkMode;
+    DAOProducts dao;
+    DAOProductSizes daoSize;
+    
 
     public ViewProducts(boolean isDarkModeEnabled) {
         initComponents();
@@ -78,7 +81,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         String brandSelected = "NINGUNO";
         String categorySelected = "NINGUNO";
         try {
-            DAOProducts dao = new DAOProductsImpl();
+            dao = new DAOProductsImpl();
             dao.consult(nameToFind, brandSelected, categorySelected)
                     .forEach((p) -> 
                             model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrandName(), p.getCategoryName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice()}));
@@ -355,8 +358,8 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
         int confirmed = javax.swing.JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar estos datos? \n", "CONFIMARCIÓN", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
         if (confirmed == javax.swing.JOptionPane.YES_OPTION) {
-            DAOProducts dao = new DAOProductsImpl();
-            DAOProductSizes daoSize = new DAOProductsSizesImpl();
+            dao = new DAOProductsImpl();
+            daoSize = new DAOProductsSizesImpl();
 
             int[] selectedRows = jTableProducts.getSelectedRows();
             int continueDeleting;
@@ -386,8 +389,8 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         if (jTableProducts.getSelectedRow() > -1) {
             try {
                 int productId = (int) jTableProducts.getValueAt(jTableProducts.getSelectedRow(), 0);
-                DAOProducts dao = new DAOProductsImpl();
-                DAOProductSizes daoSize = new DAOProductsSizesImpl();
+                dao = new DAOProductsImpl();
+                daoSize = new DAOProductsSizesImpl();
                 ModelProducts product = dao.getProductById(productId);
                 List<ProductSizes> sizeList = daoSize.getProductSizesById(productId);
                 Dashboard.ShowPanel(new UpProducts(product, sizeList, lightOrDarkMode));
@@ -407,7 +410,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     public void loadProductSize() {
         List<ProductSizes> productSizeList = null;
         try {
-            DAOProductSizes dao = new DAOProductsSizesImpl();
+            daoSize = new DAOProductsSizesImpl();
 
             int selectedRows = jTableProducts.getSelectedRow();
             int productId = (int) jTableProducts.getValueAt(selectedRows, 0);
@@ -415,7 +418,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             DefaultTableModel model = (DefaultTableModel) TableDetails.getModel();
             model.setRowCount(0);
 
-            productSizeList = dao.consult(productId);
+            productSizeList = daoSize.consult(productId);
             productSizeList.forEach((p) -> model.addRow(new Object[]{p.getId(), p.getProductId(), p.getProductName(), p.getSizeName(), p.getPrice(), p.getAmount()}));
             TableDetails.setModel(model);
 
@@ -463,7 +466,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     }//GEN-LAST:event_TableDetailsMouseClicked
 
     private void filterConsult() {
-        DAOProducts dao = new DAOProductsImpl();
+        dao = new DAOProductsImpl();
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
         model.setRowCount(0);
         String productNameToSearch = productSearch.getText();
