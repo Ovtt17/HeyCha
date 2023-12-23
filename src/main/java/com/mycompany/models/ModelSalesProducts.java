@@ -1,9 +1,11 @@
 package com.mycompany.models;
 
 import java.time.temporal.TemporalQueries;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter @Setter
 public class ModelSalesProducts {
-
     private Integer id;
     private Integer saleId;
     private Integer productSizeId;
@@ -47,49 +49,4 @@ public class ModelSalesProducts {
         this.amount = amount;
         this.subtotal = this.amount * this.priceUnity;
     }
-
-    public void setSaleId(Integer saleId) {
-        this.saleId = saleId;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public Integer getSaleId() {
-        return saleId;
-    }
-
-    public Integer getProductId() {
-        return productId;
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public Float getPriceUnity() {
-        return priceUnity;
-    }
-
-    public Float getSubtotal() {
-        return subtotal;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public String getSizeName() {
-        return sizeName;
-    }
-
-    public Integer getSizeId() {
-        return sizeId;
-    }
-
-    public Integer getProductSizeId() {
-        return productSizeId;
-    }
-
 }

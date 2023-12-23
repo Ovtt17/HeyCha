@@ -1,28 +1,39 @@
 package com.mycompany.views;
 
 import com.mycompany.implementationDAO.DAOProductsImpl;
-import com.mycompany.interfaces.DAOProducts;
-import com.mycompany.models.ModelProducts;
 import com.mycompany.implementationDAO.DAOProductsSizesImpl;
 import com.mycompany.interfaces.DAOProductSizes;
+import com.mycompany.interfaces.DAOProducts;
+import com.mycompany.models.ModelProducts;
 import com.mycompany.interfaces.Styleable;
-import com.mycompany.models.ModelProductSizes;
+import com.mycompany.models.Category;
+import com.mycompany.models.CategorySize;
+import com.mycompany.models.ProductSizes;
+import com.mycompany.models.Size;
 import java.awt.Color;
-import java.util.Arrays;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import javax.swing.JCheckBox;
-import javax.swing.JSpinner;
+import java.util.Map;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.IntStream;
+import javax.swing.JComboBox;
+import javax.swing.table.DefaultTableModel;
 
 public class UpProducts extends javax.swing.JPanel implements Styleable {
 
     boolean isEditable = false;
     ModelProducts productEditable;
-    List<ModelProductSizes> listEditable;
+    List<ProductSizes> originalSizes;
+    List<ProductSizes> newSizes = new ArrayList<>();
 
-    HashMap<String, JSpinner> spinnerMap = new HashMap<>();
-    HashMap<String, JCheckBox> checkBoxMap = new HashMap<>();
-    String[] sizes = {"XS", "S", "M", "L", "XL"};
+    List<ProductSizes> sizesToDelete = new ArrayList<>();
+
+    HashMap<String, List<Size>> sizeListByCategoryName = new HashMap<>();
+    HashMap<String, Integer> sizeSelected = new HashMap<>();
 
     public UpProducts(boolean isDarkModeEnabled) {
         initComponents();
@@ -30,11 +41,11 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         initStyles();
     }
 
-    public UpProducts(ModelProducts product, List<ModelProductSizes> list, boolean isDarkModeEnabled) {
+    public UpProducts(ModelProducts product, List<ProductSizes> list, boolean isDarkModeEnabled) {
         initComponents();
         isEditable = true;
         productEditable = product;
-        listEditable = list;
+        originalSizes = list;
         updateStyles(isDarkModeEnabled);
         initStyles();
     }
@@ -43,11 +54,17 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
     public void updateStyles(boolean isDarkModeEnabled) {
         if (isDarkModeEnabled) {
             title.setForeground(Color.white);
+            SizeTable.setForeground(Color.white);
             bg.putClientProperty("FlatLaf.style", "background: #172030");
+            panelLeft.putClientProperty("FlatLaf.style", "background: #172030");
+            panelRight.putClientProperty("FlatLaf.style", "background: #172030");
             DataUpdateBtn.putClientProperty("FlatLaf.style", "background: #0c9294");
         } else {
             title.setForeground(Color.black);
+            SizeTable.setForeground(Color.black);
             bg.putClientProperty("FlatLaf.style", "background: #FFFFFF");
+            panelLeft.putClientProperty("FlatLaf.style", "background: #FFFFFF");
+            panelRight.putClientProperty("FlatLaf.style", "background: #FFFFFF");
             DataUpdateBtn.putClientProperty("FlatLaf.style", "background: #125AAD");
         }
     }
@@ -61,15 +78,32 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         BrandLbl.putClientProperty("FlatLaf.styleClass", "h2");
         categoryLbl.putClientProperty("FlatLaf.styleClass", "h2");
         typeLbl.putClientProperty("FlatLaf.styleClass", "h2");
+        sizeLbl.putClientProperty("FlatLaf.styleClass", "h2");
 
         nameTxt.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto.");
         priceTxt.putClientProperty("JTextField.placeholderText", "Ingrese el precio del producto.");
-        descriptionTxt.putClientProperty("JTextField.placeholderText", "Ingrese una descripcion para el producto");
+        descriptionTxt.putClientProperty("JTextField.placeholderText", "Ingrese una descripcion para el producto. (Opcional)");
         discountTxt.putClientProperty("JTextField.placeholderText", "Ingrese el descuento que tendrá el producto. (opcional)");
+
+        SizeTable.getTableHeader().setBackground(new Color(0, 0, 0));
+        SizeTable.getTableHeader().setForeground(new Color(255, 255, 255));
 
         try {
             DAOProducts dao = new DAOProductsImpl();
+            ItemListener[] itemListeners = categoryCmb.getListeners(ItemListener.class);
+
+            for (ItemListener itemListener : itemListeners) {
+                categoryCmb.removeItemListener(itemListener);
+            }
+
             dao.loadCmb(brandCmb, categoryCmb, typeCmb);
+            dao = new DAOProductsImpl();
+            sizeListByCategoryName = dao.loadSizes();
+
+            for (ItemListener itemListener : itemListeners) {
+                categoryCmb.addItemListener(itemListener);
+            }
+
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -77,47 +111,23 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         if (isEditable) {
             title.setText("Editar producto.");
             DataUpdateBtn.setText("Guardar");
-            if (productEditable != null) {
+            try {
                 nameTxt.setText(productEditable.getName());
-                priceTxt.setText(productEditable.getPrice().toString());
-
+                priceTxt.setText(String.valueOf(productEditable.getPrice()));
                 descriptionTxt.setText(productEditable.getDescription());
-
                 Integer discount = productEditable.getDiscount() == null ? 0 : productEditable.getDiscount();
-                discountTxt.setText(discount.toString());
-
+                discountTxt.setText(String.valueOf(discount));
                 brandCmb.setSelectedItem(productEditable.getBrandName());
-
                 categoryCmb.setSelectedItem(productEditable.getCategoryName());
+                typeCmb.setSelectedItem(productEditable.getTypeName());
 
-                typeCmb.setSelectedIndex(productEditable.getIdType());
-                loadSizes();
-            }
-        }
-    }
+                DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
+                originalSizes.forEach(s -> {
+                    model.addRow(new Object[]{s.getSizeName(), s.getAmount()});
+                    sizeSelected.put(s.getSizeName(), s.getSizeId());
+                });
 
-    private void loadSizes() {
-        spinnerMap.put("XS", spinnerSizeXS);
-        spinnerMap.put("S", spinnerSizeS);
-        spinnerMap.put("M", spinnerSizeM);
-        spinnerMap.put("L", spinnerSizeL);
-        spinnerMap.put("XL", spinnerSizeXL);
-
-        checkBoxMap.put("XS", cbXS);
-        checkBoxMap.put("S", cbS);
-        checkBoxMap.put("M", cbM);
-        checkBoxMap.put("L", cbL);
-        checkBoxMap.put("XL", cbXL);
-
-        for (ModelProductSizes pSize : listEditable) {
-            String size = sizes[pSize.getIdSize() - 1];
-            int spinnerValue = pSize.getAmount() == null ? 0 : pSize.getAmount();
-
-            if (spinnerMap.containsKey(size)) {
-                spinnerMap.get(size).setValue(spinnerValue);
-                if (spinnerValue != 0) {
-                    checkBoxMap.get(size).setSelected(true);
-                }
+            } catch (Exception e) {
             }
         }
     }
@@ -128,59 +138,109 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
 
         bg = new javax.swing.JPanel();
         title = new javax.swing.JLabel();
+        jSeparator2 = new javax.swing.JSeparator();
+        panelRight = new javax.swing.JPanel();
+        categoryLbl = new javax.swing.JLabel();
+        categoryCmb = new javax.swing.JComboBox<>();
+        sizeLbl = new javax.swing.JLabel();
+        sizeCmb = new javax.swing.JComboBox<>();
+        amountSpinner = new javax.swing.JSpinner();
+        addSizeBtn = new javax.swing.JButton();
+        deleteSizeBtn = new javax.swing.JButton();
+        typeLbl = new javax.swing.JLabel();
+        typeCmb = new javax.swing.JComboBox<>();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        SizeTable = new javax.swing.JTable();
+        DataUpdateBtn = new javax.swing.JButton();
+        panelLeft = new javax.swing.JPanel();
         nameLbl = new javax.swing.JLabel();
         nameTxt = new javax.swing.JTextField();
         priceLbl = new javax.swing.JLabel();
         priceTxt = new javax.swing.JTextField();
+        descriptionLbl = new javax.swing.JLabel();
         descriptionTxt = new javax.swing.JTextField();
-        BrandLbl = new javax.swing.JLabel();
         discountLbl = new javax.swing.JLabel();
         discountTxt = new javax.swing.JTextField();
-        categoryLbl = new javax.swing.JLabel();
-        typeLbl = new javax.swing.JLabel();
-        DataUpdateBtn = new javax.swing.JButton();
-        descriptionLbl = new javax.swing.JLabel();
+        BrandLbl = new javax.swing.JLabel();
         brandCmb = new javax.swing.JComboBox<>();
-        categoryCmb = new javax.swing.JComboBox<>();
-        typeCmb = new javax.swing.JComboBox<>();
-        jSeparator2 = new javax.swing.JSeparator();
-        spinnerSizeXS = new javax.swing.JSpinner();
-        spinnerSizeM = new javax.swing.JSpinner();
-        spinnerSizeS = new javax.swing.JSpinner();
-        spinnerSizeL = new javax.swing.JSpinner();
-        spinnerSizeXL = new javax.swing.JSpinner();
-        cbXS = new javax.swing.JCheckBox();
-        cbS = new javax.swing.JCheckBox();
-        cbM = new javax.swing.JCheckBox();
-        cbL = new javax.swing.JCheckBox();
-        cbXL = new javax.swing.JCheckBox();
 
         setPreferredSize(new java.awt.Dimension(764, 436));
 
-        bg.setBackground(new java.awt.Color(255, 255, 255));
+        bg.setBackground(new java.awt.Color(0, 0, 0));
         bg.setPreferredSize(new java.awt.Dimension(764, 436));
 
         title.setText("Subir nuevo producto.");
 
-        nameLbl.setText("Nombre:");
+        jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
-        nameTxt.setMinimumSize(new java.awt.Dimension(0, 0));
-
-        priceLbl.setText("Precio:");
-
-        priceTxt.setMinimumSize(new java.awt.Dimension(0, 0));
-
-        descriptionTxt.setMinimumSize(new java.awt.Dimension(0, 0));
-
-        BrandLbl.setText("Marca:");
-
-        discountLbl.setText("Descuento (Opcional):");
-
-        discountTxt.setMinimumSize(new java.awt.Dimension(0, 0));
+        panelRight.setBackground(new java.awt.Color(255, 255, 255));
 
         categoryLbl.setText("Categoria:");
 
-        typeLbl.setText("Tipo (Opcional):");
+        categoryCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        categoryCmb.setMinimumSize(new java.awt.Dimension(0, 0));
+        categoryCmb.setPreferredSize(new java.awt.Dimension(64, 22));
+        categoryCmb.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                categoryCmbItemStateChanged(evt);
+            }
+        });
+
+        sizeLbl.setText("Talla:");
+
+        sizeCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        sizeCmb.setMinimumSize(new java.awt.Dimension(0, 0));
+        sizeCmb.setPreferredSize(new java.awt.Dimension(64, 22));
+
+        amountSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
+
+        addSizeBtn.setBackground(new java.awt.Color(0, 181, 64));
+        addSizeBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        addSizeBtn.setForeground(new java.awt.Color(255, 255, 255));
+        addSizeBtn.setText("+");
+        addSizeBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addSizeBtnActionPerformed(evt);
+            }
+        });
+
+        deleteSizeBtn.setBackground(new java.awt.Color(255, 51, 51));
+        deleteSizeBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        deleteSizeBtn.setForeground(new java.awt.Color(255, 255, 255));
+        deleteSizeBtn.setText("-");
+        deleteSizeBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteSizeBtnActionPerformed(evt);
+            }
+        });
+
+        typeLbl.setText("Tipo:");
+
+        typeCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        typeCmb.setMinimumSize(new java.awt.Dimension(0, 0));
+        typeCmb.setPreferredSize(new java.awt.Dimension(64, 22));
+
+        SizeTable.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        SizeTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Talla", "Cantidad"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        SizeTable.setColumnSelectionAllowed(true);
+        SizeTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(SizeTable);
+        SizeTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         DataUpdateBtn.setBackground(new java.awt.Color(18, 90, 173));
         DataUpdateBtn.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -195,185 +255,186 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
             }
         });
 
+        javax.swing.GroupLayout panelRightLayout = new javax.swing.GroupLayout(panelRight);
+        panelRight.setLayout(panelRightLayout);
+        panelRightLayout.setHorizontalGroup(
+            panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelRightLayout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelRightLayout.createSequentialGroup()
+                        .addComponent(DataUpdateBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(15, 15, 15))
+                    .addGroup(panelRightLayout.createSequentialGroup()
+                        .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelRightLayout.createSequentialGroup()
+                                .addComponent(typeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(262, 262, 262))
+                            .addGroup(panelRightLayout.createSequentialGroup()
+                                .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(panelRightLayout.createSequentialGroup()
+                                        .addComponent(sizeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGap(172, 172, 172))
+                                    .addGroup(panelRightLayout.createSequentialGroup()
+                                        .addComponent(categoryLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGap(136, 136, 136))
+                                    .addComponent(typeCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(sizeCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(categoryCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                                .addGap(24, 24, 24)
+                                .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(amountSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(addSizeBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(deleteSizeBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(24, 24, 24))))
+        );
+        panelRightLayout.setVerticalGroup(
+            panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelRightLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(typeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(typeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(categoryLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(categoryCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(sizeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(sizeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(amountSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelRightLayout.createSequentialGroup()
+                        .addGap(15, 15, 15)
+                        .addComponent(addSizeBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(deleteSizeBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panelRightLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(DataUpdateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        panelLeft.setBackground(new java.awt.Color(255, 255, 255));
+
+        nameLbl.setText("Nombre:");
+
+        nameTxt.setMinimumSize(new java.awt.Dimension(0, 0));
+
+        priceLbl.setText("Precio:");
+
+        priceTxt.setMinimumSize(new java.awt.Dimension(0, 0));
+
         descriptionLbl.setText("Descripción (Opcional):");
+
+        descriptionTxt.setMinimumSize(new java.awt.Dimension(0, 0));
+
+        discountLbl.setText("Descuento (Opcional):");
+
+        discountTxt.setMinimumSize(new java.awt.Dimension(0, 0));
+
+        BrandLbl.setText("Marca:");
 
         brandCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         brandCmb.setMinimumSize(new java.awt.Dimension(0, 0));
         brandCmb.setPreferredSize(new java.awt.Dimension(64, 22));
 
-        categoryCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        categoryCmb.setMinimumSize(new java.awt.Dimension(0, 0));
-        categoryCmb.setPreferredSize(new java.awt.Dimension(64, 22));
-
-        typeCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NINGUNO" }));
-        typeCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        typeCmb.setMinimumSize(new java.awt.Dimension(0, 0));
-        typeCmb.setPreferredSize(new java.awt.Dimension(64, 22));
-
-        jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
-
-        spinnerSizeXS.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
-
-        spinnerSizeM.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
-
-        spinnerSizeS.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
-
-        spinnerSizeL.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
-
-        spinnerSizeXL.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
-
-        cbXS.setText("XS");
-
-        cbS.setText("S");
-
-        cbM.setText("M");
-
-        cbL.setText("L");
-
-        cbXL.setText("XL");
+        javax.swing.GroupLayout panelLeftLayout = new javax.swing.GroupLayout(panelLeft);
+        panelLeft.setLayout(panelLeftLayout);
+        panelLeftLayout.setHorizontalGroup(
+            panelLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelLeftLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelLeftLayout.createSequentialGroup()
+                        .addComponent(priceLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(256, 256, 256))
+                    .addGroup(panelLeftLayout.createSequentialGroup()
+                        .addGroup(panelLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(nameTxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(priceTxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelLeftLayout.createSequentialGroup()
+                                .addComponent(discountLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(45, 45, 45))
+                            .addComponent(discountTxt, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelLeftLayout.createSequentialGroup()
+                                .addComponent(descriptionLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(39, 39, 39))
+                            .addComponent(brandCmb, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(descriptionTxt, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(panelLeftLayout.createSequentialGroup()
+                                .addComponent(BrandLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(158, 158, 158)))
+                        .addGap(91, 91, 91))
+                    .addGroup(panelLeftLayout.createSequentialGroup()
+                        .addComponent(nameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(245, 245, 245))))
+        );
+        panelLeftLayout.setVerticalGroup(
+            panelLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLeftLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(nameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(nameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(5, 5, 5)
+                .addComponent(priceLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(priceTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(BrandLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(brandCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(descriptionLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(descriptionTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(discountLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(discountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(42, 42, 42))
+        );
 
         javax.swing.GroupLayout bgLayout = new javax.swing.GroupLayout(bg);
         bg.setLayout(bgLayout);
         bgLayout.setHorizontalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bgLayout.createSequentialGroup()
-                .addGap(12, 12, 12)
+                .addGap(32, 32, 32)
                 .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(bgLayout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(nameTxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(bgLayout.createSequentialGroup()
-                                .addComponent(nameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(288, 288, 288))
-                            .addGroup(bgLayout.createSequentialGroup()
-                                .addComponent(priceLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(299, 299, 299))
-                            .addComponent(priceTxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(bgLayout.createSequentialGroup()
-                                .addComponent(descriptionLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(210, 210, 210))
-                            .addComponent(descriptionTxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(bgLayout.createSequentialGroup()
-                                .addComponent(discountLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(216, 216, 216))
-                            .addComponent(discountTxt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(typeLbl)
-                            .addGroup(bgLayout.createSequentialGroup()
-                                .addComponent(typeCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(137, 137, 137)))))
-                .addGap(22, 22, 22)
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(37, 37, 37))
+                    .addComponent(panelLeft, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
-                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(bgLayout.createSequentialGroup()
-                        .addComponent(categoryLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(286, 286, 286))
-                    .addGroup(bgLayout.createSequentialGroup()
-                        .addComponent(BrandLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(308, 308, 308))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bgLayout.createSequentialGroup()
-                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(DataUpdateBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, bgLayout.createSequentialGroup()
-                                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(bgLayout.createSequentialGroup()
-                                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(cbXS)
-                                            .addComponent(cbS))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(spinnerSizeXS, javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(spinnerSizeS, javax.swing.GroupLayout.Alignment.LEADING)))
-                                    .addGroup(bgLayout.createSequentialGroup()
-                                        .addComponent(cbM)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(spinnerSizeM)))
-                                .addGap(84, 84, 84)
-                                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(cbL)
-                                    .addComponent(cbXL))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(spinnerSizeXL)
-                                    .addComponent(spinnerSizeL))))
-                        .addGap(16, 16, 16))
-                    .addGroup(bgLayout.createSequentialGroup()
-                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(brandCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(categoryCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(134, 134, 134))))
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(panelRight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(57, 57, 57))
         );
         bgLayout.setVerticalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bgLayout.createSequentialGroup()
                 .addGap(9, 9, 9)
-                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jSeparator2)
+                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(bgLayout.createSequentialGroup()
-                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(bgLayout.createSequentialGroup()
-                                .addGap(32, 32, 32)
-                                .addComponent(BrandLbl, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE)
-                                .addGap(15, 15, 15))
-                            .addGroup(bgLayout.createSequentialGroup()
-                                .addComponent(title, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(nameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(bgLayout.createSequentialGroup()
-                                .addComponent(brandCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(categoryLbl, javax.swing.GroupLayout.DEFAULT_SIZE, 19, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(categoryCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(24, 24, 24)
-                                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(bgLayout.createSequentialGroup()
-                                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                            .addComponent(spinnerSizeL, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(cbL))
-                                        .addGap(20, 20, 20)
-                                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                            .addComponent(spinnerSizeXL, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(cbXL)))
-                                    .addGroup(bgLayout.createSequentialGroup()
-                                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                            .addComponent(spinnerSizeXS, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(cbXS))
-                                        .addGap(20, 20, 20)
-                                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                            .addComponent(spinnerSizeS, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(cbS))
-                                        .addGap(27, 27, 27)
-                                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                            .addComponent(spinnerSizeM, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(cbM))))
-                                .addGap(32, 32, 32)
-                                .addComponent(DataUpdateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(17, 17, 17))
-                            .addGroup(bgLayout.createSequentialGroup()
-                                .addComponent(nameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(priceLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(priceTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(descriptionLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(descriptionTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(discountLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(discountTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(typeLbl)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(typeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(33, 33, 33)))))
-                .addGap(0, 0, 0))
+                        .addComponent(jSeparator2)
+                        .addGap(69, 69, 69))
+                    .addGroup(bgLayout.createSequentialGroup()
+                        .addComponent(title)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(panelLeft, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(49, 49, 49))))
+            .addGroup(bgLayout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addComponent(panelRight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(51, 51, 51))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -402,7 +463,9 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
                 }
             }
 
-            discount = (discountTxt.getText().trim().isEmpty() || Integer.parseInt(discountTxt.getText().trim()) < 1) ? null : Integer.valueOf(discountTxt.getText().trim());
+            String discountText = discountTxt.getText().trim();
+            discount = (discountText.isEmpty() || Integer.parseInt(discountText) < 1)
+                    ? null : Integer.valueOf(discountText);
 
         } catch (NumberFormatException e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Por favor, ingrese solo números en los campos de precio y descuento. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -413,18 +476,16 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
 
         Integer idBrand = brandCmb.getSelectedIndex() == -1 ? null : brandCmb.getSelectedIndex() + 1;
         Integer idCategory = categoryCmb.getSelectedIndex() == -1 ? null : categoryCmb.getSelectedIndex() + 1;
-        Integer idType = typeCmb.getSelectedIndex() == -1 || typeCmb.getSelectedIndex() == 0 ? null : typeCmb.getSelectedIndex() + 1;
+        Integer idType = typeCmb.getSelectedIndex() == -1 ? null : typeCmb.getSelectedIndex() + 1;
 
-        boolean incorrectData = name.isEmpty() || price == null || idBrand == null || idCategory == null;
+        boolean incorrectData = name.isEmpty() || price == null || idBrand == null || idCategory == null || idType == null || SizeTable.getRowCount() == 0;
 
         if (incorrectData) {
             javax.swing.JOptionPane.showMessageDialog(this, "Debe llenar todos los campos correctamente. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
             nameTxt.requestFocus();
             return;
         }
-        
-        
-        
+
         ModelProducts product = isEditable ? productEditable : new ModelProducts();
         product.setName(name);
         product.setPrice(price);
@@ -433,76 +494,58 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         product.setIdBrand(idBrand);
         product.setIdCategory(idCategory);
         product.setIdType(idType);
-        
-        ModelProductSizes pSizes = new ModelProductSizes();
 
-        spinnerMap.put("XS", spinnerSizeXS);
-        spinnerMap.put("S", spinnerSizeS);
-        spinnerMap.put("M", spinnerSizeM);
-        spinnerMap.put("L", spinnerSizeL);
-        spinnerMap.put("XL", spinnerSizeXL);
-
-        checkBoxMap.put("XS", cbXS);
-        checkBoxMap.put("S", cbS);
-        checkBoxMap.put("M", cbM);
-        checkBoxMap.put("L", cbL);
-        checkBoxMap.put("XL", cbXL);
         try {
             DAOProducts dao = new DAOProductsImpl();
             DAOProductSizes daoSize = new DAOProductsSizesImpl();
+            DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
 
-            boolean selected = false;
-            for (String size : sizes) {
-                int spinnervalue = (int) spinnerMap.get(size).getValue();
-                if (spinnervalue != 0 && checkBoxMap.get(size).isSelected()) {
-                    selected = true;
-                }
-            }
-            if (!selected) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Debe seleccionar correctamente las tallas. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+            Integer productId = isEditable ? dao.modify(product) : dao.record(product);
 
-            if (!isEditable) {
-                dao.record(product, pSizes);
-                for (String size : sizes) {
-                    int spinnervalue = (int) spinnerMap.get(size).getValue();
-                    if (spinnervalue != 0 && checkBoxMap.get(size).isSelected()) {
-                        pSizes.setAmount(spinnervalue);
-                        pSizes.setIdSize(Arrays.asList(sizes).indexOf(size) + 1);
-                        daoSize.record(pSizes);
-                    }
-                }
-            } else {
-                dao.modify(product, pSizes);
-                for (String size : sizes) {
-                    int spinnervalue = (int) spinnerMap.get(size).getValue();
-                    boolean isNotSelectedButHasValue = !checkBoxMap.get(size).isSelected() && spinnervalue != 0;
+            if (isEditable) {
+                List<ProductSizes> sizesToModify = new ArrayList<>(originalSizes);
 
-                    if (isNotSelectedButHasValue) {
-                        javax.swing.JOptionPane.showMessageDialog(this, "Debe marcar la talla que desea modificar.\n\nSi desea borrar una debe igualar a 0 y marcarla.", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    pSizes.setAmount(spinnervalue);
-                    pSizes.setIdSize(Arrays.asList(sizes).indexOf(size) + 1);
-
-                    boolean isSelectedButHasNoValue = checkBoxMap.get(size).isSelected() && spinnervalue == 0;
-                    if (isSelectedButHasNoValue) {
-                        daoSize.deleteIfZero(pSizes);
-                        continue;
-                    }
-
-                    boolean isSelectedAndHasValue = spinnervalue != 0 && checkBoxMap.get(size).isSelected();
-                    if (isSelectedAndHasValue) {
-                        boolean isModified = daoSize.modify(pSizes);
-                        if (!isModified) {
-                            daoSize.record(pSizes);
+                if (!sizesToDelete.isEmpty()) {
+                    sizesToModify.removeAll(sizesToDelete);
+                    sizesToDelete.forEach(s -> {
+                        try {
+                            daoSize.delete(s);
+                        } catch (Exception ex) {
+                            Logger.getLogger(UpProducts.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                    }
+                    });
                 }
-            }
 
+                if (!newSizes.isEmpty()) {
+                    sizesToModify.addAll(newSizes);
+                }
+                sizesToModify.forEach(s -> {
+                    try {
+                        boolean isModified = daoSize.modify(s);
+                        if (!isModified) {
+                            daoSize.record(s);
+                        }
+                    } catch (Exception ex) {
+                        Logger.getLogger(UpProducts.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+            } else {
+                for (int i = 0; i < model.getRowCount(); i++) {
+                    String sizeName = (String) model.getValueAt(i, 0);
+                    Integer amount = (Integer) model.getValueAt(i, 1);
+                    Integer sizeId = sizeSelected.get(sizeName);
+                    newSizes.add(new ProductSizes(productId, sizeId, amount));
+                }
+                newSizes.forEach(s -> {
+                    try {
+                        daoSize.record(s);
+                    } catch (Exception ex) {
+                        Logger.getLogger(UpProducts.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+            }
+            newSizes.clear();
+            sizesToDelete.clear();
             String succecssMsg = isEditable ? "modificado" : "registrado";
             javax.swing.JOptionPane.showMessageDialog(this, "Datos " + succecssMsg + " correctamente. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             if (!isEditable) {
@@ -511,55 +554,128 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         } catch (Exception e) {
             String errorMsg = isEditable ? "modificar" : "registrar";
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error al " + errorMsg + " los datos. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
-
+            return;
         }
-
-
     }//GEN-LAST:event_DataUpdateBtnActionPerformed
 
+    private void categoryCmbItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_categoryCmbItemStateChanged
+        DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
+        if (SizeTable.getRowCount() > 0) {
+            model.setRowCount(0);
+        }
+
+        String sizeSelected = (String) categoryCmb.getSelectedItem();
+        List<Size> sizeList = sizeListByCategoryName.get(sizeSelected);
+        sizeCmb.removeAllItems();
+        sizeList.forEach(s -> sizeCmb.addItem(s));
+    }//GEN-LAST:event_categoryCmbItemStateChanged
+
+    private void addSizeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSizeBtnActionPerformed
+        DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
+
+        Integer amount = ((Number) amountSpinner.getValue()).intValue();
+        Integer sizeSelectedIndex = sizeCmb.getSelectedIndex();
+        Size size = (Size) sizeCmb.getSelectedItem();
+
+        String sizeName = size.getName();
+        Integer sizeId = size.getId();
+
+        if (sizeSelectedIndex == -1 || amount == 0) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Debe marcar la talla que desea agregar y dar una cantidad mayor que 0.\n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        boolean sizeExistsInTable = IntStream.range(0, model.getRowCount())
+                .mapToObj(i -> (String) model.getValueAt(i, 0))
+                .anyMatch(tableItem -> tableItem.equals(sizeName));
+
+        if (sizeExistsInTable) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ya agregó la talla " + sizeName + ".\n\nIngrese una nueva talla", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (isEditable) {
+            final Integer productId = productEditable.getId();
+            ProductSizes productSize = new ProductSizes(productId, sizeId, amount, sizeName);
+            newSizes.add(productSize);
+        }
+        model.addRow(new Object[]{sizeName, amount});
+        sizeSelected.put(sizeName, sizeId);
+        amountSpinner.setValue(0);
+    }//GEN-LAST:event_addSizeBtnActionPerformed
+
+    private void deleteSizeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteSizeBtnActionPerformed
+        DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
+
+        Integer selectedRow = SizeTable.getSelectedRow();
+        int rows = model.getRowCount();
+        if (rows == 0) {
+            javax.swing.JOptionPane.showMessageDialog(this, "No hay tallas para eliminar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            return;
+        } else if (selectedRow < 0) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar una talla para borrar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        String sizeName = (String) model.getValueAt(selectedRow, 0);
+        Integer amount = (Integer) model.getValueAt(selectedRow, 1);
+
+        model.removeRow(selectedRow);
+        Integer sizeId = sizeSelected.get(sizeName);
+        sizeSelected.remove(sizeName);
+
+        if (isEditable) {
+            final Integer productId = productEditable.getId();
+            ProductSizes productSize = new ProductSizes(productId, sizeId, amount, sizeName);
+            sizesToDelete.add(productSize);
+        }
+    }//GEN-LAST:event_deleteSizeBtnActionPerformed
+
     private void emptyFields() {
+        DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
+        model.setRowCount(0);
+
         nameTxt.setText("");
         priceTxt.setText("");
         descriptionTxt.setText("");
         discountTxt.setText("");
         brandCmb.setSelectedIndex(-1);
-        categoryCmb.setSelectedIndex(-1);
-        typeCmb.setSelectedIndex(-1);
+        ItemListener[] itemListeners = categoryCmb.getListeners(ItemListener.class);
 
-        for (String size : sizes) {
-            if (spinnerMap.containsKey(size)) {
-                spinnerMap.get(size).setValue(0);
-                checkBoxMap.get(size).setSelected(false);
-            }
+        for (ItemListener itemListener : itemListeners) {
+            categoryCmb.removeItemListener(itemListener);
         }
+        categoryCmb.setSelectedIndex(-1);
+        for (ItemListener itemListener : itemListeners) {
+            categoryCmb.addItemListener(itemListener);
+        }
+        typeCmb.setSelectedIndex(-1);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel BrandLbl;
     private javax.swing.JButton DataUpdateBtn;
+    private javax.swing.JTable SizeTable;
+    private javax.swing.JButton addSizeBtn;
+    private javax.swing.JSpinner amountSpinner;
     private javax.swing.JPanel bg;
     private javax.swing.JComboBox<String> brandCmb;
     private javax.swing.JComboBox<String> categoryCmb;
     private javax.swing.JLabel categoryLbl;
-    private javax.swing.JCheckBox cbL;
-    private javax.swing.JCheckBox cbM;
-    private javax.swing.JCheckBox cbS;
-    private javax.swing.JCheckBox cbXL;
-    private javax.swing.JCheckBox cbXS;
+    private javax.swing.JButton deleteSizeBtn;
     private javax.swing.JLabel descriptionLbl;
     private javax.swing.JTextField descriptionTxt;
     private javax.swing.JLabel discountLbl;
     private javax.swing.JTextField discountTxt;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JLabel nameLbl;
     private javax.swing.JTextField nameTxt;
+    private javax.swing.JPanel panelLeft;
+    private javax.swing.JPanel panelRight;
     private javax.swing.JLabel priceLbl;
     private javax.swing.JTextField priceTxt;
-    private javax.swing.JSpinner spinnerSizeL;
-    private javax.swing.JSpinner spinnerSizeM;
-    private javax.swing.JSpinner spinnerSizeS;
-    private javax.swing.JSpinner spinnerSizeXL;
-    private javax.swing.JSpinner spinnerSizeXS;
+    private javax.swing.JComboBox<Object> sizeCmb;
+    private javax.swing.JLabel sizeLbl;
     private javax.swing.JLabel title;
     private javax.swing.JComboBox<String> typeCmb;
     private javax.swing.JLabel typeLbl;

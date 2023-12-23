@@ -5,7 +5,7 @@ import com.mycompany.implementationDAO.DAOSalesProductsImpl;
 import com.mycompany.interfaces.DAOSales;
 import com.mycompany.interfaces.DAOSalesProducts;
 import com.mycompany.interfaces.Styleable;
-import com.mycompany.models.ModelProductSizes;
+import com.mycompany.models.ProductSizes;
 import com.mycompany.models.ModelSales;
 import com.mycompany.models.ModelSalesProducts;
 import java.awt.Color;

@@ -8,7 +8,8 @@ import com.mycompany.interfaces.DAOProductSizes;
 import com.mycompany.interfaces.DAOProducts;
 import com.mycompany.interfaces.ExcelExporter;
 import com.mycompany.interfaces.Styleable;
-import com.mycompany.models.ModelProductSizes;
+import com.mycompany.models.ModelProducts;
+import com.mycompany.models.ProductSizes;
 import java.awt.Color;
 import java.util.List;
 import java.util.logging.Level;
@@ -369,7 +370,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
                 try {
                     int selectedRow = selectedRows[i];
                     dao.delete((int) jTableProducts.getValueAt(selectedRow, 0));
-                    daoSize.delete((int) jTableProducts.getValueAt(selectedRow, 0));
+                    daoSize.deleteAllSizes((int) jTableProducts.getValueAt(selectedRow, 0));
                     model.removeRow(selectedRow);
                     modelDetails.setRowCount(0);
                 } catch (Exception e) {
@@ -387,7 +388,9 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
                 int productId = (int) jTableProducts.getValueAt(jTableProducts.getSelectedRow(), 0);
                 DAOProducts dao = new DAOProductsImpl();
                 DAOProductSizes daoSize = new DAOProductsSizesImpl();
-                Dashboard.ShowPanel(new UpProducts(dao.getProductById(productId), daoSize.getProductSizesById(productId), lightOrDarkMode));
+                ModelProducts product = dao.getProductById(productId);
+                List<ProductSizes> sizeList = daoSize.getProductSizesById(productId);
+                Dashboard.ShowPanel(new UpProducts(product, sizeList, lightOrDarkMode));
             } catch (Exception e) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
@@ -402,7 +405,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     }//GEN-LAST:event_jTableProductsMouseClicked
 
     public void loadProductSize() {
-        List<ModelProductSizes> productSizeList = null;
+        List<ProductSizes> productSizeList = null;
         try {
             DAOProductSizes dao = new DAOProductsSizesImpl();
 
@@ -413,7 +416,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             model.setRowCount(0);
 
             productSizeList = dao.consult(productId);
-            productSizeList.forEach((p) -> model.addRow(new Object[]{p.getId(), p.getIdProduct(), p.getNameProduct(), p.getNameSize(), p.getPrice(), p.getAmount()}));
+            productSizeList.forEach((p) -> model.addRow(new Object[]{p.getId(), p.getProductId(), p.getProductName(), p.getSizeName(), p.getPrice(), p.getAmount()}));
             TableDetails.setModel(model);
 
         } catch (Exception e) {

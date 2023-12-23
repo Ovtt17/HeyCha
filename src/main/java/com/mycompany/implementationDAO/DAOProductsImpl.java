@@ -2,7 +2,9 @@ package com.mycompany.implementationDAO;
 
 import com.mycompany.db.Database;
 import com.mycompany.interfaces.DAOProducts;
-import com.mycompany.models.ModelProductSizes;
+import com.mycompany.models.Category;
+import com.mycompany.models.Size;
+import com.mycompany.models.ProductSizes;
 import com.mycompany.models.ModelProducts;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,7 +13,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComboBox;
@@ -19,7 +23,8 @@ import javax.swing.JComboBox;
 public class DAOProductsImpl extends Database implements DAOProducts {
 
     @Override
-    public void record(ModelProducts product, ModelProductSizes pSizes) throws Exception {
+    public Integer record(ModelProducts product) throws Exception {
+        Integer productId = null;
         try (Connection con = this.getConnection()) {
             String query = "call insertProduct(?,?,?,?,?,?,?);";
             final PreparedStatement st = con.prepareStatement(query);
@@ -31,8 +36,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
                 try (rs) {
                     if (rs.next()) {
                         //haciendo una consulta dentro del procedure para obtener el ultimo id insertado
-                        int idProducto = rs.getInt("idProduct");
-                        pSizes.setIdProduct(idProducto);
+                        productId = rs.getInt("idProduct");
                     }
                 }
             }
@@ -40,55 +44,49 @@ public class DAOProductsImpl extends Database implements DAOProducts {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de insercion en la base de datos", e);
             throw e;
         }
+        return productId;
     }
 
     private void setProductFields(PreparedStatement st, ModelProducts product) throws SQLException {
         // Asigna los valores para los parámetros de la sentencia SQL
         st.setString(1, product.getName()); // Reemplaza con el método adecuado para obtener el nombre
         st.setFloat(2, product.getPrice());   // Reemplaza con el método adecuado para obtener el precio
-        if (product.getDescription() != null) {
-            st.setString(3, product.getDescription()); // Reemplaza con el método adecuado para obtener la descripción
-        } else {
-            st.setNull(3, Types.VARCHAR);
-        }
-        if (product.getDiscount() != null) {
-            st.setInt(4, product.getDiscount()); // Reemplaza con el método adecuado para obtener el descuento
-        } else {
-            st.setNull(4, Types.INTEGER);
-        }
+        if (product.getDescription() != null) st.setString(3, product.getDescription());
+        else st.setNull(3, Types.VARCHAR);
+        
+        if (product.getDiscount() != null)st.setInt(4, product.getDiscount()); 
+        else st.setNull(4, Types.INTEGER);
 
-        st.setInt(5, product.getIdBrand()); // Reemplaza con el método adecuado para obtener el ID de la marca
-        st.setInt(6, product.getIdCategory()); // Reemplaza con el método adecuado para obtener el ID de la categoría
-
-        if (product.getIdType() != null) {
-            st.setInt(7, product.getIdType()); // Reemplaza con el método adecuado para obtener el ID del tipo
-        } else {
-            st.setNull(7, Types.INTEGER);
-        }
+        st.setInt(5, product.getIdBrand());
+        st.setInt(6, product.getIdCategory());
+        st.setInt(7, product.getIdType());
+        
     }
 
     @Override
-    public void modify(ModelProducts product, ModelProductSizes pSizes) throws Exception {
+    public Integer modify(ModelProducts product) throws Exception {
+        Integer productId;
         try (Connection con = this.getConnection()) {
             final PreparedStatement st = con.prepareStatement("call modifyProduct(?, ?, ?, ?, ?, ?, ?, ?);");
 
             try (st) {
                 setProductFields(st, product);
                 st.setInt(8, product.getId());
-                pSizes.setIdProduct(product.getId());
+                productId = product.getId();
                 st.executeUpdate();
             }
         } catch (SQLException e) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de modificacion en la base de datos", e);
             throw e;
         }
+        return productId;
     }
 
     @Override
     public void delete(int productId) throws Exception {
-        try (Connection con = this.getConnection()) {
+        try {
             String deleteProduct = "call deleteProduct(?);";
-            final PreparedStatement pst = con.prepareStatement(deleteProduct);
+            final PreparedStatement pst = this.getConnection().prepareStatement(deleteProduct);
             try (pst) {
                 pst.setInt(1, productId);
                 pst.executeUpdate();
@@ -202,6 +200,19 @@ public class DAOProductsImpl extends Database implements DAOProducts {
     }
 
     @Override
+    public void loadFilterCmb(JComboBox<String> BrandFilterCmb, JComboBox<String> CategoryFilterCmb) throws Exception {
+        try (Connection con = this.getConnection()) {
+            String queryBrand = "select nombre from marcas;";
+            String queryCategory = "select nombre from categorias;";
+            fillComboBox(con, BrandFilterCmb, queryBrand);
+            fillComboBox(con, CategoryFilterCmb, queryCategory);
+        } catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de cargar los ComboBox de los filtros en la base de datos", e);
+            throw e;
+        }
+    }
+
+    @Override
     public void fillComboBox(Connection con, JComboBox<String> comboBox, String query) throws SQLException {
         final Statement statement = con.createStatement();
         try (statement) {
@@ -218,16 +229,36 @@ public class DAOProductsImpl extends Database implements DAOProducts {
     }
 
     @Override
-    public void loadFilterCmb(JComboBox<String> BrandFilterCmb, JComboBox<String> CategoryFilterCmb) throws Exception {
-        try (Connection con = this.getConnection()) {
-            String queryBrand = "select nombre from marcas;";
-            String queryCategory = "select nombre from categorias;";
-            fillComboBox(con, BrandFilterCmb, queryBrand);
-            fillComboBox(con, CategoryFilterCmb, queryCategory);
+    public HashMap<String, List<Size>> loadSizes() throws SQLException {
+        HashMap<String, List<Size>> hashMap = new HashMap<>();
+        Size size;
+
+        try (Connection conn = this.getConnection()) {
+            String query = "call cargar_tallas();";
+            PreparedStatement st = conn.prepareStatement(query);
+            try (st) {
+                final ResultSet rs = st.executeQuery();
+                try (rs) {
+                    while (rs.next()) {
+                        String categoryName = rs.getString("nombre");
+                        String sizeName = rs.getString("talla");
+                        Integer sizeId = rs.getInt("id_talla");
+                        
+                        size = new Size(sizeId, sizeName);
+                        
+                        List<Size> list = hashMap.get(categoryName);
+                        if (list == null) {
+                            list = new ArrayList<>();
+                            hashMap.put(categoryName, list);
+                        }
+                        list.add(size);
+                    }
+                }
+            }
         } catch (SQLException e) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de cargar los ComboBox de los filtros en la base de datos", e);
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de cargar las tallas de la categoria correspondiente.", e);
             throw e;
         }
+        return hashMap;
     }
-
 }

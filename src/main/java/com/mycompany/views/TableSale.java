@@ -4,7 +4,7 @@ import com.mycompany.implementationDAO.DAOProductsImpl;
 import com.mycompany.implementationDAO.DAOProductsSizesImpl;
 import com.mycompany.interfaces.DAOProductSizes;
 import com.mycompany.interfaces.DAOProducts;
-import com.mycompany.models.ModelProductSizes;
+import com.mycompany.models.ProductSizes;
 import com.mycompany.models.ModelProducts;
 import com.mycompany.models.ModelSalesProducts;
 import java.awt.Color;
@@ -309,7 +309,7 @@ public class TableSale extends javax.swing.JDialog {
         loadProductSize();
     }//GEN-LAST:event_jTableProductsMouseClicked
     private void loadProductSize() {
-        List<ModelProductSizes> productSizeList;
+        List<ProductSizes> productSizeList;
         try {
             DAOProductSizes dao = new DAOProductsSizesImpl();
 //            if (table.getSelectedRow() < 0) {
@@ -325,7 +325,7 @@ public class TableSale extends javax.swing.JDialog {
 
             productPrice = (Float) jTableProducts.getValueAt(selectedRow, 6);
             productSizeList = dao.consult(productId);
-            productSizeList.forEach((p) -> model.addRow(new Object[]{p.getId(), p.getIdProduct(), p.getNameProduct(), p.getNameSize(), p.getPrice(), p.getAmount()}));
+            productSizeList.forEach((p) -> model.addRow(new Object[]{p.getId(), p.getProductId(), p.getProductName(), p.getSizeName(), p.getPrice(), p.getAmount()}));
             TableDetails.setModel(model);
 
         } catch (Exception e) {
