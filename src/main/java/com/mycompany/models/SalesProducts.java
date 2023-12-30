@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class ModelSalesProducts {
+public class SalesProducts {
     private Integer id;
     private Integer saleId;
     private Integer productSizeId;
@@ -18,7 +18,7 @@ public class ModelSalesProducts {
     private Float subtotal;
 
     //constructor to inserting
-    public ModelSalesProducts(Integer saleId, Integer productSizeId, Float priceUnity, int amount, Float subtotal) {
+    public SalesProducts(Integer saleId, Integer productSizeId, Float priceUnity, int amount, Float subtotal) {
         this.saleId = saleId;
         this.productSizeId = productSizeId;
         this.priceUnity = priceUnity;
@@ -27,7 +27,7 @@ public class ModelSalesProducts {
     }
 
     //constructor for consulting
-    public ModelSalesProducts(Integer id, Integer productSizeId, Integer saleId, Integer productId, String productName, String sizeName, Float priceUnity, Integer amount, Float subtotal) {
+    public SalesProducts(Integer id, Integer productSizeId, Integer saleId, Integer productId, String productName, String sizeName, Float priceUnity, Integer amount, Float subtotal) {
         this.id = id;
         this.productSizeId = productSizeId;
         this.saleId = saleId;
@@ -40,7 +40,7 @@ public class ModelSalesProducts {
     }
 
     //constructor for adding to shopping cart
-    public ModelSalesProducts(Integer productSizeId, Integer productId, String productName, String sizeName, Float price, Integer amount) {
+    public SalesProducts(Integer productSizeId, Integer productId, String productName, String sizeName, Float price, Integer amount) {
         this.productSizeId = productSizeId;
         this.productId = productId;
         this.productName = productName;

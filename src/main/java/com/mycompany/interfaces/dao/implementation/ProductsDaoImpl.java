@@ -1,11 +1,8 @@
-package com.mycompany.implementationDAO;
+package com.mycompany.interfaces.dao.implementation;
 
 import com.mycompany.db.Database;
-import com.mycompany.interfaces.DAOProducts;
-import com.mycompany.models.Category;
 import com.mycompany.models.Size;
-import com.mycompany.models.ProductSizes;
-import com.mycompany.models.ModelProducts;
+import com.mycompany.models.Products;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,15 +12,15 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComboBox;
+import com.mycompany.interfaces.dao.ProductsDao;
 
-public class DAOProductsImpl extends Database implements DAOProducts {
+public class ProductsDaoImpl extends Database implements ProductsDao {
 
     @Override
-    public Integer record(ModelProducts product) throws Exception {
+    public Integer record(Products product) throws Exception {
         Integer productId = null;
         try (Connection con = this.getConnection()) {
             String query = "call insertProduct(?,?,?,?,?,?,?);";
@@ -47,7 +44,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
         return productId;
     }
 
-    private void setProductFields(PreparedStatement st, ModelProducts product) throws SQLException {
+    private void setProductFields(PreparedStatement st, Products product) throws SQLException {
         // Asigna los valores para los parámetros de la sentencia SQL
         st.setString(1, product.getName()); // Reemplaza con el método adecuado para obtener el nombre
         st.setFloat(2, product.getPrice());   // Reemplaza con el método adecuado para obtener el precio
@@ -64,7 +61,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
     }
 
     @Override
-    public Integer modify(ModelProducts product) throws Exception {
+    public Integer modify(Products product) throws Exception {
         Integer productId;
         try (Connection con = this.getConnection()) {
             final PreparedStatement st = con.prepareStatement("call modifyProduct(?, ?, ?, ?, ?, ?, ?, ?);");
@@ -106,8 +103,8 @@ public class DAOProductsImpl extends Database implements DAOProducts {
     }
 
     @Override
-    public List<ModelProducts> consult(String name, String brand, String category) throws Exception {
-        List<ModelProducts> list = null;
+    public List<Products> consult(String name, String brand, String category) throws Exception {
+        List<Products> list = null;
         try (Connection con = this.getConnection()) {
             String query = "call consultProducts(?, ?, ?);";
             PreparedStatement st = con.prepareStatement(query);
@@ -119,7 +116,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
                 final ResultSet rs = st.executeQuery();
                 try (rs) {
                     while (rs.next()) {
-                        ModelProducts product = setProductFieldsToConsult(rs);
+                        Products product = setProductFieldsToConsult(rs);
                         list.add(product);
                     }
                 }
@@ -131,7 +128,7 @@ public class DAOProductsImpl extends Database implements DAOProducts {
         return list;
     }
 
-    private ModelProducts setProductFieldsToConsult(ResultSet rs) throws SQLException {
+    private Products setProductFieldsToConsult(ResultSet rs) throws SQLException {
         Integer id = rs.getInt("ID");
         String name = rs.getString("NOMBRE");
         Float price = rs.getFloat("PRECIO");
@@ -153,13 +150,13 @@ public class DAOProductsImpl extends Database implements DAOProducts {
         Integer totalExistence = rs.getInt("TOTAL_EXISTENCIA");
         Float totalPrice = rs.getFloat("VALOR_TOTAL");
 
-        return new ModelProducts(id, name, price, description, discount, brandId, categoryId, typeId, brandName, categoryName, typeName, brandAvailable, totalExistence, totalPrice);
+        return new Products(id, name, price, description, discount, brandId, categoryId, typeId, brandName, categoryName, typeName, brandAvailable, totalExistence, totalPrice);
 
     }
 
     @Override
-    public ModelProducts getProductById(int productId) throws Exception {
-        ModelProducts product = null;
+    public Products getProductById(int productId) throws Exception {
+        Products product = null;
 
         try (Connection con = this.getConnection()) {
             String query = "call consultByProductId(?);";

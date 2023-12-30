@@ -1,16 +1,16 @@
-package com.mycompany.exporters;
+package com.mycompany.interfaces.exporters.implementation;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import javax.swing.table.TableModel;
 import java.io.FileOutputStream;
-import com.mycompany.interfaces.ExcelExporter;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JTable;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import com.mycompany.interfaces.exporters.IExcelExporter;
 
-public class ExcelExporterImpl implements ExcelExporter {
+public class ExcelExporterImpl implements IExcelExporter {
 
     @Override
     public void export(JTable table) throws Exception {

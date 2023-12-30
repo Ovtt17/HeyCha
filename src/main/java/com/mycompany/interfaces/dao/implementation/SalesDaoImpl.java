@@ -1,8 +1,7 @@
-package com.mycompany.implementationDAO;
+package com.mycompany.interfaces.dao.implementation;
 
 import com.mycompany.db.Database;
-import com.mycompany.interfaces.DAOSales;
-import com.mycompany.models.ModelSales;
+import com.mycompany.models.Sales;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,11 +15,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComboBox;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
+import com.mycompany.interfaces.dao.SalesDao;
 
-public class DAOSalesImpl extends Database implements DAOSales {
+public class SalesDaoImpl extends Database implements SalesDao {
 
     @Override
-    public Integer record(ModelSales sale) throws Exception {
+    public Integer record(Sales sale) throws Exception {
         Integer idSale = null;
         try (Connection con = this.getConnection()) {
             String query = "{call insertSale(?, ?, ?, ?, ?)}";
@@ -39,7 +39,7 @@ public class DAOSalesImpl extends Database implements DAOSales {
         return idSale;
     }
 
-    private void setSalesFieldsToInsert(CallableStatement cst, ModelSales sale) throws SQLException {
+    private void setSalesFieldsToInsert(CallableStatement cst, Sales sale) throws SQLException {
         cst.setInt(2, sale.getClientId() != null ? sale.getClientId() : 0);
         cst.setDate(3, java.sql.Date.valueOf(sale.getDate()));
         cst.setInt(4, sale.getQuantitySold());
@@ -48,7 +48,7 @@ public class DAOSalesImpl extends Database implements DAOSales {
     }
 
     @Override
-    public Integer modify(ModelSales sale) throws Exception {
+    public Integer modify(Sales sale) throws Exception {
         Integer saleId = null;
         try (Connection con = this.getConnection()) {
             String query = "call modificar_venta(?, ?, ?);";
@@ -62,13 +62,13 @@ public class DAOSalesImpl extends Database implements DAOSales {
         return saleId;
     }
 
-    private void setSalesFieldsToModify(PreparedStatement cst, ModelSales sale) {
+    private void setSalesFieldsToModify(PreparedStatement cst, Sales sale) {
         try {
             cst.setInt(1, sale.getQuantitySold());
             cst.setFloat(2, sale.getTotalMoneySold());
             cst.setInt(3, sale.getId());
         } catch (SQLException ex) {
-            Logger.getLogger(DAOSalesImpl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalesDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -88,8 +88,8 @@ public class DAOSalesImpl extends Database implements DAOSales {
     }
 
     @Override
-    public List<ModelSales> consult(Date date) throws Exception {
-        List<ModelSales> list = null;
+    public List<Sales> consult(Date date) throws Exception {
+        List<Sales> list = null;
         try (Connection con = this.getConnection()) {
             String query = "call consultSales(?);";
             final PreparedStatement pst = con.prepareStatement(query);
@@ -99,7 +99,7 @@ public class DAOSalesImpl extends Database implements DAOSales {
                 final ResultSet rs = pst.executeQuery();
                 try (rs) {
                     while (rs.next()) {
-                        ModelSales sale = setSalesFieldsToConsult(rs);
+                        Sales sale = setSalesFieldsToConsult(rs);
                         list.add(sale);
                     }
                 }
@@ -112,7 +112,7 @@ public class DAOSalesImpl extends Database implements DAOSales {
         return list;
     }
 
-    private ModelSales setSalesFieldsToConsult(ResultSet rs) throws SQLException {
+    private Sales setSalesFieldsToConsult(ResultSet rs) throws SQLException {
         Integer saleId = rs.getInt("ID_VENTA");
         Integer clientId = rs.getInt("ID_CLIENTE");
         String clientName = rs.getString("NOMBRE_CLIENTE");
@@ -120,13 +120,13 @@ public class DAOSalesImpl extends Database implements DAOSales {
         Integer quantitySold = rs.getInt("CANTIDAD_VENDIDA");
         Float totalMoneySold = rs.getFloat("TOTAL");
 
-        return new ModelSales(saleId, clientId, clientName, quantitySold, totalMoneySold, date);
+        return new Sales(saleId, clientId, clientName, quantitySold, totalMoneySold, date);
 
     }
 
     @Override
-    public ModelSales getSaleById(int saleId) throws Exception {
-        ModelSales sale = null;
+    public Sales getSaleById(int saleId) throws Exception {
+        Sales sale = null;
         try (Connection con = this.getConnection()) {
             String sql = "call consultSalesById(?);";
             final PreparedStatement ps = con.prepareStatement(sql);

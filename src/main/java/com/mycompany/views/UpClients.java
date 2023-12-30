@@ -1,16 +1,16 @@
 package com.mycompany.views;
 
-import com.mycompany.implementationDAO.DAOClientsImpl;
-import com.mycompany.interfaces.DAOClients;
-import com.mycompany.interfaces.Styleable;
-import com.mycompany.models.ModelClients;
+import com.mycompany.interfaces.dao.implementation.ClientsDaoImpl;
+import com.mycompany.models.Clients;
 import java.awt.Color;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
+import com.mycompany.interfaces.dao.ClientsDao;
+import com.mycompany.interfaces.style.IStyleable;
 
-public class UpClients extends javax.swing.JPanel implements Styleable {
+public class UpClients extends javax.swing.JPanel implements IStyleable {
 
     boolean isEditable;
-    ModelClients clientEditable;
+    Clients clientEditable;
 
     public UpClients(boolean isDarkModeEnabled) {
         initComponents();
@@ -18,7 +18,7 @@ public class UpClients extends javax.swing.JPanel implements Styleable {
         initStyles();
     }
 
-    public UpClients(ModelClients client, boolean isDarkModeEnabled) {
+    public UpClients(Clients client, boolean isDarkModeEnabled) {
         initComponents();
         isEditable = true;
         clientEditable = client;
@@ -51,7 +51,7 @@ public class UpClients extends javax.swing.JPanel implements Styleable {
 
         directionTxt.putClientProperty("JTextField.placeholderText", "Ingrese la dirección donde vive el cliente.");
         try {
-            DAOClients dao = new DAOClientsImpl();
+            ClientsDao dao = new ClientsDaoImpl();
             dao.loadCmb(cityCmb);
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -220,14 +220,14 @@ public class UpClients extends javax.swing.JPanel implements Styleable {
             return;
         }
 
-        ModelClients client = isEditable ? clientEditable : new ModelClients();
+        Clients client = isEditable ? clientEditable : new Clients();
         client.setName(name);
         client.setCellphone(cellphone);
         client.setCity(city);
         client.setDirection(direction);
         
         try {
-            DAOClients dao = new DAOClientsImpl();
+            ClientsDao dao = new ClientsDaoImpl();
             if (!isEditable) {
                 dao.record(client);
             } else {

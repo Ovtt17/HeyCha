@@ -1,8 +1,7 @@
-package com.mycompany.implementationDAO;
+package com.mycompany.interfaces.dao.implementation;
 
 import com.mycompany.db.Database;
-import com.mycompany.interfaces.DAOSalesProducts;
-import com.mycompany.models.ModelSalesProducts;
+import com.mycompany.models.SalesProducts;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,11 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.mycompany.interfaces.dao.SalesDetailsDao;
 
-public class DAOSalesProductsImpl extends Database implements DAOSalesProducts {
+public class SalesDetailsDaoImpl extends Database implements SalesDetailsDao {
 
     @Override
-    public void record(ModelSalesProducts salesProducts) throws Exception {
+    public void record(SalesProducts salesProducts) throws Exception {
         try (Connection con = this.getConnection()) {
             String sql = "call insertSalesProducts(?, ?, ?, ?, ?, ?);";
             final PreparedStatement st = con.prepareStatement(sql);
@@ -29,7 +29,7 @@ public class DAOSalesProductsImpl extends Database implements DAOSalesProducts {
         }
     }
 
-    private void setFieldsToInsert(PreparedStatement st, ModelSalesProducts salesProducts) throws SQLException {
+    private void setFieldsToInsert(PreparedStatement st, SalesProducts salesProducts) throws SQLException {
         st.setInt(1, salesProducts.getSaleId());
         st.setInt(2, salesProducts.getProductSizeId());
         st.setFloat(3, salesProducts.getPriceUnity());
@@ -39,7 +39,7 @@ public class DAOSalesProductsImpl extends Database implements DAOSalesProducts {
     }
 
     @Override
-    public void modify(ModelSalesProducts sale) throws Exception {
+    public void modify(SalesProducts sale) throws Exception {
         try (Connection con = this.getConnection()) {
             String sql = "call modificar_detalles_venta(?, ?, ?, ?, ?);";
             final PreparedStatement ps = con.prepareStatement(sql);
@@ -53,7 +53,7 @@ public class DAOSalesProductsImpl extends Database implements DAOSalesProducts {
         }
     }
 
-    private void setSalesFieldsToModify(PreparedStatement ps, ModelSalesProducts sale) throws SQLException {
+    private void setSalesFieldsToModify(PreparedStatement ps, SalesProducts sale) throws SQLException {
         try {
             ps.setInt(1, sale.getSaleId());
             ps.setInt(2, sale.getProductSizeId());
@@ -61,7 +61,7 @@ public class DAOSalesProductsImpl extends Database implements DAOSalesProducts {
             ps.setInt(4, sale.getAmount());
             ps.setFloat(5, sale.getSubtotal());
         } catch (SQLException ex) {
-            Logger.getLogger(DAOSalesProductsImpl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalesDetailsDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -82,8 +82,8 @@ public class DAOSalesProductsImpl extends Database implements DAOSalesProducts {
     }
 
     @Override
-    public List<ModelSalesProducts> consult(int saleId) throws Exception {
-        List<ModelSalesProducts> list = null;
+    public List<SalesProducts> consult(int saleId) throws Exception {
+        List<SalesProducts> list = null;
         try (Connection con = this.getConnection()) {
             String query = "call consultSalesProducts(?);";
             final PreparedStatement st = con.prepareStatement(query);
@@ -93,7 +93,7 @@ public class DAOSalesProductsImpl extends Database implements DAOSalesProducts {
                 final ResultSet rs = st.executeQuery();
                 try (rs) {
                     while (rs.next()) {
-                        ModelSalesProducts salesProducts = setSalesProductsForConsult(rs);
+                        SalesProducts salesProducts = setSalesProductsForConsult(rs);
                         list.add(salesProducts);
                     }
                 }
@@ -105,8 +105,8 @@ public class DAOSalesProductsImpl extends Database implements DAOSalesProducts {
         return list;
     }
 
-    private ModelSalesProducts setSalesProductsForConsult(ResultSet rs) {
-        ModelSalesProducts sp = null;
+    private SalesProducts setSalesProductsForConsult(ResultSet rs) {
+        SalesProducts sp = null;
         try {
             Integer id = rs.getInt("id");
             Integer productSizeId = rs.getInt("id_producto_talla");
@@ -117,9 +117,9 @@ public class DAOSalesProductsImpl extends Database implements DAOSalesProducts {
             Float priceUnity = rs.getFloat("precio_unidad");
             Integer amount = rs.getInt("cantidad");
             Float subtotal = rs.getFloat("subtotal");
-            sp = new ModelSalesProducts(id, productSizeId, saleId, productId, productName, size, priceUnity, amount, subtotal);
+            sp = new SalesProducts(id, productSizeId, saleId, productId, productName, size, priceUnity, amount, subtotal);
         } catch (SQLException ex) {
-            Logger.getLogger(DAOSalesProductsImpl.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SalesDetailsDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return sp;
     }

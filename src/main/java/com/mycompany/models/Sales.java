@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class ModelSales {
+public class Sales {
 
     private int id;
     private Integer clientId;
@@ -16,17 +16,17 @@ public class ModelSales {
 
     
     
-    public ModelSales() {}
+    public Sales() {}
 
     // CONSTRUCTOR PARA ADICIONAR
-    public ModelSales(Integer clientId, Integer quantitySold, Float totalMoneySold, LocalDate date) {
+    public Sales(Integer clientId, Integer quantitySold, Float totalMoneySold, LocalDate date) {
         this.clientId = clientId;
         this.quantitySold = quantitySold;
         this.totalMoneySold = totalMoneySold;
         this.date = date;
     }
 
-    public ModelSales(int id, Integer clientId, String clientName, Integer quantitySold, Float totalMoneySold, LocalDate date) {
+    public Sales(int id, Integer clientId, String clientName, Integer quantitySold, Float totalMoneySold, LocalDate date) {
         this.id = id;
         this.clientId = clientId;
         this.clientName = clientName;

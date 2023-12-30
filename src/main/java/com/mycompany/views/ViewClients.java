@@ -1,22 +1,22 @@
 package com.mycompany.views;
 
-import com.mycompany.exporters.ExcelExporterImpl;
-import com.mycompany.implementationDAO.DAOClientsImpl;
+import com.mycompany.interfaces.exporters.implementation.ExcelExporterImpl;
+import com.mycompany.interfaces.dao.implementation.ClientsDaoImpl;
 import com.mycompany.heycha.Dashboard;
-import com.mycompany.interfaces.DAOClients;
-import com.mycompany.interfaces.ExcelExporter;
-import com.mycompany.interfaces.Styleable;
-import com.mycompany.models.ModelClients;
+import com.mycompany.models.Clients;
 import java.awt.Color;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
+import com.mycompany.interfaces.dao.ClientsDao;
+import com.mycompany.interfaces.exporters.IExcelExporter;
+import com.mycompany.interfaces.style.IStyleable;
 
-public class ViewClients extends javax.swing.JPanel implements Styleable {
+public class ViewClients extends javax.swing.JPanel implements IStyleable {
 
     boolean lightOrDarkMode;
-    List<ModelClients> clients;
+    List<Clients> clients;
 
     public ViewClients(boolean isDarkModeEnabled) {
         initComponents();
@@ -60,7 +60,7 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
     }
 
     private void loadClients() {
-        DAOClients dao = new DAOClientsImpl();
+        ClientsDao dao = new ClientsDaoImpl();
         DefaultTableModel model = (DefaultTableModel) JTableClients.getModel();
         model.setRowCount(0);
         String nameToFind = "";
@@ -254,7 +254,7 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
         DefaultTableModel model = (DefaultTableModel) JTableClients.getModel();
         model.setRowCount(0);
         String nameToFind = clientSearch.getText().trim();
-        for (ModelClients c : clients) {
+        for (Clients c : clients) {
             if (c.getName().toLowerCase().contains(nameToFind)) {
                 model.addRow(new Object[]{c.getId(), c.getName(), c.getCellphone(), c.getCity(), c.getDirection()});
             }
@@ -270,7 +270,7 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
         if (JTableClients.getSelectedRow() > -1) {
             try {
                 int productId = (int) JTableClients.getValueAt(JTableClients.getSelectedRow(), 0);
-                DAOClients dao = new DAOClientsImpl();
+                ClientsDao dao = new ClientsDaoImpl();
                 Dashboard.ShowPanel(new UpClients(dao.getClientById(productId), lightOrDarkMode));
             } catch (Exception e) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -295,7 +295,7 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
 
         int confirmed = javax.swing.JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar estos datos? \n", "CONFIMARCIÓN", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
         if (confirmed == javax.swing.JOptionPane.YES_OPTION) {
-            DAOClients dao = new DAOClientsImpl();
+            ClientsDao dao = new ClientsDaoImpl();
 
             int[] selectedRows = JTableClients.getSelectedRows();
             int continueDeleting;
@@ -322,7 +322,7 @@ public class ViewClients extends javax.swing.JPanel implements Styleable {
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
-        ExcelExporter exporter = new ExcelExporterImpl();
+        IExcelExporter exporter = new ExcelExporterImpl();
         try {
             exporter.export(JTableClients);
         } catch (Exception ex) {

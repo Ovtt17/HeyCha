@@ -1,27 +1,27 @@
 package com.mycompany.views;
 
-import com.mycompany.exporters.ExcelExporterImpl;
-import com.mycompany.exporters.PdfExporterImpl;
-import com.mycompany.implementationDAO.DAOSalesImpl;
-import com.mycompany.implementationDAO.DAOSalesProductsImpl;
+import com.mycompany.interfaces.exporters.implementation.ExcelExporterImpl;
+import com.mycompany.interfaces.exporters.implementation.PdfExporterImpl;
+import com.mycompany.interfaces.dao.implementation.SalesDaoImpl;
+import com.mycompany.interfaces.dao.implementation.SalesDetailsDaoImpl;
 import com.mycompany.heycha.Dashboard;
-import com.mycompany.interfaces.DAOSales;
-import com.mycompany.interfaces.DAOSalesProducts;
-import com.mycompany.interfaces.ExcelExporter;
-import com.mycompany.interfaces.PdfExporter;
-import com.mycompany.interfaces.Styleable;
-import com.mycompany.models.ModelSalesProducts;
+import com.mycompany.models.SalesProducts;
 import java.awt.Color;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
+import com.mycompany.interfaces.dao.SalesDao;
+import com.mycompany.interfaces.dao.SalesDetailsDao;
+import com.mycompany.interfaces.exporters.IExcelExporter;
+import com.mycompany.interfaces.exporters.IPdfExporter;
+import com.mycompany.interfaces.style.IStyleable;
 
-public class ViewSales extends javax.swing.JPanel implements Styleable {
+public class ViewSales extends javax.swing.JPanel implements IStyleable {
     
-    DAOSales dao;
-    DAOSalesProducts daoDetails;
+    SalesDao dao;
+    SalesDetailsDao daoDetails;
     
     boolean lightOrDarkMode;
     Integer count;
@@ -78,7 +78,7 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
 
     private void loadSales() {
         try {
-            dao = new DAOSalesImpl();
+            dao = new SalesDaoImpl();
             DefaultTableModel model = (DefaultTableModel) JTableSales.getModel();
             model.setRowCount(0);
             DefaultTableModel modelDetail = (DefaultTableModel) TableSaleDetails.getModel();
@@ -375,8 +375,8 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
                 }
                 // TODO
                 try {
-                    DAOSales daoSale = new DAOSalesImpl();
-                    DAOSalesProducts daoSalesDetails = new DAOSalesProductsImpl();
+                    SalesDao daoSale = new SalesDaoImpl();
+                    SalesDetailsDao daoSalesDetails = new SalesDetailsDaoImpl();
 
                     int selectedRow = selectedRows[i];
 
@@ -397,9 +397,9 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
         loadSalesProducts();
     }//GEN-LAST:event_JTableSalesMouseClicked
     private void loadSalesProducts() {
-        List<ModelSalesProducts> salesProductsList;
+        List<SalesProducts> salesProductsList;
         try {
-            daoDetails = new DAOSalesProductsImpl();
+            daoDetails = new SalesDetailsDaoImpl();
             int selectedRows = JTableSales.getSelectedRow();
             int productId = (int) JTableSales.getValueAt(selectedRows, 0);
 
@@ -416,8 +416,8 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
             try {
                 int saleId = (int) JTableSales.getValueAt(JTableSales.getSelectedRow(), 0);
 
-                dao = new DAOSalesImpl();
-                daoDetails = new DAOSalesProductsImpl();
+                dao = new SalesDaoImpl();
+                daoDetails = new SalesDetailsDaoImpl();
                 Dashboard.ShowPanel(new UpSales(dao.getSaleById(saleId), daoDetails.consult(saleId), lightOrDarkMode));
             } catch (Exception e) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -428,7 +428,7 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnExcelExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcelExportActionPerformed
-        ExcelExporter exporter = new ExcelExporterImpl();
+        IExcelExporter exporter = new ExcelExporterImpl();
         try {
             exporter.export(JTableSales);
         } catch (Exception ex) {
@@ -445,7 +445,7 @@ public class ViewSales extends javax.swing.JPanel implements Styleable {
     }//GEN-LAST:event_DateSpinnerStateChanged
 
     private void btnPdfExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPdfExportActionPerformed
-        PdfExporter exporter = new PdfExporterImpl();
+        IPdfExporter exporter = new PdfExporterImpl();
         try {
             exporter.export(JTableSales, count, totalMoney);
         } catch (Exception ex) {

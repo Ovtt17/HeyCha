@@ -1,9 +1,9 @@
-package com.mycompany.interfaces;
+package com.mycompany.interfaces.dao;
 
 import com.mycompany.models.ProductSizes;
 import java.util.List;
 
-public interface DAOProductSizes {
+public interface SizesDao {
     boolean record (ProductSizes productSize) throws Exception;
     boolean modify (ProductSizes productSize) throws Exception;
     void deleteAllSizes (int productId) throws Exception;

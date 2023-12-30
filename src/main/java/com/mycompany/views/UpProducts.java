@@ -1,11 +1,8 @@
 package com.mycompany.views;
 
-import com.mycompany.implementationDAO.DAOProductsImpl;
-import com.mycompany.implementationDAO.DAOProductsSizesImpl;
-import com.mycompany.interfaces.DAOProductSizes;
-import com.mycompany.interfaces.DAOProducts;
-import com.mycompany.models.ModelProducts;
-import com.mycompany.interfaces.Styleable;
+import com.mycompany.interfaces.dao.implementation.ProductsDaoImpl;
+import com.mycompany.interfaces.dao.implementation.SizesDaoImpl;
+import com.mycompany.models.Products;
 import com.mycompany.models.ProductSizes;
 import com.mycompany.models.Size;
 import java.awt.Color;
@@ -17,13 +14,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import javax.swing.table.DefaultTableModel;
+import com.mycompany.interfaces.dao.SizesDao;
+import com.mycompany.interfaces.dao.ProductsDao;
+import com.mycompany.interfaces.style.IStyleable;
 
-public class UpProducts extends javax.swing.JPanel implements Styleable {
-    DAOProducts dao;
-    DAOProductSizes daoSize;
+public class UpProducts extends javax.swing.JPanel implements IStyleable {
+    ProductsDao dao;
+    SizesDao daoSize;
 
     boolean isEditable = false;
-    ModelProducts productEditable;
+    Products productEditable;
     List<ProductSizes> originalSizes;
     List<ProductSizes> newSizes = new ArrayList<>();
 
@@ -38,7 +38,7 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         initStyles();
     }
 
-    public UpProducts(ModelProducts product, List<ProductSizes> list, boolean isDarkModeEnabled) {
+    public UpProducts(Products product, List<ProductSizes> list, boolean isDarkModeEnabled) {
         initComponents();
         isEditable = true;
         productEditable = product;
@@ -86,7 +86,7 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         SizeTable.getTableHeader().setForeground(new Color(255, 255, 255));
 
         try {
-            dao = new DAOProductsImpl();
+            dao = new ProductsDaoImpl();
             ItemListener[] itemListeners = categoryCmb.getListeners(ItemListener.class);
 
             for (ItemListener itemListener : itemListeners) {
@@ -94,7 +94,7 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
             }
 
             dao.loadCmb(brandCmb, categoryCmb, typeCmb);
-            dao = new DAOProductsImpl();
+            dao = new ProductsDaoImpl();
             sizeListByCategoryName = dao.loadSizes();
 
             for (ItemListener itemListener : itemListeners) {
@@ -483,7 +483,7 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
             return;
         }
 
-        ModelProducts product = isEditable ? productEditable : new ModelProducts();
+        Products product = isEditable ? productEditable : new Products();
         product.setName(name);
         product.setPrice(price);
         product.setDescription(description);
@@ -493,8 +493,8 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         product.setIdType(idType);
 
         try {
-            dao = new DAOProductsImpl();
-            daoSize = new DAOProductsSizesImpl();
+            dao = new ProductsDaoImpl();
+            
             DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
 
             Integer productId = isEditable ? dao.modify(product) : dao.record(product);
@@ -506,6 +506,7 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
                     sizesToModify.removeAll(sizesToDelete);
                     sizesToDelete.forEach(s -> {
                         try {
+                            daoSize = new SizesDaoImpl();
                             daoSize.delete(s);
                         } catch (Exception ex) {
                             Logger.getLogger(UpProducts.class.getName()).log(Level.SEVERE, null, ex);
@@ -518,6 +519,7 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
                 }
                 sizesToModify.forEach(s -> {
                     try {
+                        daoSize = new SizesDaoImpl();
                         boolean isModified = daoSize.modify(s);
                         if (!isModified) {
                             daoSize.record(s);
@@ -535,6 +537,7 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
                 }
                 newSizes.forEach(s -> {
                     try {
+                        daoSize = new SizesDaoImpl();
                         daoSize.record(s);
                     } catch (Exception ex) {
                         Logger.getLogger(UpProducts.class.getName()).log(Level.SEVERE, null, ex);

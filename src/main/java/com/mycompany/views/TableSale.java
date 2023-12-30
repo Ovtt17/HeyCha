@@ -1,24 +1,24 @@
 package com.mycompany.views;
 
-import com.mycompany.implementationDAO.DAOProductsImpl;
-import com.mycompany.implementationDAO.DAOProductsSizesImpl;
-import com.mycompany.interfaces.DAOProductSizes;
-import com.mycompany.interfaces.DAOProducts;
+import com.mycompany.interfaces.dao.implementation.ProductsDaoImpl;
+import com.mycompany.interfaces.dao.implementation.SizesDaoImpl;
 import com.mycompany.models.ProductSizes;
-import com.mycompany.models.ModelProducts;
-import com.mycompany.models.ModelSalesProducts;
+import com.mycompany.models.Products;
+import com.mycompany.models.SalesProducts;
 import java.awt.Color;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
+import com.mycompany.interfaces.dao.SizesDao;
+import com.mycompany.interfaces.dao.ProductsDao;
 
 public class TableSale extends javax.swing.JDialog {
 
     UpSales upSales;
     ViewProducts p = new ViewProducts();
-    List<ModelProducts> products;
+    List<Products> products;
     Float productPrice;
 
     public TableSale(java.awt.Frame parent, boolean modal, boolean darkModeStatus) {
@@ -64,7 +64,7 @@ public class TableSale extends javax.swing.JDialog {
         String brandSelected = "NINGUNO";
         String categorySelected = "NINGUNO";
         try {
-            DAOProducts dao = new DAOProductsImpl();
+            ProductsDao dao = new ProductsDaoImpl();
             dao.consult(nameToFind, brandSelected, categorySelected).forEach((p) -> {
                 modelProduct.addRow(new Object[]{p.getId(), p.getName(), p.getBrandName(), p.getCategoryName(), p.getSizeAvailable(), p.getTotalExistence(), p.getPrice()});
 
@@ -73,7 +73,7 @@ public class TableSale extends javax.swing.JDialog {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
         try {
-            DAOProducts dao = new DAOProductsImpl();
+            ProductsDao dao = new ProductsDaoImpl();
             dao.loadFilterCmb(BrandFilterCmb, CategoryFilterCmb);
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -311,7 +311,7 @@ public class TableSale extends javax.swing.JDialog {
     private void loadProductSize() {
         List<ProductSizes> productSizeList;
         try {
-            DAOProductSizes dao = new DAOProductsSizesImpl();
+            SizesDao dao = new SizesDaoImpl();
 //            if (table.getSelectedRow() < 0) {
 //                javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto para ver sus detalles. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
 //                return;
@@ -362,7 +362,7 @@ public class TableSale extends javax.swing.JDialog {
         Float price = productPrice;
         Integer amount = (Integer) AmountSpinner.getValue();
 
-        ModelSalesProducts salesDetails = new ModelSalesProducts(productSizeId, productId, productName, sizeName, price, amount);
+        SalesProducts salesDetails = new SalesProducts(productSizeId, productId, productName, sizeName, price, amount);
         upSales.addProduct(salesDetails);
         javax.swing.JOptionPane.showMessageDialog(this, "El producto se ha agregado al carrito de compras. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
         this.dispose();
@@ -378,7 +378,7 @@ public class TableSale extends javax.swing.JDialog {
     }//GEN-LAST:event_TableDetailsMouseClicked
 
     private void filteredConsult() {
-        DAOProducts dao = new DAOProductsImpl();
+        ProductsDao dao = new ProductsDaoImpl();
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
         model.setRowCount(0);
         String productNameToSearch = productSearch.getText();

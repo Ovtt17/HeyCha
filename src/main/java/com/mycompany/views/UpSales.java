@@ -1,13 +1,10 @@
 package com.mycompany.views;
 
-import com.mycompany.implementationDAO.DAOSalesImpl;
-import com.mycompany.implementationDAO.DAOSalesProductsImpl;
-import com.mycompany.interfaces.DAOSales;
-import com.mycompany.interfaces.DAOSalesProducts;
-import com.mycompany.interfaces.Styleable;
+import com.mycompany.interfaces.dao.implementation.SalesDaoImpl;
+import com.mycompany.interfaces.dao.implementation.SalesDetailsDaoImpl;
 import com.mycompany.models.ProductSizes;
-import com.mycompany.models.ModelSales;
-import com.mycompany.models.ModelSalesProducts;
+import com.mycompany.models.Sales;
+import com.mycompany.models.SalesProducts;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,13 +14,16 @@ import java.util.Objects;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import com.mycompany.interfaces.dao.SalesDao;
+import com.mycompany.interfaces.dao.SalesDetailsDao;
+import com.mycompany.interfaces.style.IStyleable;
 
-public class UpSales extends javax.swing.JPanel implements Styleable {
+public class UpSales extends javax.swing.JPanel implements IStyleable {
 
     boolean isEditable = false;
     boolean darkModeStatus = false;
-    private ModelSales saleEditable;
-    private List<ModelSalesProducts> products;
+    private Sales saleEditable;
+    private List<SalesProducts> products;
     HashMap<String, Integer> clientHashMap;
 
     private DefaultTableModel newModel = new DefaultTableModel();
@@ -41,7 +41,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
     public UpSales() {
     }
 
-    public UpSales(ModelSales sale, List<ModelSalesProducts> salesDetailsEditable, boolean isDarkModeEnabled) {
+    public UpSales(Sales sale, List<SalesProducts> salesDetailsEditable, boolean isDarkModeEnabled) {
         initComponents();
         isEditable = true;
         updateStyles(isDarkModeEnabled);
@@ -54,7 +54,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
         updateTable();
     }
 
-    public void addProduct(ModelSalesProducts product) {
+    public void addProduct(SalesProducts product) {
         this.products.add(product);
         updateTable();
     }
@@ -114,7 +114,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
             newModel.addColumn("Id de venta");
         } else {
             try {
-                DAOSales dao = new DAOSalesImpl();
+                SalesDao dao = new SalesDaoImpl();
                 dao.loadClientsCmb(clientsCmb);
             } catch (Exception e) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -300,13 +300,13 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
         }
         try {
 
-            ModelSales sale = isEditable ? saleEditable : new ModelSales();
+            Sales sale = isEditable ? saleEditable : new Sales();
             sale.setClientId(clientId);
             sale.setQuantitySold(totalQuantitySold);
             sale.setTotalMoneySold(total);
             sale.setDate(date);
 
-            DAOSales dao = new DAOSalesImpl();
+            SalesDao dao = new SalesDaoImpl();
             Integer idSale = isEditable ? dao.modify(sale) : dao.record(sale);
 
             products.stream()
@@ -314,7 +314,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
                     .forEach((p) -> {
                         try {
                             p.setSaleId(idSale);
-                            DAOSalesProducts daoSalesProducts = new DAOSalesProductsImpl();
+                            SalesDetailsDao daoSalesProducts = new SalesDetailsDaoImpl();
 
                             if (isEditable) {
                                 daoSalesProducts.modify(p);
@@ -379,7 +379,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
                 // TODO
                 try {
                     int selectedRow = selectedRows[i];
-                    DAOSalesProducts daoSalesDetails = new DAOSalesProductsImpl();
+                    SalesDetailsDao daoSalesDetails = new SalesDetailsDaoImpl();
                     int idIndex = 0, nameIndex = 0, sizeIndex = 0, priceIndex = 0, amountIndex = 0;
                     if (isEditable) {
                         Integer saleId = (Integer) jTable1.getValueAt(selectedRow, 0);

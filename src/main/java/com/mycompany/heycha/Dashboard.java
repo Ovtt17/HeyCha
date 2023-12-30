@@ -2,7 +2,6 @@ package com.mycompany.heycha;
 
 import com.formdev.flatlaf.intellijthemes.FlatCyanLightIJTheme;
 import com.formdev.flatlaf.intellijthemes.FlatCarbonIJTheme;
-import com.mycompany.interfaces.Styleable;
 import com.mycompany.views.ViewClients;
 import com.mycompany.views.ViewProducts;
 import com.mycompany.views.ViewSales;
@@ -15,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import com.mycompany.interfaces.style.IStyleable;
 
 public class Dashboard extends javax.swing.JFrame {
 
@@ -30,8 +30,8 @@ public class Dashboard extends javax.swing.JFrame {
     }
 
     private void updateStyles(Component component, boolean isDarkModeEnabled) {
-        if (component instanceof Styleable) {
-            ((Styleable) component).updateStyles(isDarkModeEnabled);
+        if (component instanceof IStyleable) {
+            ((IStyleable) component).updateStyles(isDarkModeEnabled);
         }
 
         if (component instanceof Container) {

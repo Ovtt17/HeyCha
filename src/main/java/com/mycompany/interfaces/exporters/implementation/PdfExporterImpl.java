@@ -1,6 +1,5 @@
-package com.mycompany.exporters;
+package com.mycompany.interfaces.exporters.implementation;
 
-import com.mycompany.interfaces.PdfExporter;
 
 import javax.swing.*;
 import com.itextpdf.text.*;
@@ -8,8 +7,9 @@ import com.itextpdf.text.pdf.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import com.mycompany.interfaces.exporters.IPdfExporter;
 
-public class PdfExporterImpl implements PdfExporter {
+public class PdfExporterImpl implements IPdfExporter {
 
     @Override
     public void export(JTable jTable, Integer count, Float totalMoney) {

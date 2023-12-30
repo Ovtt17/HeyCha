@@ -1,7 +1,7 @@
-package com.mycompany.interfaces;
+package com.mycompany.interfaces.exporters;
 
 import javax.swing.JTable;
 
-public interface ExcelExporter {
+public interface IExcelExporter {
     void export(JTable table) throws Exception;
 }

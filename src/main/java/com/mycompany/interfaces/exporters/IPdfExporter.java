@@ -1,7 +1,7 @@
-package com.mycompany.interfaces;
+package com.mycompany.interfaces.exporters;
 
 import javax.swing.JTable;
 
-public interface PdfExporter {
+public interface IPdfExporter {
     void export(JTable jTable, Integer count, Float totalMoney);
 }

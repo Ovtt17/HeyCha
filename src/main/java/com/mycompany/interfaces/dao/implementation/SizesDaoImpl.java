@@ -1,7 +1,6 @@
-package com.mycompany.implementationDAO;
+package com.mycompany.interfaces.dao.implementation;
 
 import com.mycompany.db.Database;
-import com.mycompany.interfaces.DAOProductSizes;
 import com.mycompany.models.ProductSizes;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,8 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.mycompany.interfaces.dao.SizesDao;
 
-public class DAOProductsSizesImpl extends Database implements DAOProductSizes {
+public class SizesDaoImpl extends Database implements SizesDao {
 
     @Override
     public boolean record(ProductSizes productSize) throws Exception {

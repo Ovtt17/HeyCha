@@ -1,21 +1,19 @@
-package com.mycompany.interfaces;
+package com.mycompany.interfaces.dao;
 
-import com.mycompany.models.Category;
 import com.mycompany.models.Size;
-import com.mycompany.models.ProductSizes;
-import com.mycompany.models.ModelProducts;
+import com.mycompany.models.Products;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import javax.swing.JComboBox;
 
-public interface DAOProducts {
-    Integer record (ModelProducts product) throws Exception;
-    Integer modify (ModelProducts product) throws Exception;
+public interface ProductsDao {
+    Integer record (Products product) throws Exception;
+    Integer modify (Products product) throws Exception;
     void delete (int productId) throws Exception;
-    List<ModelProducts> consult(String name, String brand, String category) throws Exception;
-    ModelProducts getProductById(int productId) throws Exception;
+    List<Products> consult(String name, String brand, String category) throws Exception;
+    Products getProductById(int productId) throws Exception;
     
     /**
      * obteniendo datos desde la base de datos para llenar los campos para agregar productos.

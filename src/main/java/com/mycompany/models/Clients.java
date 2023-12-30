@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class ModelClients {
+public class Clients {
 
     private int id;
     private String name;
