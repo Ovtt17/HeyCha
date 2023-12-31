@@ -1,6 +1,7 @@
 package com.mycompany.interfaces.dao;
 
 import com.mycompany.models.Size;
+import com.mycompany.models.Type;
 import com.mycompany.models.Product;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -22,8 +23,10 @@ public interface ProductsDao {
      * @param typeCmb
      * @throws Exception 
      */
-    void loadCmb(JComboBox<String> brandCmb, JComboBox<String> categoryCmb, JComboBox<String> typeCmb) throws Exception;
+    void loadCmb(JComboBox<String> brandCmb, JComboBox<String> categoryCmb) throws Exception;
     void loadFilterCmb(JComboBox<String> BrandFilterCmb, JComboBox<String> CategoryFilterCmb) throws Exception;
     void fillComboBox(Connection con, JComboBox<String> comboBox, String query) throws SQLException;
+    
     HashMap<String, List<Size>> loadSizes() throws SQLException;
+    HashMap<String, List<Type>> loadTypes() throws SQLException;
 }

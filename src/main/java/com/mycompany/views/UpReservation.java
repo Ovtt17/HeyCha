@@ -79,6 +79,8 @@ public class UpReservation extends javax.swing.JPanel implements IStyleable{
             if (isEditable) {
                 paid = reservationEditable.getPaid();
                 remaining = reservationEditable.getRemaining();
+            } else {
+                remaining = totalPayment - paid;
             }
             paidTxt.setText("$" + paid);
             remainingTxt.setText("$" + remaining);

@@ -16,6 +16,8 @@ import javax.swing.table.DefaultTableModel;
 import com.mycompany.interfaces.dao.SizesDao;
 import com.mycompany.interfaces.dao.ProductsDao;
 import com.mycompany.interfaces.style.IStyleable;
+import com.mycompany.models.Type;
+import javax.swing.JComboBox;
 
 public class UpProducts extends javax.swing.JPanel implements IStyleable {
     ProductsDao productDao = new ProductsDaoImpl();
@@ -29,6 +31,7 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
     List<Size> sizesToDelete = new ArrayList<>();
 
     HashMap<String, List<Size>> sizeListByCategoryName = new HashMap<>();
+    HashMap<String, List<Type>> typeListByCategoryName = new HashMap<>();
     HashMap<String, Integer> sizeSelected = new HashMap<>();
 
     public UpProducts(boolean isDarkModeEnabled) {
@@ -92,9 +95,10 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
                 categoryCmb.removeItemListener(itemListener);
             }
 
-            productDao.loadCmb(brandCmb, categoryCmb, typeCmb);
+            productDao.loadCmb(brandCmb, categoryCmb);
             
             sizeListByCategoryName = productDao.loadSizes();
+            typeListByCategoryName = productDao.loadTypes();
 
             for (ItemListener itemListener : itemListeners) {
                 categoryCmb.addItemListener(itemListener);
@@ -264,39 +268,42 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
                     .addGroup(panelRightLayout.createSequentialGroup()
                         .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelRightLayout.createSequentialGroup()
+                                .addComponent(sizeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(196, 196, 196))
+                            .addGroup(panelRightLayout.createSequentialGroup()
                                 .addComponent(typeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(262, 262, 262))
+                                .addGap(198, 198, 198))
                             .addGroup(panelRightLayout.createSequentialGroup()
                                 .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(panelRightLayout.createSequentialGroup()
-                                        .addComponent(sizeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGap(172, 172, 172))
-                                    .addGroup(panelRightLayout.createSequentialGroup()
-                                        .addComponent(categoryLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGap(136, 136, 136))
-                                    .addComponent(typeCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(sizeCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(categoryCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                                .addGap(24, 24, 24)
-                                .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(amountSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(addSizeBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(deleteSizeBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(24, 24, 24))))
+                                .addGap(24, 24, 24)))
+                        .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(amountSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(addSizeBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(deleteSizeBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(24, 24, 24))
+                    .addGroup(panelRightLayout.createSequentialGroup()
+                        .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelRightLayout.createSequentialGroup()
+                                .addComponent(categoryLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                .addGap(136, 136, 136))
+                            .addComponent(typeCmb, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(categoryCmb, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(112, 112, 112))))
         );
         panelRightLayout.setVerticalGroup(
             panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelRightLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
+                .addComponent(categoryLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(categoryCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(typeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(typeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(categoryLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(categoryCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(sizeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -470,11 +477,12 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
 
         String description = descriptionTxt.getText().trim().isEmpty() ? null : descriptionTxt.getText().trim();
 
-        Integer idBrand = brandCmb.getSelectedIndex() == -1 ? null : brandCmb.getSelectedIndex() + 1;
-        Integer idCategory = categoryCmb.getSelectedIndex() == -1 ? null : categoryCmb.getSelectedIndex() + 1;
-        Integer idType = typeCmb.getSelectedIndex() == -1 ? null : typeCmb.getSelectedIndex() + 1;
+        Integer brandId = brandCmb.getSelectedIndex() == -1 ? null : brandCmb.getSelectedIndex() + 1;
+        Integer categoryId = categoryCmb.getSelectedIndex() == -1 ? null : categoryCmb.getSelectedIndex() + 1;
+        Type type = (Type) typeCmb.getSelectedItem();
+        Integer typeId = type.getId();
 
-        boolean incorrectData = name.isEmpty() || price == null || idBrand == null || idCategory == null || idType == null || SizeTable.getRowCount() == 0;
+        boolean incorrectData = name.isEmpty() || price == null || brandId == null || categoryId == null || typeId == null || SizeTable.getRowCount() == 0;
 
         if (incorrectData) {
             javax.swing.JOptionPane.showMessageDialog(this, "Debe llenar todos los campos correctamente. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -487,9 +495,9 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
         product.setPrice(price);
         product.setDescription(description);
         product.setDiscount(discount);
-        product.setIdBrand(idBrand);
-        product.setIdCategory(idCategory);
-        product.setIdType(idType);
+        product.setIdBrand(brandId);
+        product.setIdCategory(categoryId);
+        product.setIdType(typeId);
 
         try {
             DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
@@ -557,13 +565,19 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
         if (SizeTable.getRowCount() > 0) {
             model.setRowCount(0);
         }
-
-        String sizeSelected = (String) categoryCmb.getSelectedItem();
-        List<Size> sizeList = sizeListByCategoryName.get(sizeSelected);
-        sizeCmb.removeAllItems();
-        sizeList.forEach(s -> sizeCmb.addItem(s));
+        String categorySelected = (String) categoryCmb.getSelectedItem();
+        List<Size> sizeList = sizeListByCategoryName.get(categorySelected);
+        List<Type> typeList = typeListByCategoryName.get(categorySelected);
+        
+        loadListInComboBox(sizeList, sizeCmb);
+        loadListInComboBox(typeList, typeCmb);
+        
     }//GEN-LAST:event_categoryCmbItemStateChanged
-
+    private <T> void loadListInComboBox(List<T> list, JComboBox combobox) {
+        combobox.removeAllItems();
+        list.forEach(s -> combobox.addItem(s));
+    }
+    
     private void addSizeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSizeBtnActionPerformed
         DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
 

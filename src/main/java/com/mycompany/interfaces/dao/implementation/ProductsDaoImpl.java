@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComboBox;
 import com.mycompany.interfaces.dao.ProductsDao;
+import com.mycompany.models.Type;
 
 public class ProductsDaoImpl extends Database implements ProductsDao {
 
@@ -48,16 +49,22 @@ public class ProductsDaoImpl extends Database implements ProductsDao {
         // Asigna los valores para los parámetros de la sentencia SQL
         st.setString(1, product.getName()); // Reemplaza con el método adecuado para obtener el nombre
         st.setFloat(2, product.getPrice());   // Reemplaza con el método adecuado para obtener el precio
-        if (product.getDescription() != null) st.setString(3, product.getDescription());
-        else st.setNull(3, Types.VARCHAR);
-        
-        if (product.getDiscount() != null)st.setInt(4, product.getDiscount()); 
-        else st.setNull(4, Types.INTEGER);
+        if (product.getDescription() != null) {
+            st.setString(3, product.getDescription());
+        } else {
+            st.setNull(3, Types.VARCHAR);
+        }
+
+        if (product.getDiscount() != null) {
+            st.setInt(4, product.getDiscount());
+        } else {
+            st.setNull(4, Types.INTEGER);
+        }
 
         st.setInt(5, product.getIdBrand());
         st.setInt(6, product.getIdCategory());
         st.setInt(7, product.getIdType());
-        
+
     }
 
     @Override
@@ -178,18 +185,15 @@ public class ProductsDaoImpl extends Database implements ProductsDao {
     }
 
     @Override
-    public void loadCmb(JComboBox<String> brandCmb, JComboBox<String> categoryCmb, JComboBox<String> typeCmb) throws Exception {
+    public void loadCmb(JComboBox<String> brandCmb, JComboBox<String> categoryCmb) throws Exception {
 
         try (Connection con = this.getConnection()) {
             String queryBrand = "select nombre from marcas;";
             String queryCategory = "select nombre from categorias;";
-            String queryType = "select nombre from tipo;";
             fillComboBox(con, brandCmb, queryBrand);
             brandCmb.setSelectedIndex(-1);
             fillComboBox(con, categoryCmb, queryCategory);
             categoryCmb.setSelectedIndex(-1);
-            fillComboBox(con, typeCmb, queryType);
-            typeCmb.setSelectedIndex(-1);
         } catch (SQLException e) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de cargar los ComboBox de agregar o modificar en la base de datos", e);
             throw e;
@@ -238,17 +242,52 @@ public class ProductsDaoImpl extends Database implements ProductsDao {
                 try (rs) {
                     while (rs.next()) {
                         String categoryName = rs.getString("nombre");
-                        String sizeName = rs.getString("talla");
                         Integer sizeId = rs.getInt("id_talla");
-                        
+                        String sizeName = rs.getString("talla");
+
                         size = new Size(sizeId, sizeName);
-                        
+
                         List<Size> list = hashMap.get(categoryName);
                         if (list == null) {
                             list = new ArrayList<>();
                             hashMap.put(categoryName, list);
                         }
                         list.add(size);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de cargar las tallas de la categoria correspondiente.", e);
+            throw e;
+        }
+        return hashMap;
+    }
+
+    @Override
+    public HashMap<String, List<Type>> loadTypes() throws SQLException {
+        HashMap<String, List<Type>> hashMap = new HashMap<>();
+        Type type;
+
+        try (Connection conn = this.getConnection()) {
+            String query = "call cargar_tipos();";
+            PreparedStatement st = conn.prepareStatement(query);
+            try (st) {
+                final ResultSet rs = st.executeQuery();
+                try (rs) {
+                    while (rs.next()) {
+                        String categoryName = rs.getString("nombre_categoria");
+                        
+                        Integer typeId = rs.getInt("id");
+                        String typeName = rs.getString("nombre_tipo");
+
+                        type = new Type(typeId, typeName);
+
+                        List<Type> list = hashMap.get(categoryName);
+                        if (list == null) {
+                            list = new ArrayList<>();
+                            hashMap.put(categoryName, list);
+                        }
+                        list.add(type);
                     }
                 }
             }

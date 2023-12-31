@@ -22,6 +22,7 @@ public class ViewClients extends javax.swing.JPanel implements IStyleable {
     public ViewClients(boolean isDarkModeEnabled) {
         initComponents();
         updateStyles(isDarkModeEnabled);
+        initStyles();
         loadClients();
     }
     @Override
