@@ -2,8 +2,7 @@ package com.mycompany.views;
 
 import com.mycompany.interfaces.dao.implementation.ProductsDaoImpl;
 import com.mycompany.interfaces.dao.implementation.SizesDaoImpl;
-import com.mycompany.models.Products;
-import com.mycompany.models.ProductSizes;
+import com.mycompany.models.Product;
 import com.mycompany.models.Size;
 import java.awt.Color;
 import java.awt.event.ItemListener;
@@ -19,15 +18,15 @@ import com.mycompany.interfaces.dao.ProductsDao;
 import com.mycompany.interfaces.style.IStyleable;
 
 public class UpProducts extends javax.swing.JPanel implements IStyleable {
-    ProductsDao dao;
-    SizesDao daoSize;
+    ProductsDao productDao = new ProductsDaoImpl();
+    SizesDao sizeDao = new SizesDaoImpl();
 
     boolean isEditable = false;
-    Products productEditable;
-    List<ProductSizes> originalSizes;
-    List<ProductSizes> newSizes = new ArrayList<>();
+    Product productEditable;
+    List<Size> originalSizes;
+    List<Size> newSizes = new ArrayList<>();
 
-    List<ProductSizes> sizesToDelete = new ArrayList<>();
+    List<Size> sizesToDelete = new ArrayList<>();
 
     HashMap<String, List<Size>> sizeListByCategoryName = new HashMap<>();
     HashMap<String, Integer> sizeSelected = new HashMap<>();
@@ -38,7 +37,7 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
         initStyles();
     }
 
-    public UpProducts(Products product, List<ProductSizes> list, boolean isDarkModeEnabled) {
+    public UpProducts(Product product, List<Size> list, boolean isDarkModeEnabled) {
         initComponents();
         isEditable = true;
         productEditable = product;
@@ -66,7 +65,8 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
         }
     }
 
-    private void initStyles() {
+    @Override
+    public void initStyles() {
         title.putClientProperty("FlatLaf.styleClass", "h1");
         nameLbl.putClientProperty("FlatLaf.styleClass", "h2");
         priceLbl.putClientProperty("FlatLaf.styleClass", "h2");
@@ -86,16 +86,15 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
         SizeTable.getTableHeader().setForeground(new Color(255, 255, 255));
 
         try {
-            dao = new ProductsDaoImpl();
             ItemListener[] itemListeners = categoryCmb.getListeners(ItemListener.class);
 
             for (ItemListener itemListener : itemListeners) {
                 categoryCmb.removeItemListener(itemListener);
             }
 
-            dao.loadCmb(brandCmb, categoryCmb, typeCmb);
-            dao = new ProductsDaoImpl();
-            sizeListByCategoryName = dao.loadSizes();
+            productDao.loadCmb(brandCmb, categoryCmb, typeCmb);
+            
+            sizeListByCategoryName = productDao.loadSizes();
 
             for (ItemListener itemListener : itemListeners) {
                 categoryCmb.addItemListener(itemListener);
@@ -483,7 +482,7 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
             return;
         }
 
-        Products product = isEditable ? productEditable : new Products();
+        Product product = isEditable ? productEditable : new Product();
         product.setName(name);
         product.setPrice(price);
         product.setDescription(description);
@@ -493,52 +492,47 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
         product.setIdType(idType);
 
         try {
-            dao = new ProductsDaoImpl();
-            
             DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
 
-            Integer productId = isEditable ? dao.modify(product) : dao.record(product);
+            Integer productId = isEditable ? productDao.modify(product) : productDao.record(product);
 
             if (isEditable) {
-                List<ProductSizes> sizesToModify = new ArrayList<>(originalSizes);
+                List<Size> sizesToModify = new ArrayList<>(originalSizes);
 
                 if (!sizesToDelete.isEmpty()) {
                     sizesToModify.removeAll(sizesToDelete);
                     sizesToDelete.forEach(s -> {
                         try {
-                            daoSize = new SizesDaoImpl();
-                            daoSize.delete(s);
+                            sizeDao.delete(s);
                         } catch (Exception ex) {
                             Logger.getLogger(UpProducts.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     });
                 }
-
                 if (!newSizes.isEmpty()) {
                     sizesToModify.addAll(newSizes);
                 }
                 sizesToModify.forEach(s -> {
                     try {
-                        daoSize = new SizesDaoImpl();
-                        boolean isModified = daoSize.modify(s);
+                        boolean isModified = sizeDao.modify(s);
                         if (!isModified) {
-                            daoSize.record(s);
+                            sizeDao.record(s);
                         }
                     } catch (Exception ex) {
                         Logger.getLogger(UpProducts.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 });
+                
             } else {
                 for (int i = 0; i < model.getRowCount(); i++) {
                     String sizeName = (String) model.getValueAt(i, 0);
                     Integer amount = (Integer) model.getValueAt(i, 1);
                     Integer sizeId = sizeSelected.get(sizeName);
-                    newSizes.add(new ProductSizes(productId, sizeId, amount));
+                    newSizes.add(new Size(productId, sizeId, amount));
                 }
                 newSizes.forEach(s -> {
                     try {
-                        daoSize = new SizesDaoImpl();
-                        daoSize.record(s);
+                        sizeDao.record(s);
                     } catch (Exception ex) {
                         Logger.getLogger(UpProducts.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -575,10 +569,10 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
 
         Integer amount = ((Number) amountSpinner.getValue()).intValue();
         Integer sizeSelectedIndex = sizeCmb.getSelectedIndex();
-        Size size = (Size) sizeCmb.getSelectedItem();
+        Size size = (Size) sizeCmb.getSelectedItem(); 
 
-        String sizeName = size.getName();
-        Integer sizeId = size.getId();
+        String sizeName = size.getSizeName();
+        Integer sizeId = size.getSizeId();
 
         if (sizeSelectedIndex == -1 || amount == 0) {
             javax.swing.JOptionPane.showMessageDialog(this, "Debe marcar la talla que desea agregar y dar una cantidad mayor que 0.\n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -596,8 +590,7 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
 
         if (isEditable) {
             final Integer productId = productEditable.getId();
-            ProductSizes productSize = new ProductSizes(productId, sizeId, amount, sizeName);
-            newSizes.add(productSize);
+            newSizes.add(new Size(productId, sizeId, amount, sizeName));
         }
         model.addRow(new Object[]{sizeName, amount});
         sizeSelected.put(sizeName, sizeId);
@@ -625,7 +618,7 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
 
         if (isEditable) {
             final Integer productId = productEditable.getId();
-            ProductSizes productSize = new ProductSizes(productId, sizeId, amount, sizeName);
+            Size productSize = new Size(productId, sizeId, amount, sizeName);
             sizesToDelete.add(productSize);
         }
     }//GEN-LAST:event_deleteSizeBtnActionPerformed

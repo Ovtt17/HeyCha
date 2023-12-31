@@ -5,33 +5,33 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class Sales {
+public class Sale {
 
     private int id;
     private Integer clientId;
     private String clientName;
     private Integer quantitySold;
-    private Float totalMoneySold;
+    private Float totalMoneyEarned;
     private LocalDate date;  
 
     
     
-    public Sales() {}
+    public Sale() {}
 
     // CONSTRUCTOR PARA ADICIONAR
-    public Sales(Integer clientId, Integer quantitySold, Float totalMoneySold, LocalDate date) {
+    public Sale(Integer clientId, Integer quantitySold, Float totalMoneyEarned, LocalDate date) {
         this.clientId = clientId;
         this.quantitySold = quantitySold;
-        this.totalMoneySold = totalMoneySold;
+        this.totalMoneyEarned = totalMoneyEarned;
         this.date = date;
     }
 
-    public Sales(int id, Integer clientId, String clientName, Integer quantitySold, Float totalMoneySold, LocalDate date) {
+    public Sale(int id, Integer clientId, String clientName, Integer quantitySold, Float totalMoneyEarned, LocalDate date) {
         this.id = id;
         this.clientId = clientId;
         this.clientName = clientName;
         this.quantitySold = quantitySold;
-        this.totalMoneySold = totalMoneySold;
+        this.totalMoneyEarned = totalMoneyEarned;
         this.date = date;
     }
 

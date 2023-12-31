@@ -1,7 +1,7 @@
 package com.mycompany.views;
 
 import com.mycompany.interfaces.dao.implementation.ClientsDaoImpl;
-import com.mycompany.models.Clients;
+import com.mycompany.models.Client;
 import java.awt.Color;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import com.mycompany.interfaces.dao.ClientsDao;
@@ -10,7 +10,7 @@ import com.mycompany.interfaces.style.IStyleable;
 public class UpClients extends javax.swing.JPanel implements IStyleable {
 
     boolean isEditable;
-    Clients clientEditable;
+    Client clientEditable;
 
     public UpClients(boolean isDarkModeEnabled) {
         initComponents();
@@ -18,7 +18,7 @@ public class UpClients extends javax.swing.JPanel implements IStyleable {
         initStyles();
     }
 
-    public UpClients(Clients client, boolean isDarkModeEnabled) {
+    public UpClients(Client client, boolean isDarkModeEnabled) {
         initComponents();
         isEditable = true;
         clientEditable = client;
@@ -39,7 +39,8 @@ public class UpClients extends javax.swing.JPanel implements IStyleable {
         }
     }
 
-    private void initStyles() {
+    @Override
+    public void initStyles() {
         title.putClientProperty("FlatLaf.styleClass", "h1");
         nameLbl.putClientProperty("FlatLaf.styleClass", "h2");
         cellphoneLbl.putClientProperty("FlatLaf.styleClass", "h2");
@@ -220,7 +221,7 @@ public class UpClients extends javax.swing.JPanel implements IStyleable {
             return;
         }
 
-        Clients client = isEditable ? clientEditable : new Clients();
+        Client client = isEditable ? clientEditable : new Client();
         client.setName(name);
         client.setCellphone(cellphone);
         client.setCity(city);

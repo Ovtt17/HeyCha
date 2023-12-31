@@ -1,7 +1,7 @@
 package com.mycompany.interfaces.dao;
 
 import com.mycompany.models.Size;
-import com.mycompany.models.Products;
+import com.mycompany.models.Product;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -9,11 +9,11 @@ import java.util.List;
 import javax.swing.JComboBox;
 
 public interface ProductsDao {
-    Integer record (Products product) throws Exception;
-    Integer modify (Products product) throws Exception;
+    Integer record (Product product) throws Exception;
+    Integer modify (Product product) throws Exception;
     void delete (int productId) throws Exception;
-    List<Products> consult(String name, String brand, String category) throws Exception;
-    Products getProductById(int productId) throws Exception;
+    List<Product> consult(String name, String brand, String category) throws Exception;
+    Product getProductById(int productId) throws Exception;
     
     /**
      * obteniendo datos desde la base de datos para llenar los campos para agregar productos.

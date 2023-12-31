@@ -1,7 +1,7 @@
 package com.mycompany.interfaces.dao.implementation;
 
 import com.mycompany.db.Database;
-import com.mycompany.models.Clients;
+import com.mycompany.models.Client;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,7 +17,7 @@ import com.mycompany.interfaces.dao.ClientsDao;
 public class ClientsDaoImpl extends Database implements ClientsDao {
 
     @Override
-    public void record(Clients client) throws Exception {
+    public void record(Client client) throws Exception {
         try (Connection con = this.getConnection()){
             String query = "call insertClient(?,?,?,?);";
             final PreparedStatement pst = con.prepareStatement(query);
@@ -31,7 +31,7 @@ public class ClientsDaoImpl extends Database implements ClientsDao {
         }
     }
 
-    private void setClientFieldsToInsert(PreparedStatement pst, Clients client) {
+    private void setClientFieldsToInsert(PreparedStatement pst, Client client) {
         try {
             pst.setString(1, client.getName());
             pst.setInt(2, client.getCellphone());
@@ -43,7 +43,7 @@ public class ClientsDaoImpl extends Database implements ClientsDao {
     }
 
     @Override
-    public void modify(Clients client) throws Exception {
+    public void modify(Client client) throws Exception {
         try (Connection con = this.getConnection()) {
             String query = "call modifyClient(?,?,?,?,?);";
             final PreparedStatement pst = con.prepareStatement(query);
@@ -57,7 +57,7 @@ public class ClientsDaoImpl extends Database implements ClientsDao {
         }
     }
 
-    private void setClientFieldsToModify(PreparedStatement pst, Clients client) {
+    private void setClientFieldsToModify(PreparedStatement pst, Client client) {
         try {
             pst.setString(1, client.getName());
             pst.setInt(2, client.getCellphone());
@@ -70,8 +70,8 @@ public class ClientsDaoImpl extends Database implements ClientsDao {
     }
 
     @Override
-    public Clients getClientById(int clientId) throws Exception {
-        Clients client = new Clients();
+    public Client getClientById(int clientId) throws Exception {
+        Client client = new Client();
         try (Connection con = this.getConnection()) {
             String query = "call consultByClientId(?);";
             final PreparedStatement pst = con.prepareStatement(query);
@@ -113,8 +113,8 @@ public class ClientsDaoImpl extends Database implements ClientsDao {
     }
 
     @Override
-    public List<Clients> consult(String name) throws SQLException {
-        List<Clients> list = null;
+    public List<Client> consult(String name) throws SQLException {
+        List<Client> list = null;
         try (Connection con = this.getConnection()) {
             String query = "call consultClient(?);";
             final PreparedStatement pst = con.prepareStatement(query);
@@ -124,7 +124,7 @@ public class ClientsDaoImpl extends Database implements ClientsDao {
                 final ResultSet rs = pst.executeQuery();
                 try (rs) {
                     while (rs.next()) {
-                        Clients client = new Clients();
+                        Client client = new Client();
                         setClientFieldsToConsult(rs, client);
                         list.add(client);
                     }
@@ -137,7 +137,7 @@ public class ClientsDaoImpl extends Database implements ClientsDao {
         return list;
     }
 
-    private void setClientFieldsToConsult(ResultSet rs, Clients client) {
+    private void setClientFieldsToConsult(ResultSet rs, Client client) {
         try {
             client.setId(rs.getInt("ID"));
             client.setName(rs.getString("NOMBRE"));

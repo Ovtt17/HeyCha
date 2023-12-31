@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class Products {
+public class Product {
 
     private int id;
     private String name;
@@ -27,11 +27,11 @@ public class Products {
     private int amountSelected;
     private String sizeSelected;
 
-    public Products() {
+    public Product() {
     }
     
     // save new product
-    public Products(String name, Float price, String description, Integer discount, Integer IdBrand, Integer IdCategory, Integer IdType) {
+    public Product(String name, Float price, String description, Integer discount, Integer IdBrand, Integer IdCategory, Integer IdType) {
         this.name = name;
         this.price = price;
         this.description = description;
@@ -42,7 +42,7 @@ public class Products {
     }
 
     //consult product
-    public Products(Integer id, String name, Float price, String description, Integer discount, String brand, String category, String type, String brandAvailable, Integer totalExistence, Float totalPrice) {
+    public Product(Integer id, String name, Float price, String description, Integer discount, String brand, String category, String type, String brandAvailable, Integer totalExistence, Float totalPrice) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -56,7 +56,7 @@ public class Products {
         this.totalPrice = totalPrice;
     }
 
-//    public Products(int id, String name, Float price, String sizeSelected, int amountSelected) {
+//    public Product(int id, String name, Float price, String sizeSelected, int amountSelected) {
 //        this.id = id;
 //        this.name = name;
 //        this.price = price;
@@ -65,7 +65,7 @@ public class Products {
 //    }
 
     // return all query from database
-    public Products(Integer id, String name, Float price, String description, Integer discount, Integer brandId, Integer categoryId, Integer typeId, String brandName, String categoryName, String typeName, String brandAvailable, Integer totalExistence, Float totalPrice) {
+    public Product(Integer id, String name, Float price, String description, Integer discount, Integer brandId, Integer categoryId, Integer typeId, String brandName, String categoryName, String typeName, String brandAvailable, Integer totalExistence, Float totalPrice) {
         this.id = id;
         this.name = name;
         this.price = price;

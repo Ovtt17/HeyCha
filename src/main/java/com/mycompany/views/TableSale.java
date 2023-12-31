@@ -2,9 +2,9 @@ package com.mycompany.views;
 
 import com.mycompany.interfaces.dao.implementation.ProductsDaoImpl;
 import com.mycompany.interfaces.dao.implementation.SizesDaoImpl;
-import com.mycompany.models.ProductSizes;
-import com.mycompany.models.Products;
-import com.mycompany.models.SalesProducts;
+import com.mycompany.models.Size;
+import com.mycompany.models.Product;
+import com.mycompany.models.SaleDetail;
 import java.awt.Color;
 import java.util.List;
 import java.util.logging.Level;
@@ -13,12 +13,14 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 import com.mycompany.interfaces.dao.SizesDao;
 import com.mycompany.interfaces.dao.ProductsDao;
+import com.mycompany.models.ReservationDetail;
 
 public class TableSale extends javax.swing.JDialog {
 
+    boolean saleMode = false;
     UpSales upSales;
-    ViewProducts p = new ViewProducts();
-    List<Products> products;
+    UpReservation upReservation;
+
     Float productPrice;
 
     public TableSale(java.awt.Frame parent, boolean modal, boolean darkModeStatus) {
@@ -32,6 +34,14 @@ public class TableSale extends javax.swing.JDialog {
         initComponents();
         initTable(darkModeStatus);
         this.upSales = upSales;
+        saleMode = true;
+    }
+
+    public TableSale(java.awt.Frame parent, boolean modal, UpReservation upReservation, boolean darkModeStatus) {
+        super(parent, modal);
+        initComponents();
+        initTable(darkModeStatus);
+        this.upReservation = upReservation;
     }
 
     private TableSale() {
@@ -309,14 +319,9 @@ public class TableSale extends javax.swing.JDialog {
         loadProductSize();
     }//GEN-LAST:event_jTableProductsMouseClicked
     private void loadProductSize() {
-        List<ProductSizes> productSizeList;
+        List<Size> productSizeList;
         try {
             SizesDao dao = new SizesDaoImpl();
-//            if (table.getSelectedRow() < 0) {
-//                javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto para ver sus detalles. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-//                return;
-//            }
-
             int selectedRow = jTableProducts.getSelectedRow();
             int productId = (int) jTableProducts.getValueAt(selectedRow, 0);
 
@@ -362,8 +367,14 @@ public class TableSale extends javax.swing.JDialog {
         Float price = productPrice;
         Integer amount = (Integer) AmountSpinner.getValue();
 
-        SalesProducts salesDetails = new SalesProducts(productSizeId, productId, productName, sizeName, price, amount);
-        upSales.addProduct(salesDetails);
+        if (saleMode) {
+            SaleDetail salesDetails = new SaleDetail(productSizeId, productId, productName, sizeName, price, amount);
+            upSales.addProduct(salesDetails);
+        } else {
+            ReservationDetail rDetails = new ReservationDetail(productSizeId, productId, productName, sizeName, price, amount);
+            upReservation.addProduct(rDetails);
+        }
+
         javax.swing.JOptionPane.showMessageDialog(this, "El producto se ha agregado al carrito de compras. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
         this.dispose();
     }//GEN-LAST:event_btnAddActionPerformed

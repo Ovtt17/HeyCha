@@ -5,7 +5,7 @@ import com.mycompany.interfaces.exporters.implementation.PdfExporterImpl;
 import com.mycompany.interfaces.dao.implementation.SalesDaoImpl;
 import com.mycompany.interfaces.dao.implementation.SalesDetailsDaoImpl;
 import com.mycompany.heycha.Dashboard;
-import com.mycompany.models.SalesProducts;
+import com.mycompany.models.SaleDetail;
 import java.awt.Color;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -33,8 +33,9 @@ public class ViewSales extends javax.swing.JPanel implements IStyleable {
         initStyles();
         loadSales();
     }
-
-    private void initStyles() {
+    
+    @Override
+    public void initStyles() {
         title.putClientProperty("FlatLaf.styleClass", "h1");
         SaleDetailsTxt.putClientProperty("FlatLaf.styleClass", "h1");
 
@@ -89,9 +90,9 @@ public class ViewSales extends javax.swing.JPanel implements IStyleable {
             count = 0; totalMoney = 0f;
             dao.consult(sqlDate).forEach(
                     (s) -> {
-                        model.addRow(new Object[]{s.getId(), s.getClientId(), s.getClientName(), s.getDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), s.getQuantitySold(), s.getTotalMoneySold()});
+                        model.addRow(new Object[]{s.getId(), s.getClientId(), s.getClientName(), s.getDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), s.getQuantitySold(), s.getTotalMoneyEarned()});
                         count++;
-                        totalMoney += s.getTotalMoneySold();
+                        totalMoney += s.getTotalMoneyEarned();
 
                     });
             TotalSalesTxt.setText(count.toString());
@@ -311,11 +312,11 @@ public class ViewSales extends javax.swing.JPanel implements IStyleable {
                     .addComponent(DateSpinner, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(SaleDetailsTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(9, 9, 9)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 72, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(background_salesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(background_salesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -337,9 +338,9 @@ public class ViewSales extends javax.swing.JPanel implements IStyleable {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 540, Short.MAX_VALUE)
+            .addGap(0, 436, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(background_sales, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(background_sales, javax.swing.GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -394,10 +395,10 @@ public class ViewSales extends javax.swing.JPanel implements IStyleable {
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void JTableSalesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTableSalesMouseClicked
-        loadSalesProducts();
+        loadSalesDetails();
     }//GEN-LAST:event_JTableSalesMouseClicked
-    private void loadSalesProducts() {
-        List<SalesProducts> salesProductsList;
+    private void loadSalesDetails() {
+        List<SaleDetail> salesProductsList;
         try {
             daoDetails = new SalesDetailsDaoImpl();
             int selectedRows = JTableSales.getSelectedRow();
@@ -473,5 +474,7 @@ public class ViewSales extends javax.swing.JPanel implements IStyleable {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
+
+    
 
 }

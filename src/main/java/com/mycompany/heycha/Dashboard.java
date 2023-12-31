@@ -15,6 +15,7 @@ import java.util.Locale;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import com.mycompany.interfaces.style.IStyleable;
+import com.mycompany.views.ViewReservation;
 
 public class Dashboard extends javax.swing.JFrame {
 
@@ -120,6 +121,7 @@ public class Dashboard extends javax.swing.JFrame {
         btnProducts = new javax.swing.JButton();
         btnSales = new javax.swing.JButton();
         btnClients = new javax.swing.JButton();
+        btnReserved = new javax.swing.JButton();
         header = new javax.swing.JPanel();
         navText = new javax.swing.JLabel();
         dateText = new javax.swing.JLabel();
@@ -128,10 +130,10 @@ public class Dashboard extends javax.swing.JFrame {
         ModeBtn = new javax.swing.JToggleButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("HeyCha");
         setBackground(new java.awt.Color(255, 255, 255));
         setExtendedState(6);
         setIconImage(getIconImage());
-        setPreferredSize(new java.awt.Dimension(1090, 680));
         setSize(new java.awt.Dimension(1090, 680));
 
         background.setBackground(new java.awt.Color(255, 255, 255));
@@ -165,7 +167,7 @@ public class Dashboard extends javax.swing.JFrame {
         btnSales.setBackground(new java.awt.Color(21, 101, 192));
         btnSales.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnSales.setForeground(new java.awt.Color(255, 255, 255));
-        btnSales.setIcon(new javax.swing.ImageIcon(getClass().getResource("/calendar-multiple-check.png"))); // NOI18N
+        btnSales.setIcon(new javax.swing.ImageIcon(getClass().getResource("/sales-icon.png"))); // NOI18N
         btnSales.setText("Ventas");
         btnSales.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 10, 1, 1, new java.awt.Color(0, 0, 0)));
         btnSales.setBorderPainted(false);
@@ -196,6 +198,23 @@ public class Dashboard extends javax.swing.JFrame {
             }
         });
 
+        btnReserved.setBackground(new java.awt.Color(21, 101, 192));
+        btnReserved.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnReserved.setForeground(new java.awt.Color(255, 255, 255));
+        btnReserved.setIcon(new javax.swing.ImageIcon(getClass().getResource("/calendar-multiple-check.png"))); // NOI18N
+        btnReserved.setText("Apartados");
+        btnReserved.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 10, 1, 1, new java.awt.Color(0, 0, 0)));
+        btnReserved.setBorderPainted(false);
+        btnReserved.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnReserved.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnReserved.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        btnReserved.setIconTextGap(12);
+        btnReserved.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReservedActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout menuLayout = new javax.swing.GroupLayout(menu);
         menu.setLayout(menuLayout);
         menuLayout.setHorizontalGroup(
@@ -212,6 +231,7 @@ public class Dashboard extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, menuLayout.createSequentialGroup()
                         .addComponent(appName, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(14, 14, 14))))
+            .addComponent(btnReserved, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         menuLayout.setVerticalGroup(
             menuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -224,6 +244,8 @@ public class Dashboard extends javax.swing.JFrame {
                 .addComponent(btnProducts, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnSales, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnReserved, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnClients, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -337,6 +359,10 @@ public class Dashboard extends javax.swing.JFrame {
         InitStyles();
     }//GEN-LAST:event_ModeBtnActionPerformed
 
+    private void btnReservedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReservedActionPerformed
+        ShowPanel(new ViewReservation(this.isDarkModeEnabled()));
+    }//GEN-LAST:event_btnReservedActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -356,6 +382,7 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JPanel background;
     private javax.swing.JButton btnClients;
     private javax.swing.JButton btnProducts;
+    private javax.swing.JButton btnReserved;
     private javax.swing.JButton btnSales;
     private static javax.swing.JPanel content;
     private javax.swing.JLabel dateText;

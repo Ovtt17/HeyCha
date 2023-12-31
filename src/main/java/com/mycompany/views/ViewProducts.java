@@ -4,8 +4,8 @@ import com.mycompany.interfaces.exporters.implementation.ExcelExporterImpl;
 import com.mycompany.interfaces.dao.implementation.ProductsDaoImpl;
 import com.mycompany.interfaces.dao.implementation.SizesDaoImpl;
 import com.mycompany.heycha.Dashboard;
-import com.mycompany.models.Products;
-import com.mycompany.models.ProductSizes;
+import com.mycompany.models.Product;
+import com.mycompany.models.Size;
 import java.awt.Color;
 import java.util.List;
 import java.util.logging.Level;
@@ -19,13 +19,14 @@ import com.mycompany.interfaces.style.IStyleable;
 public class ViewProducts extends javax.swing.JPanel implements IStyleable {
 
     boolean lightOrDarkMode;
-    ProductsDao dao;
-    SizesDao daoSize;
+    ProductsDao productDao = new ProductsDaoImpl();
+    SizesDao sizeDao = new SizesDaoImpl();
     
 
     public ViewProducts(boolean isDarkModeEnabled) {
         initComponents();
         updateStyles(isDarkModeEnabled);
+        initStyles();
         loadProducts();
     }
 
@@ -34,8 +35,7 @@ public class ViewProducts extends javax.swing.JPanel implements IStyleable {
     }
 
     @Override
-    public void updateStyles(boolean isDarkModeEnabled) {
-        lightOrDarkMode = isDarkModeEnabled;
+    public void initStyles() {
         title.putClientProperty("FlatLaf.styleClass", "h1");
         ProductDetailsTxt.putClientProperty("FlatLaf.styleClass", "h1");
         productSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto a buscar.");
@@ -49,6 +49,11 @@ public class ViewProducts extends javax.swing.JPanel implements IStyleable {
         TableDetails.getTableHeader().setBackground(new Color(0, 0, 0));
         jTableProducts.getTableHeader().setForeground(new Color(255, 255, 255));
         TableDetails.getTableHeader().setForeground(new Color(255, 255, 255));
+    }
+    
+    @Override
+    public void updateStyles(boolean isDarkModeEnabled) {
+        lightOrDarkMode = isDarkModeEnabled;
         if (isDarkModeEnabled) {
             title.setForeground(Color.white);
             ProductDetailsTxt.setForeground(Color.white);
@@ -81,12 +86,11 @@ public class ViewProducts extends javax.swing.JPanel implements IStyleable {
         String brandSelected = "NINGUNO";
         String categorySelected = "NINGUNO";
         try {
-            dao = new ProductsDaoImpl();
-            dao.consult(nameToFind, brandSelected, categorySelected)
+            
+            productDao.consult(nameToFind, brandSelected, categorySelected)
                     .forEach((p) -> 
                             model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrandName(), p.getCategoryName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice()}));
-            dao = new ProductsDaoImpl();
-            dao.loadFilterCmb(BrandFilterCmb, CategoryFilterCmb);
+            productDao.loadFilterCmb(BrandFilterCmb, CategoryFilterCmb);
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -313,11 +317,11 @@ public class ViewProducts extends javax.swing.JPanel implements IStyleable {
                     .addComponent(CategoryLbl)
                     .addComponent(btnCleanField, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(ProductDetailsTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(14, 14, 14)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -358,9 +362,6 @@ public class ViewProducts extends javax.swing.JPanel implements IStyleable {
 
         int confirmed = javax.swing.JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar estos datos? \n", "CONFIMARCIÓN", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
         if (confirmed == javax.swing.JOptionPane.YES_OPTION) {
-            dao = new ProductsDaoImpl();
-            daoSize = new SizesDaoImpl();
-
             int[] selectedRows = jTableProducts.getSelectedRows();
             int continueDeleting;
             for (int i = selectedRows.length - 1; i >= 0; i--) {
@@ -372,8 +373,8 @@ public class ViewProducts extends javax.swing.JPanel implements IStyleable {
                 }
                 try {
                     int selectedRow = selectedRows[i];
-                    dao.delete((int) jTableProducts.getValueAt(selectedRow, 0));
-                    daoSize.deleteAllSizes((int) jTableProducts.getValueAt(selectedRow, 0));
+                    productDao.delete((int) jTableProducts.getValueAt(selectedRow, 0));
+                    sizeDao.deleteAllSizes((int) jTableProducts.getValueAt(selectedRow, 0));
                     model.removeRow(selectedRow);
                     modelDetails.setRowCount(0);
                 } catch (Exception e) {
@@ -389,10 +390,9 @@ public class ViewProducts extends javax.swing.JPanel implements IStyleable {
         if (jTableProducts.getSelectedRow() > -1) {
             try {
                 int productId = (int) jTableProducts.getValueAt(jTableProducts.getSelectedRow(), 0);
-                dao = new ProductsDaoImpl();
-                daoSize = new SizesDaoImpl();
-                Products product = dao.getProductById(productId);
-                List<ProductSizes> sizeList = daoSize.getProductSizesById(productId);
+                
+                Product product = productDao.getProductById(productId);
+                List<Size> sizeList = sizeDao.getProductSizesById(productId);
                 Dashboard.ShowPanel(new UpProducts(product, sizeList, lightOrDarkMode));
             } catch (Exception e) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -408,17 +408,15 @@ public class ViewProducts extends javax.swing.JPanel implements IStyleable {
     }//GEN-LAST:event_jTableProductsMouseClicked
 
     public void loadProductSize() {
-        List<ProductSizes> productSizeList = null;
+        List<Size> productSizeList = null;
         try {
-            daoSize = new SizesDaoImpl();
-
             int selectedRows = jTableProducts.getSelectedRow();
             int productId = (int) jTableProducts.getValueAt(selectedRows, 0);
 
             DefaultTableModel model = (DefaultTableModel) TableDetails.getModel();
             model.setRowCount(0);
 
-            productSizeList = daoSize.consult(productId);
+            productSizeList = sizeDao.consult(productId);
             productSizeList.forEach((p) -> model.addRow(new Object[]{p.getId(), p.getProductId(), p.getProductName(), p.getSizeName(), p.getPrice(), p.getAmount()}));
             TableDetails.setModel(model);
 
@@ -466,7 +464,7 @@ public class ViewProducts extends javax.swing.JPanel implements IStyleable {
     }//GEN-LAST:event_TableDetailsMouseClicked
 
     private void filterConsult() {
-        dao = new ProductsDaoImpl();
+        
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
         model.setRowCount(0);
         String productNameToSearch = productSearch.getText();
@@ -474,7 +472,7 @@ public class ViewProducts extends javax.swing.JPanel implements IStyleable {
         String productCategoryToSearch = CategoryFilterCmb.getSelectedItem() == null ? "NINGUNO" : CategoryFilterCmb.getSelectedItem().toString();
 
         try {
-            dao.consult(productNameToSearch, productBrandToSearch, productCategoryToSearch).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrandName(), p.getCategoryName(), p.getTypeName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice(), p.getDescription()}));
+            productDao.consult(productNameToSearch, productBrandToSearch, productCategoryToSearch).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrandName(), p.getCategoryName(), p.getTypeName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice(), p.getDescription()}));
         } catch (Exception ex) {
             Logger.getLogger(ViewProducts.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -499,5 +497,6 @@ public class ViewProducts extends javax.swing.JPanel implements IStyleable {
     private javax.swing.JTextField productSearch;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
+
 
 }

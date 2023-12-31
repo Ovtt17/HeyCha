@@ -1,10 +1,12 @@
 package com.mycompany.views;
 
-import com.mycompany.interfaces.dao.implementation.SalesDaoImpl;
-import com.mycompany.interfaces.dao.implementation.SalesDetailsDaoImpl;
-import com.mycompany.models.Size;
-import com.mycompany.models.Sale;
-import com.mycompany.models.SaleDetail;
+import com.mycompany.interfaces.dao.ReservationDao;
+import com.mycompany.interfaces.dao.ReservationDetailsDao;
+import com.mycompany.interfaces.dao.implementation.ReservationDaoImpl;
+import com.mycompany.interfaces.dao.implementation.ReservationDetailsDaoImpl;
+import com.mycompany.interfaces.style.IStyleable;
+import com.mycompany.models.Reservation;
+import com.mycompany.models.ReservationDetail;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,56 +16,52 @@ import java.util.Objects;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
-import com.mycompany.interfaces.dao.SalesDao;
-import com.mycompany.interfaces.dao.SalesDetailsDao;
-import com.mycompany.interfaces.style.IStyleable;
 
-public class UpSales extends javax.swing.JPanel implements IStyleable {
+public class UpReservation extends javax.swing.JPanel implements IStyleable{
 
-    SalesDao dao = new SalesDaoImpl();
-    SalesDetailsDao saleDetailsDao = new SalesDetailsDaoImpl();
-
+    ReservationDao reservationDao = new ReservationDaoImpl();
+    ReservationDetailsDao daoDetails = new ReservationDetailsDaoImpl();
+    
     boolean isEditable = false;
     boolean darkModeStatus = false;
-    private Sale saleEditable;
-    private List<SaleDetail> products;
+    private Reservation reservationEditable;
+    private List<ReservationDetail> products;
     HashMap<String, Integer> clientHashMap;
 
     private DefaultTableModel newModel = new DefaultTableModel();
     private Float totalPayment = 0f;
     private Integer totalQuantity = 0;
-
-    public UpSales(boolean isDarkModeEnabled) {
+    
+    public UpReservation(boolean isDarkModeEnabled) {
         initComponents();
         darkModeStatus = isDarkModeEnabled;
         updateStyles(isDarkModeEnabled);
         initStyles();
         this.products = new ArrayList<>();
     }
-
-    public UpSales() {
-    }
-
-    public UpSales(Sale sale, List<SaleDetail> salesDetailsEditable, boolean isDarkModeEnabled) {
+    public UpReservation () {}
+    
+    public UpReservation(Reservation reservation, List<ReservationDetail> reservationDetailEditable, boolean isDarkModeEnabled) {
         initComponents();
         isEditable = true;
+        this.reservationEditable = reservation;
+        this.products = reservationDetailEditable;
         updateStyles(isDarkModeEnabled);
         initStyles();
-        this.saleEditable = sale;
         clientHashMap = new HashMap<>();
-        clientHashMap.put(saleEditable.getClientName(), saleEditable.getClientId());
-        clientsCmb.addItem(saleEditable.getClientName());
-        this.products = salesDetailsEditable;
+        clientHashMap.put(reservationEditable.getClientName(), reservationEditable.getClientId());
+        clientsCmb.addItem(reservationEditable.getClientName());
         updateTable();
     }
-
-    public void addProduct(SaleDetail product) {
+    public void addProduct(ReservationDetail product) {
         this.products.add(product);
         updateTable();
     }
 
     private void updateTable() {
         try {
+            Float paid = 0f, remaining = 0f;
+            
             newModel.setRowCount(0);
             totalPayment = 0f;
             totalQuantity = 0;
@@ -71,13 +69,19 @@ public class UpSales extends javax.swing.JPanel implements IStyleable {
                     .filter(Objects::nonNull)
                     .forEach(p -> {
                         if (isEditable) {
-                            newModel.addRow(new Object[]{p.getSaleId(), p.getProductId(), p.getProductName(), p.getProductSizeId(), p.getSizeName(), p.getPriceUnity(), p.getAmount(), p.getSubtotal()});
+                            newModel.addRow(new Object[]{p.getReservationId(), p.getProductId(), p.getProductName(), p.getProductSizeId(), p.getSizeName(), p.getPriceUnity(), p.getAmount(), p.getSubtotal()});
                         } else {
                             newModel.addRow(new Object[]{p.getProductId(), p.getProductName(), p.getProductSizeId(), p.getSizeName(), p.getPriceUnity(), p.getAmount(), p.getSubtotal()});
                         }
                         totalPayment += p.getSubtotal();
                         totalQuantity += p.getAmount();
                     });
+            if (isEditable) {
+                paid = reservationEditable.getPaid();
+                remaining = reservationEditable.getRemaining();
+            }
+            paidTxt.setText("$" + paid);
+            remainingTxt.setText("$" + remaining);
             totalValueTxt.setText("$" + totalPayment);
             jTable1.setModel(newModel);
         } catch (Exception e) {
@@ -113,18 +117,18 @@ public class UpSales extends javax.swing.JPanel implements IStyleable {
         title.putClientProperty("FlatLaf.styleClass", "h1");
         jTable1.setDefaultEditor(Object.class, null);
         if (isEditable) {
-            title.setText("Editar venta");
+            title.setText("Editar Apartado");
             btnDataUpdate.setText("Editar");
-            newModel.addColumn("Id de venta");
+            newModel.addColumn("Id de Apartado");
         } else {
             try {
-                dao.loadClientsCmb(clientsCmb);
+                reservationDao.loadClientsCmb(clientsCmb);
             } catch (Exception e) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
         }
-        newModel.addColumn("ID del producto");
-        newModel.addColumn("Nombre del producto");
+        newModel.addColumn("ID del Producto");
+        newModel.addColumn("Nombre del Producto");
         newModel.addColumn("ID Unico");
         newModel.addColumn("Talla");
         newModel.addColumn("Precio Unitario");
@@ -153,11 +157,17 @@ public class UpSales extends javax.swing.JPanel implements IStyleable {
         totalValueTxt = new javax.swing.JTextField();
         clientLbl = new javax.swing.JLabel();
         clientsCmb = new javax.swing.JComboBox<>();
+        TotalLbl1 = new javax.swing.JLabel();
+        paidTxt = new javax.swing.JTextField();
+        TotalLbl2 = new javax.swing.JLabel();
+        newPaymentTxt = new javax.swing.JTextField();
+        TotalLbl3 = new javax.swing.JLabel();
+        remainingTxt = new javax.swing.JTextField();
 
         bg.setBackground(new java.awt.Color(255, 255, 255));
         bg.setPreferredSize(new java.awt.Dimension(764, 436));
 
-        title.setText("Subir Nueva Venta.");
+        title.setText("Subir Nuevo Apartado.");
 
         btnDataUpdate.setBackground(new java.awt.Color(18, 90, 173));
         btnDataUpdate.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -216,6 +226,20 @@ public class UpSales extends javax.swing.JPanel implements IStyleable {
 
         clientLbl.setText("Cliente:");
 
+        TotalLbl1.setText("Abonado:");
+
+        paidTxt.setEditable(false);
+        paidTxt.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        TotalLbl2.setText("Nuevo Abono:");
+
+        newPaymentTxt.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        TotalLbl3.setText("Restante:");
+
+        remainingTxt.setEditable(false);
+        remainingTxt.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
         javax.swing.GroupLayout bgLayout = new javax.swing.GroupLayout(bg);
         bg.setLayout(bgLayout);
         bgLayout.setHorizontalGroup(
@@ -230,24 +254,34 @@ public class UpSales extends javax.swing.JPanel implements IStyleable {
                         .addComponent(btnDataUpdate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGap(201, 201, 201))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bgLayout.createSequentialGroup()
+                .addGap(90, 90, 90)
                 .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(bgLayout.createSequentialGroup()
-                        .addGap(442, 533, Short.MAX_VALUE)
+                        .addGap(0, 6, Short.MAX_VALUE)
+                        .addComponent(TotalLbl2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(newPaymentTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(TotalLbl1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(paidTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(TotalLbl3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(remainingTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(TotalLbl)
-                        .addGap(37, 37, 37)
-                        .addComponent(totalValueTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(bgLayout.createSequentialGroup()
-                        .addGap(90, 90, 90)
-                        .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(bgLayout.createSequentialGroup()
-                                .addComponent(clientLbl)
-                                .addGap(18, 18, 18)
-                                .addComponent(clientsCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(69, 69, 69)
-                                .addComponent(BtnAddProduct)
-                                .addGap(18, 18, 18)
-                                .addComponent(BtnDeleteProduct))
-                            .addComponent(jScrollPane1))))
+                        .addGap(18, 18, 18)
+                        .addComponent(totalValueTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, bgLayout.createSequentialGroup()
+                        .addComponent(clientLbl)
+                        .addGap(18, 18, 18)
+                        .addComponent(clientsCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(69, 69, 69)
+                        .addComponent(BtnAddProduct)
+                        .addGap(18, 18, 18)
+                        .addComponent(BtnDeleteProduct))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING))
                 .addGap(100, 100, 100))
         );
         bgLayout.setVerticalGroup(
@@ -265,8 +299,16 @@ public class UpSales extends javax.swing.JPanel implements IStyleable {
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(TotalLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(TotalLbl2, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(newPaymentTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(TotalLbl1, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(paidTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(TotalLbl3, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(remainingTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(TotalLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(totalValueTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(37, 37, 37)
                 .addComponent(btnDataUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -277,7 +319,7 @@ public class UpSales extends javax.swing.JPanel implements IStyleable {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, 765, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -295,6 +337,7 @@ public class UpSales extends javax.swing.JPanel implements IStyleable {
 
         LocalDate date = LocalDate.now();
         Integer totalQuantitySold = totalQuantity;
+        Float newPayment =  Float.valueOf(newPaymentTxt.getText().trim());
         Float total = totalPayment;
 
         boolean incorrectData = total <= 0 || total == null;
@@ -303,55 +346,54 @@ public class UpSales extends javax.swing.JPanel implements IStyleable {
             return;
         }
         try {
-
-            Sale sale = isEditable ? saleEditable : new Sale();
-            sale.setClientId(clientId);
-            sale.setQuantitySold(totalQuantitySold);
-            sale.setTotalMoneyEarned(total);
-            sale.setDate(date);
-
-            Integer idSale = isEditable ? dao.modify(sale) : dao.record(sale);
+            Reservation reservation = isEditable ? reservationEditable : new Reservation();
+            reservation.setClientId(clientId);
+            reservation.setQuantitySold(totalQuantitySold);
+            reservation.setPaid(newPayment);
+            reservation.setTotalMoneyEarned(total);
+            reservation.setDate(date);
+            
+            Integer reservationId = isEditable ? reservationDao.modify(reservation) : reservationDao.record(reservation);
 
             products.stream()
-                    .filter(Objects::nonNull)
-                    .forEach((p) -> {
-                        try {
-                            p.setSaleId(idSale);
-
-                            if (isEditable) {
-                                saleDetailsDao.modify(p);
-                            } else {
-                                saleDetailsDao.record(p);
-                            }
-
-                        } catch (Exception e) {
-                            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
-                        }
-                    });
+            .filter(Objects::nonNull)
+            .forEach((p) -> {
+                try {
+                    p.setReservationId(reservationId);
+                    if (isEditable) daoDetails.modify(p);
+                    else daoDetails.record(p);
+                } catch (Exception e) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+                }
+            });
             javax.swing.JOptionPane.showMessageDialog(this, "Datos guardados correctamente. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             emptyFields();
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnDataUpdateActionPerformed
+
     private void emptyFields() {
         clientsCmb.setSelectedIndex(0);
         newModel.setRowCount(0);
         totalValueTxt.setText("");
+        newPaymentTxt.setText("");
+        paidTxt.setText("");
+        remainingTxt.setText("");
         totalPayment = 0f;
         totalQuantity = 0;
         products.clear();
     }
+    
+    private void jTable1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jTable1PropertyChange
+
+    }//GEN-LAST:event_jTable1PropertyChange
 
     private void BtnAddProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnAddProductActionPerformed
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
         TableSale t = new TableSale(parentFrame, true, this, darkModeStatus);
         t.setVisible(true);
     }//GEN-LAST:event_BtnAddProductActionPerformed
-
-    private void jTable1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jTable1PropertyChange
-
-    }//GEN-LAST:event_jTable1PropertyChange
 
     private void BtnDeleteProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnDeleteProductActionPerformed
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
@@ -381,12 +423,12 @@ public class UpSales extends javax.swing.JPanel implements IStyleable {
                 // TODO
                 try {
                     int selectedRow = selectedRows[i];
-                    SalesDetailsDao daoSalesDetails = new SalesDetailsDaoImpl();
+                    ReservationDetailsDao daoDetails = new ReservationDetailsDaoImpl();
                     int idIndex = 0, nameIndex = 0, sizeIndex = 0, priceIndex = 0, amountIndex = 0;
                     if (isEditable) {
-                        Integer saleId = (Integer) jTable1.getValueAt(selectedRow, 0);
+                        Integer reservationId = (Integer) jTable1.getValueAt(selectedRow, 0);
                         Integer productSizeId = (int) jTable1.getValueAt(selectedRow, 3);
-                        daoSalesDetails.delete(saleId, productSizeId);
+                        daoDetails.delete(reservationId, productSizeId);
                         idIndex = 1;
                         nameIndex = 2;
                         sizeIndex = 4;
@@ -406,11 +448,11 @@ public class UpSales extends javax.swing.JPanel implements IStyleable {
                     Float price = (Float) jTable1.getValueAt(selectedRow, priceIndex);
                     Integer amount = (Integer) jTable1.getValueAt(selectedRow, amountIndex);
                     products.removeIf(p
-                            -> Objects.equals(p.getProductId(), productId) // posible fail
-                            && p.getProductName().equals(productName)
-                            && p.getSizeName().equals(sizeName)
-                            && p.getPriceUnity().equals(price)
-                            && p.getAmount() == amount
+                        -> Objects.equals(p.getProductId(), productId) // posible fail
+                        && p.getProductName().equals(productName)
+                        && p.getSizeName().equals(sizeName)
+                        && p.getPriceUnity().equals(price)
+                        && p.getAmount() == amount
                     );
 
                     model.removeRow(selectedRow);
@@ -428,12 +470,18 @@ public class UpSales extends javax.swing.JPanel implements IStyleable {
     private javax.swing.JButton BtnAddProduct;
     private javax.swing.JButton BtnDeleteProduct;
     private javax.swing.JLabel TotalLbl;
+    private javax.swing.JLabel TotalLbl1;
+    private javax.swing.JLabel TotalLbl2;
+    private javax.swing.JLabel TotalLbl3;
     private javax.swing.JPanel bg;
     private javax.swing.JButton btnDataUpdate;
     private javax.swing.JLabel clientLbl;
     private javax.swing.JComboBox<String> clientsCmb;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JTextField newPaymentTxt;
+    private javax.swing.JTextField paidTxt;
+    private javax.swing.JTextField remainingTxt;
     private javax.swing.JLabel title;
     private javax.swing.JTextField totalValueTxt;
     // End of variables declaration//GEN-END:variables

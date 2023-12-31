@@ -16,12 +16,12 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="bg" alignment="0" max="32767" attributes="0"/>
+          <Component id="bg" alignment="0" pref="765" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="bg" max="32767" attributes="0"/>
+          <Component id="bg" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -39,9 +39,9 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                           <Component id="title" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -53,28 +53,36 @@
                   <EmptySpace min="-2" pref="201" max="-2" attributes="0"/>
               </Group>
               <Group type="102" alignment="1" attributes="0">
+                  <EmptySpace min="-2" pref="90" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="1" attributes="0">
-                      <Group type="102" attributes="0">
-                          <EmptySpace min="442" pref="533" max="32767" attributes="0"/>
+                      <Group type="102" alignment="1" attributes="0">
+                          <EmptySpace min="0" pref="6" max="32767" attributes="0"/>
+                          <Component id="TotalLbl2" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="newPaymentTxt" min="-2" pref="58" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="TotalLbl1" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="paidTxt" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="TotalLbl3" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="remainingTxt" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="TotalLbl" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
-                          <Component id="totalValueTxt" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="totalValueTxt" min="-2" pref="87" max="-2" attributes="0"/>
                       </Group>
-                      <Group type="102" attributes="0">
-                          <EmptySpace min="-2" pref="90" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" attributes="0">
-                                  <Component id="clientLbl" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                                  <Component id="clientsCmb" max="32767" attributes="0"/>
-                                  <EmptySpace min="-2" pref="69" max="-2" attributes="0"/>
-                                  <Component id="BtnAddProduct" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                                  <Component id="BtnDeleteProduct" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <Component id="jScrollPane1" max="32767" attributes="0"/>
-                          </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="clientLbl" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                          <Component id="clientsCmb" max="32767" attributes="0"/>
+                          <EmptySpace min="-2" pref="69" max="-2" attributes="0"/>
+                          <Component id="BtnAddProduct" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                          <Component id="BtnDeleteProduct" min="-2" max="-2" attributes="0"/>
                       </Group>
+                      <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="100" max="-2" attributes="0"/>
               </Group>
@@ -88,7 +96,7 @@
                   <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="clientLbl" alignment="1" min="-2" pref="28" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
+                      <Group type="103" alignment="0" groupAlignment="3" attributes="0">
                           <Component id="BtnAddProduct" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
                           <Component id="BtnDeleteProduct" alignment="3" min="-2" pref="34" max="-2" attributes="0"/>
                           <Component id="clientsCmb" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
@@ -97,9 +105,19 @@
                   <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                   <Component id="jScrollPane1" pref="190" max="32767" attributes="0"/>
                   <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="TotalLbl" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
-                      <Component id="totalValueTxt" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                          <Component id="TotalLbl2" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
+                          <Component id="newPaymentTxt" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
+                          <Component id="TotalLbl1" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
+                          <Component id="paidTxt" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                          <Component id="TotalLbl3" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
+                          <Component id="remainingTxt" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
+                          <Component id="TotalLbl" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
+                      </Group>
+                      <Component id="totalValueTxt" min="-2" pref="31" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
                   <Component id="btnDataUpdate" min="-2" pref="35" max="-2" attributes="0"/>
@@ -111,7 +129,7 @@
       <SubComponents>
         <Component class="javax.swing.JLabel" name="title">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Subir Nueva Venta."/>
+            <Property name="text" type="java.lang.String" value="Subir Nuevo Apartado."/>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="btnDataUpdate">
@@ -150,9 +168,6 @@
                 </Property>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
                   <Table columnCount="0" rowCount="0"/>
-                </Property>
-                <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
-                  <TableColumnModel selectionModel="0"/>
                 </Property>
                 <Property name="rowHeight" type="int" value="30"/>
                 <Property name="showGrid" type="boolean" value="true"/>
@@ -227,6 +242,44 @@
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
           </AuxValues>
+        </Component>
+        <Component class="javax.swing.JLabel" name="TotalLbl1">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Abonado:"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="paidTxt">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Segoe UI" size="14" style="0"/>
+            </Property>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="TotalLbl2">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Nuevo Abono:"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="newPaymentTxt">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Segoe UI" size="14" style="0"/>
+            </Property>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="TotalLbl3">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Restante:"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="remainingTxt">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Segoe UI" size="14" style="0"/>
+            </Property>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>

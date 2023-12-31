@@ -17,13 +17,12 @@ public class Database {
     public Database() {
         try {
             Class.forName(JDBC_DRIVER);
-            this.connection = DriverManager.getConnection(DB_URL, USER, PASSWORD);
-        } catch (ClassNotFoundException | SQLException ex) {
+        } catch (ClassNotFoundException ex) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public Connection getConnection() {
-        return this.connection;
+    public Connection getConnection() throws SQLException {
+        return this.connection = DriverManager.getConnection(DB_URL, USER, PASSWORD);
     }
 }

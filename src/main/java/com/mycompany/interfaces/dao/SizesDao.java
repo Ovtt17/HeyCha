@@ -1,14 +1,14 @@
 package com.mycompany.interfaces.dao;
 
-import com.mycompany.models.ProductSizes;
+import com.mycompany.models.Size;
 import java.util.List;
 
 public interface SizesDao {
-    boolean record (ProductSizes productSize) throws Exception;
-    boolean modify (ProductSizes productSize) throws Exception;
+    boolean record (Size productSize) throws Exception;
+    boolean modify (Size productSize) throws Exception;
     void deleteAllSizes (int productId) throws Exception;
-    List<ProductSizes> consult(int productId) throws Exception;
-    List<ProductSizes> getProductSizesById(int productId) throws Exception;
-    void delete (ProductSizes productSize) throws Exception;
+    List<Size> consult(int productId) throws Exception;
+    List<Size> getProductSizesById(int productId) throws Exception;
+    void delete (Size productSize) throws Exception;
 
 }

@@ -2,7 +2,7 @@ package com.mycompany.interfaces.dao.implementation;
 
 import com.mycompany.db.Database;
 import com.mycompany.models.Size;
-import com.mycompany.models.Products;
+import com.mycompany.models.Product;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,7 +20,7 @@ import com.mycompany.interfaces.dao.ProductsDao;
 public class ProductsDaoImpl extends Database implements ProductsDao {
 
     @Override
-    public Integer record(Products product) throws Exception {
+    public Integer record(Product product) throws Exception {
         Integer productId = null;
         try (Connection con = this.getConnection()) {
             String query = "call insertProduct(?,?,?,?,?,?,?);";
@@ -44,7 +44,7 @@ public class ProductsDaoImpl extends Database implements ProductsDao {
         return productId;
     }
 
-    private void setProductFields(PreparedStatement st, Products product) throws SQLException {
+    private void setProductFields(PreparedStatement st, Product product) throws SQLException {
         // Asigna los valores para los parámetros de la sentencia SQL
         st.setString(1, product.getName()); // Reemplaza con el método adecuado para obtener el nombre
         st.setFloat(2, product.getPrice());   // Reemplaza con el método adecuado para obtener el precio
@@ -61,7 +61,7 @@ public class ProductsDaoImpl extends Database implements ProductsDao {
     }
 
     @Override
-    public Integer modify(Products product) throws Exception {
+    public Integer modify(Product product) throws Exception {
         Integer productId;
         try (Connection con = this.getConnection()) {
             final PreparedStatement st = con.prepareStatement("call modifyProduct(?, ?, ?, ?, ?, ?, ?, ?);");
@@ -103,8 +103,8 @@ public class ProductsDaoImpl extends Database implements ProductsDao {
     }
 
     @Override
-    public List<Products> consult(String name, String brand, String category) throws Exception {
-        List<Products> list = null;
+    public List<Product> consult(String name, String brand, String category) throws Exception {
+        List<Product> list = null;
         try (Connection con = this.getConnection()) {
             String query = "call consultProducts(?, ?, ?);";
             PreparedStatement st = con.prepareStatement(query);
@@ -116,7 +116,7 @@ public class ProductsDaoImpl extends Database implements ProductsDao {
                 final ResultSet rs = st.executeQuery();
                 try (rs) {
                     while (rs.next()) {
-                        Products product = setProductFieldsToConsult(rs);
+                        Product product = setProductFieldsToConsult(rs);
                         list.add(product);
                     }
                 }
@@ -128,7 +128,7 @@ public class ProductsDaoImpl extends Database implements ProductsDao {
         return list;
     }
 
-    private Products setProductFieldsToConsult(ResultSet rs) throws SQLException {
+    private Product setProductFieldsToConsult(ResultSet rs) throws SQLException {
         Integer id = rs.getInt("ID");
         String name = rs.getString("NOMBRE");
         Float price = rs.getFloat("PRECIO");
@@ -150,13 +150,13 @@ public class ProductsDaoImpl extends Database implements ProductsDao {
         Integer totalExistence = rs.getInt("TOTAL_EXISTENCIA");
         Float totalPrice = rs.getFloat("VALOR_TOTAL");
 
-        return new Products(id, name, price, description, discount, brandId, categoryId, typeId, brandName, categoryName, typeName, brandAvailable, totalExistence, totalPrice);
+        return new Product(id, name, price, description, discount, brandId, categoryId, typeId, brandName, categoryName, typeName, brandAvailable, totalExistence, totalPrice);
 
     }
 
     @Override
-    public Products getProductById(int productId) throws Exception {
-        Products product = null;
+    public Product getProductById(int productId) throws Exception {
+        Product product = null;
 
         try (Connection con = this.getConnection()) {
             String query = "call consultByProductId(?);";

@@ -1,7 +1,8 @@
 package com.mycompany.interfaces.dao.implementation;
 
 import com.mycompany.db.Database;
-import com.mycompany.models.SaleDetail;
+import com.mycompany.interfaces.dao.ReservationDetailsDao;
+import com.mycompany.models.ReservationDetail;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,17 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.mycompany.interfaces.dao.SalesDetailsDao;
 
-public class SalesDetailsDaoImpl extends Database implements SalesDetailsDao {
+public class ReservationDetailsDaoImpl extends Database implements ReservationDetailsDao {
 
     @Override
-    public void record(SaleDetail salesProducts) throws Exception {
+    public void record(ReservationDetail rDetails) throws Exception {
         try (Connection con = this.getConnection()) {
-            String sql = "call insertSalesProducts(?, ?, ?, ?, ?);";
+            String sql = "call insertar_detalles_apartado(?, ?, ?, ?, ?);";
             final PreparedStatement st = con.prepareStatement(sql);
             try (st) {
-                setFieldsToInsert(st, salesProducts);
+                setFieldsToInsert(st, rDetails);
                 st.execute();
             }
         } catch (SQLException e) {
@@ -28,22 +28,21 @@ public class SalesDetailsDaoImpl extends Database implements SalesDetailsDao {
             throw e;
         }
     }
-
-    private void setFieldsToInsert(PreparedStatement st, SaleDetail salesProducts) throws SQLException {
-        st.setInt(1, salesProducts.getSaleId());
-        st.setInt(2, salesProducts.getProductSizeId());
-        st.setFloat(3, salesProducts.getPriceUnity());
-        st.setInt(4, salesProducts.getAmount());
-        st.setFloat(5, salesProducts.getSubtotal());
+    private void setFieldsToInsert(PreparedStatement st, ReservationDetail rDetails) throws SQLException {
+        st.setInt(1, rDetails.getReservationId());
+        st.setInt(2, rDetails.getProductSizeId());
+        st.setFloat(3, rDetails.getPriceUnity());
+        st.setInt(4, rDetails.getAmount());
+        st.setFloat(5, rDetails.getSubtotal());
     }
 
     @Override
-    public void modify(SaleDetail sale) throws Exception {
+    public void modify(ReservationDetail rDetails) throws Exception {
         try (Connection con = this.getConnection()) {
-            String sql = "call modificar_detalles_venta(?, ?, ?, ?, ?);";
+            String sql = "call modificar_detalles_apartado(?, ?, ?, ?, ?);";
             final PreparedStatement ps = con.prepareStatement(sql);
             try (ps) {
-                setSalesFieldsToModify(ps, sale);
+                setSalesFieldsToModify(ps, rDetails);
                 ps.execute();
             }
         } catch (Exception e) {
@@ -51,26 +50,25 @@ public class SalesDetailsDaoImpl extends Database implements SalesDetailsDao {
             throw e;
         }
     }
-
-    private void setSalesFieldsToModify(PreparedStatement ps, SaleDetail sale) throws SQLException {
+    private void setSalesFieldsToModify(PreparedStatement ps, ReservationDetail rDetails) throws SQLException {
         try {
-            ps.setInt(1, sale.getSaleId());
-            ps.setInt(2, sale.getProductSizeId());
-            ps.setFloat(3, sale.getPriceUnity());
-            ps.setInt(4, sale.getAmount());
-            ps.setFloat(5, sale.getSubtotal());
+            ps.setInt(1, rDetails.getReservationId());
+            ps.setInt(2, rDetails.getProductSizeId());
+            ps.setFloat(3, rDetails.getPriceUnity());
+            ps.setInt(4, rDetails.getAmount());
+            ps.setFloat(5, rDetails.getSubtotal());
         } catch (SQLException ex) {
             Logger.getLogger(SalesDetailsDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
-    public void delete(Integer saleId, Integer productSizeId) throws Exception {
+    public void delete(Integer reservationId, Integer productSizeId) throws Exception {
         try (Connection con = this.getConnection()) {
-            String sql = "call deleteSalesProducts(?, ?);";
+            String sql = "call eliminar_producto_de_apartado(?, ?);";
             final PreparedStatement ps = con.prepareStatement(sql);
             try (ps) {
-                ps.setInt(1, saleId);
+                ps.setInt(1, reservationId);
                 ps.setInt(2, productSizeId);
                 ps.execute();
             }
@@ -81,19 +79,24 @@ public class SalesDetailsDaoImpl extends Database implements SalesDetailsDao {
     }
 
     @Override
-    public List<SaleDetail> consult(int saleId) throws Exception {
-        List<SaleDetail> list = null;
+    public void deleteSoldProduct(int reservationId) throws Exception {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public List<ReservationDetail> consult(int reservationId) throws Exception {
+        List<ReservationDetail> list = null;
         try (Connection con = this.getConnection()) {
-            String query = "call consultSalesProducts(?);";
+            String query = "call consultar_detalles_apartado(?);";
             final PreparedStatement st = con.prepareStatement(query);
             try (st) {
-                st.setInt(1, saleId);
+                st.setInt(1, reservationId);
                 list = new ArrayList();
                 final ResultSet rs = st.executeQuery();
                 try (rs) {
                     while (rs.next()) {
-                        SaleDetail salesProducts = setSalesProductsForConsult(rs);
-                        list.add(salesProducts);
+                        ReservationDetail rDetail = setReservationDetailForConsult(rs);
+                        list.add(rDetail);
                     }
                 }
             }
@@ -103,34 +106,29 @@ public class SalesDetailsDaoImpl extends Database implements SalesDetailsDao {
         }
         return list;
     }
-
-    private SaleDetail setSalesProductsForConsult(ResultSet rs) {
-        SaleDetail sp = null;
+    private ReservationDetail setReservationDetailForConsult(ResultSet rs) {
+        ReservationDetail rd = null;
         try {
             Integer id = rs.getInt("id");
             Integer productSizeId = rs.getInt("id_producto_talla");
-            Integer saleId = rs.getInt("id_venta");
+            Integer reservationId = rs.getInt("id_apartado");
             Integer productId = rs.getInt("id_producto");
             String productName = rs.getString("nombre_producto");
             String size = rs.getString("talla");
             Float priceUnity = rs.getFloat("precio_unidad");
             Integer amount = rs.getInt("cantidad");
             Float subtotal = rs.getFloat("subtotal");
-            sp = new SaleDetail(id, productSizeId, saleId, productId, productName, size, priceUnity, amount, subtotal);
+            rd = new ReservationDetail(id, productSizeId, reservationId, productId, productName, size, priceUnity, amount, subtotal);
         } catch (SQLException ex) {
             Logger.getLogger(SalesDetailsDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return sp;
+        return rd;
     }
 
     @Override
-    public void deleteSoldProduct(int saleId) throws Exception {
+    public void deleteAll(int reservationId) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    @Override
-    public void deleteAll(int saleId) {
-        
-    }
-
+    
 }

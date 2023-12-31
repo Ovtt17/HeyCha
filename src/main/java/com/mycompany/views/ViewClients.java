@@ -3,7 +3,7 @@ package com.mycompany.views;
 import com.mycompany.interfaces.exporters.implementation.ExcelExporterImpl;
 import com.mycompany.interfaces.dao.implementation.ClientsDaoImpl;
 import com.mycompany.heycha.Dashboard;
-import com.mycompany.models.Clients;
+import com.mycompany.models.Client;
 import java.awt.Color;
 import java.util.List;
 import java.util.logging.Level;
@@ -16,20 +16,19 @@ import com.mycompany.interfaces.style.IStyleable;
 public class ViewClients extends javax.swing.JPanel implements IStyleable {
 
     boolean lightOrDarkMode;
-    List<Clients> clients;
+    List<Client> clients;
+    ClientsDao dao = new ClientsDaoImpl();
 
     public ViewClients(boolean isDarkModeEnabled) {
         initComponents();
         updateStyles(isDarkModeEnabled);
         loadClients();
     }
-
     @Override
-    public void updateStyles(boolean isDarkModeEnabled) {
+    public void initStyles() {
         JTableClients.getTableHeader().setBackground(new Color(0, 0, 0));
         JTableClients.getTableHeader().setForeground(new Color(255, 255, 255));
         
-        lightOrDarkMode = isDarkModeEnabled;
         title.putClientProperty("FlatLaf.styleClass", "h1");
         title.setForeground(Color.black);
         clientSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del cliente a buscar.");
@@ -39,7 +38,13 @@ public class ViewClients extends javax.swing.JPanel implements IStyleable {
         btnEdit.putClientProperty("JButton.buttonType", "roundRect");
         btnCleanField.putClientProperty("JButton.buttonType", "roundRect");
         btnExport.putClientProperty("JButton.buttonType", "roundRect");
+    }
+    
 
+    @Override
+    public void updateStyles(boolean isDarkModeEnabled) {
+        lightOrDarkMode = isDarkModeEnabled;
+        
         if (isDarkModeEnabled) {
             title.setForeground(Color.white);
             background_clients.putClientProperty("FlatLaf.style", "background: #172030");
@@ -60,7 +65,7 @@ public class ViewClients extends javax.swing.JPanel implements IStyleable {
     }
 
     private void loadClients() {
-        ClientsDao dao = new ClientsDaoImpl();
+        
         DefaultTableModel model = (DefaultTableModel) JTableClients.getModel();
         model.setRowCount(0);
         String nameToFind = "";
@@ -254,7 +259,7 @@ public class ViewClients extends javax.swing.JPanel implements IStyleable {
         DefaultTableModel model = (DefaultTableModel) JTableClients.getModel();
         model.setRowCount(0);
         String nameToFind = clientSearch.getText().trim();
-        for (Clients c : clients) {
+        for (Client c : clients) {
             if (c.getName().toLowerCase().contains(nameToFind)) {
                 model.addRow(new Object[]{c.getId(), c.getName(), c.getCellphone(), c.getCity(), c.getDirection()});
             }
@@ -270,7 +275,7 @@ public class ViewClients extends javax.swing.JPanel implements IStyleable {
         if (JTableClients.getSelectedRow() > -1) {
             try {
                 int productId = (int) JTableClients.getValueAt(JTableClients.getSelectedRow(), 0);
-                ClientsDao dao = new ClientsDaoImpl();
+                
                 Dashboard.ShowPanel(new UpClients(dao.getClientById(productId), lightOrDarkMode));
             } catch (Exception e) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -295,7 +300,6 @@ public class ViewClients extends javax.swing.JPanel implements IStyleable {
 
         int confirmed = javax.swing.JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar estos datos? \n", "CONFIMARCIÓN", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
         if (confirmed == javax.swing.JOptionPane.YES_OPTION) {
-            ClientsDao dao = new ClientsDaoImpl();
 
             int[] selectedRows = JTableClients.getSelectedRows();
             int continueDeleting;
