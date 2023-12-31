@@ -134,7 +134,6 @@ public class UpReservation extends javax.swing.JPanel implements IStyleable{
         newModel.addColumn("Precio Unitario");
         newModel.addColumn("Cantidad");
         newModel.addColumn("Precio Total");
-
     }
 
     /**
@@ -452,7 +451,7 @@ public class UpReservation extends javax.swing.JPanel implements IStyleable{
                         && p.getProductName().equals(productName)
                         && p.getSizeName().equals(sizeName)
                         && p.getPriceUnity().equals(price)
-                        && p.getAmount() == amount
+                        && p.getAmount().equals(amount)
                     );
 
                     model.removeRow(selectedRow);

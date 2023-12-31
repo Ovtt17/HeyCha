@@ -38,6 +38,8 @@ public class ViewClients extends javax.swing.JPanel implements IStyleable {
         btnEdit.putClientProperty("JButton.buttonType", "roundRect");
         btnCleanField.putClientProperty("JButton.buttonType", "roundRect");
         btnExport.putClientProperty("JButton.buttonType", "roundRect");
+        JTableClients.getTableHeader().setBackground(new Color(0, 0, 0));
+        JTableClients.getTableHeader().setForeground(new Color(255, 255, 255));
     }
     
 
