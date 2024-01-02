@@ -165,7 +165,11 @@
                     <Property name="toolTipText" type="java.lang.String" value=""/>
                     <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                       <TableColumnModel selectionModel="2">
+<<<<<<< HEAD
                         <Column maxWidth="100" minWidth="50" prefWidth="60" resizable="true">
+=======
+                        <Column maxWidth="100" minWidth="35" prefWidth="45" resizable="true">
+>>>>>>> 5f6eef036bfab1666c8bdce61b28de687f7e0919
                           <Title/>
                           <Editor/>
                           <Renderer/>
@@ -234,9 +238,12 @@
                   <Color blue="ff" green="ff" red="ff" type="rgb"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Limpiar"/>
+<<<<<<< HEAD
                 <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
                   <Color id="Hand Cursor"/>
                 </Property>
+=======
+>>>>>>> 5f6eef036bfab1666c8bdce61b28de687f7e0919
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCleanActionPerformed"/>
@@ -254,9 +261,12 @@
                   <Color blue="ff" green="ff" red="ff" type="rgb"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Editar"/>
+<<<<<<< HEAD
                 <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
                   <Color id="Hand Cursor"/>
                 </Property>
+=======
+>>>>>>> 5f6eef036bfab1666c8bdce61b28de687f7e0919
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnEditActionPerformed"/>
@@ -274,9 +284,12 @@
                   <Color blue="ff" green="ff" red="ff" type="rgb"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Borrar"/>
+<<<<<<< HEAD
                 <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
                   <Color id="Hand Cursor"/>
                 </Property>
+=======
+>>>>>>> 5f6eef036bfab1666c8bdce61b28de687f7e0919
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnDeleteActionPerformed"/>

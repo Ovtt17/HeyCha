@@ -45,8 +45,11 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
         newbrandTxt.putClientProperty("JTextField.placeholderText", "Ingrese el nombre de la nueva marca.");
 
         btnClean.putClientProperty("JButton.buttonType", "roundRect");
+<<<<<<< HEAD
         btnEdit.putClientProperty("JButton.buttonType", "roundRect");
         btnDelete.putClientProperty("JButton.buttonType", "roundRect");
+=======
+>>>>>>> 5f6eef036bfab1666c8bdce61b28de687f7e0919
         TableBrand.getTableHeader().setBackground(new Color(0, 0, 0));
         TableBrand.getTableHeader().setForeground(new Color(255, 255, 255));
     }
@@ -107,8 +110,13 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
         jScrollPane1.setViewportView(TableBrand);
         TableBrand.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         if (TableBrand.getColumnModel().getColumnCount() > 0) {
+<<<<<<< HEAD
             TableBrand.getColumnModel().getColumn(0).setMinWidth(50);
             TableBrand.getColumnModel().getColumn(0).setPreferredWidth(60);
+=======
+            TableBrand.getColumnModel().getColumn(0).setMinWidth(35);
+            TableBrand.getColumnModel().getColumn(0).setPreferredWidth(45);
+>>>>>>> 5f6eef036bfab1666c8bdce61b28de687f7e0919
             TableBrand.getColumnModel().getColumn(0).setMaxWidth(100);
         }
 
@@ -131,7 +139,10 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
         btnClean.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnClean.setForeground(new java.awt.Color(255, 255, 255));
         btnClean.setText("Limpiar");
+<<<<<<< HEAD
         btnClean.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+=======
+>>>>>>> 5f6eef036bfab1666c8bdce61b28de687f7e0919
         btnClean.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCleanActionPerformed(evt);
@@ -142,7 +153,10 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
         btnEdit.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnEdit.setForeground(new java.awt.Color(255, 255, 255));
         btnEdit.setText("Editar");
+<<<<<<< HEAD
         btnEdit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+=======
+>>>>>>> 5f6eef036bfab1666c8bdce61b28de687f7e0919
         btnEdit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEditActionPerformed(evt);
@@ -153,7 +167,10 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
         btnDelete.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnDelete.setForeground(new java.awt.Color(255, 255, 255));
         btnDelete.setText("Borrar");
+<<<<<<< HEAD
         btnDelete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+=======
+>>>>>>> 5f6eef036bfab1666c8bdce61b28de687f7e0919
         btnDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDeleteActionPerformed(evt);
