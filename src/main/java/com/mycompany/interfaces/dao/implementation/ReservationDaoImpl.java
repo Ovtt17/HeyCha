@@ -58,6 +58,9 @@ public class ReservationDaoImpl extends Database implements ReservationDao {
                 ps.executeUpdate();
                 reservationId = reservation.getId();
             }
+        } catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de modificación en la base de datos", e);
+            throw e;
         }
         return reservationId;
     }
@@ -72,7 +75,7 @@ public class ReservationDaoImpl extends Database implements ReservationDao {
                 ps.execute();
             }
         } catch (SQLException e) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de insercion en la base de datos", e);
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de eliminación en la base de datos", e);
             throw e;
         }
     }
@@ -129,8 +132,8 @@ public class ReservationDaoImpl extends Database implements ReservationDao {
                     }
                 }
             }
-        } catch (Exception e) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de consulta en la base de datos", e);
+        } catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de obtener los apartados por id en la base de datos", e);
             throw e;
         }
         return reservation;

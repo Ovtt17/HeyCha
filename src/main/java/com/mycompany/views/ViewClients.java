@@ -31,7 +31,6 @@ public class ViewClients extends javax.swing.JPanel implements IStyleable {
         JTableClients.getTableHeader().setForeground(new Color(255, 255, 255));
         
         title.putClientProperty("FlatLaf.styleClass", "h1");
-        title.setForeground(Color.black);
         clientSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del cliente a buscar.");
 
         btnAdd.putClientProperty("JButton.buttonType", "roundRect");

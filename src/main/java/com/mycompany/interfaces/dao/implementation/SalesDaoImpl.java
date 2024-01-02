@@ -56,6 +56,9 @@ public class SalesDaoImpl extends Database implements SalesDao {
                 ps.executeUpdate();
                 saleId = sale.getId();
             }
+        }catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de modificación en la base de datos", e);
+            throw e;
         }
         return saleId;
     }
@@ -127,8 +130,8 @@ public class SalesDaoImpl extends Database implements SalesDao {
                     }
                 }
             }
-        } catch (Exception e) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de consulta en la base de datos", e);
+        } catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de consulta por id en la base de datos", e);
             throw e;
         }
         return sale;
