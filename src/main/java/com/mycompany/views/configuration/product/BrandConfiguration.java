@@ -107,8 +107,8 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
         jScrollPane1.setViewportView(TableBrand);
         TableBrand.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         if (TableBrand.getColumnModel().getColumnCount() > 0) {
-            TableBrand.getColumnModel().getColumn(0).setMinWidth(35);
-            TableBrand.getColumnModel().getColumn(0).setPreferredWidth(45);
+            TableBrand.getColumnModel().getColumn(0).setMinWidth(50);
+            TableBrand.getColumnModel().getColumn(0).setPreferredWidth(60);
             TableBrand.getColumnModel().getColumn(0).setMaxWidth(100);
         }
 
