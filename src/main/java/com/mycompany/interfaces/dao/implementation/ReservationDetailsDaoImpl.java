@@ -24,7 +24,7 @@ public class ReservationDetailsDaoImpl extends Database implements ReservationDe
                 st.execute();
             }
         } catch (SQLException e) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación en la base de datos", e);
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de inserción en la base de datos", e);
             throw e;
         }
     }
@@ -45,8 +45,8 @@ public class ReservationDetailsDaoImpl extends Database implements ReservationDe
                 setSalesFieldsToModify(ps, rDetails);
                 ps.execute();
             }
-        } catch (Exception e) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación en la base de datos", e);
+        } catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de modificación en la base de datos", e);
             throw e;
         }
     }
@@ -73,7 +73,7 @@ public class ReservationDetailsDaoImpl extends Database implements ReservationDe
                 ps.execute();
             }
         } catch (SQLException e) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de insercion en la base de datos", e);
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de eliminación en la base de datos", e);
             throw e;
         }
     }
@@ -101,7 +101,7 @@ public class ReservationDetailsDaoImpl extends Database implements ReservationDe
                 }
             }
         } catch (SQLException e) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de insercion en la base de datos", e);
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de consulta en la base de datos", e);
             throw e;
         }
         return list;
