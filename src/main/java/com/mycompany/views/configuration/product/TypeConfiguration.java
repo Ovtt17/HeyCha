@@ -1,26 +1,28 @@
 package com.mycompany.views.configuration.product;
 
-import com.mycompany.interfaces.dao.BrandDao;
-import com.mycompany.interfaces.dao.implementation.BrandDaoImpl;
+import com.mycompany.interfaces.dao.TypeDao;
+import com.mycompany.interfaces.dao.implementation.TypeDaoImpl;
 import com.mycompany.interfaces.style.IStyleable;
-import com.mycompany.models.Brand;
+import com.mycompany.models.Category;
+import com.mycompany.models.Type;
 import java.awt.Color;
+import java.awt.event.ItemListener;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.table.DefaultTableModel;
 
-public class BrandConfiguration extends javax.swing.JPanel implements IStyleable {
+public class TypeConfiguration extends javax.swing.JPanel implements IStyleable {
 
-    BrandDao brandDao = new BrandDaoImpl();
+    TypeDao typeDao = new TypeDaoImpl();
+    Type typeEditable;
     boolean isEditable = false;
-    Brand brandEditable;
 
-    BrandConfiguration(boolean lightOrDarkMode) {
+    TypeConfiguration(boolean lightOrDarkMode) {
         initComponents();
         updateStyles(lightOrDarkMode);
         initStyles();
-        loadBrand();
+        loadCombobox();
     }
 
     @Override
@@ -29,7 +31,8 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
             bg.putClientProperty("FlatLaf.style", "background: #172030");
             content.putClientProperty("FlatLaf.style", "background: #172030");
             contentTitleLbl.setForeground(Color.white);
-            newBrandLbl.setForeground(Color.white);
+            newTypeLbl.setForeground(Color.white);
+            categoryLbl.setForeground(Color.white);
 
             DataUpdateBtn.putClientProperty("FlatLaf.style", "background: #0c9294");
             btnClean.putClientProperty("FlatLaf.style", "background: #0c9294");
@@ -39,7 +42,8 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
             bg.putClientProperty("FlatLaf.style", "background: #FFFFFF");
             content.putClientProperty("FlatLaf.style", "background: #FFFFFF");
             contentTitleLbl.setForeground(Color.black);
-            newBrandLbl.setForeground(Color.black);
+            newTypeLbl.setForeground(Color.black);
+            categoryLbl.setForeground(Color.black);
 
             DataUpdateBtn.putClientProperty("FlatLaf.style", "background: #125AAD");
             btnClean.putClientProperty("FlatLaf.style", "background: #125AAD");
@@ -51,14 +55,41 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
     @Override
     public void initStyles() {
         contentTitleLbl.putClientProperty("FlatLaf.styleClass", "h2");
-        newBrandLbl.putClientProperty("FlatLaf.styleClass", "h2");
-        newbrandTxt.putClientProperty("JTextField.placeholderText", "Ingrese el nombre de la nueva marca.");
+        newTypeLbl.putClientProperty("FlatLaf.styleClass", "h2");
+        newTypeTxt.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del nuevo tipo.");
 
         btnClean.putClientProperty("JButton.buttonType", "roundRect");
         btnEdit.putClientProperty("JButton.buttonType", "roundRect");
         btnDelete.putClientProperty("JButton.buttonType", "roundRect");
-        TableBrand.getTableHeader().setBackground(new Color(0, 0, 0));
-        TableBrand.getTableHeader().setForeground(new Color(255, 255, 255));
+        TableType.getTableHeader().setBackground(new Color(0, 0, 0));
+        TableType.getTableHeader().setForeground(new Color(255, 255, 255));
+    }
+
+    private void loadCombobox() {
+        try {
+            List<Category> categoryList = typeDao.loadCategories();
+            ItemListener[] itemListeners = cmbCategory.getListeners(ItemListener.class);
+
+            removeEventListener(cmbCategory, itemListeners);
+            categoryList.forEach(c -> cmbCategory.addItem(c));
+            addEventListener(cmbCategory, itemListeners);
+
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void removeEventListener(JComboBox<Category> combobox, ItemListener[] itemListeners) {
+        for (ItemListener itemListener : itemListeners) {
+            combobox.removeItemListener(itemListener);
+        }
+    }
+
+    private void addEventListener(JComboBox<Category> combobox, ItemListener[] itemListeners) {
+        combobox.setSelectedIndex(-1);
+        for (ItemListener itemListener : itemListeners) {
+            combobox.addItemListener(itemListener);
+        }
     }
 
     /**
@@ -71,28 +102,29 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
     private void initComponents() {
 
         bg = new javax.swing.JPanel();
+        contentTitleLbl = new javax.swing.JLabel();
         content = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        TableBrand = new javax.swing.JTable();
-        newBrandLbl = new javax.swing.JLabel();
-        newbrandTxt = new javax.swing.JTextField();
+        TableType = new javax.swing.JTable();
+        newTypeLbl = new javax.swing.JLabel();
+        newTypeTxt = new javax.swing.JTextField();
         DataUpdateBtn = new javax.swing.JButton();
         btnClean = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
-        contentTitleLbl = new javax.swing.JLabel();
-
-        setBackground(new java.awt.Color(255, 255, 255));
-        setPreferredSize(new java.awt.Dimension(755, 441));
+        categoryLbl = new javax.swing.JLabel();
+        cmbCategory = new javax.swing.JComboBox<>();
 
         bg.setBackground(new java.awt.Color(255, 255, 255));
+
+        contentTitleLbl.setText("Configuración de tipos");
 
         content.setBackground(new java.awt.Color(255, 255, 255));
 
         jScrollPane1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        TableBrand.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        TableBrand.setModel(new javax.swing.table.DefaultTableModel(
+        TableType.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        TableType.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -108,23 +140,18 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
                 return canEdit [columnIndex];
             }
         });
-        TableBrand.setToolTipText("");
-        TableBrand.setColumnSelectionAllowed(true);
-        TableBrand.setGridColor(new java.awt.Color(153, 153, 153));
-        TableBrand.setRowHeight(30);
-        TableBrand.setShowGrid(true);
-        TableBrand.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(TableBrand);
-        TableBrand.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        if (TableBrand.getColumnModel().getColumnCount() > 0) {
-            TableBrand.getColumnModel().getColumn(0).setMinWidth(50);
-            TableBrand.getColumnModel().getColumn(0).setPreferredWidth(60);
-            TableBrand.getColumnModel().getColumn(0).setMaxWidth(100);
-        }
+        TableType.setToolTipText("");
+        TableType.setColumnSelectionAllowed(true);
+        TableType.setGridColor(new java.awt.Color(153, 153, 153));
+        TableType.setRowHeight(30);
+        TableType.setShowGrid(true);
+        TableType.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(TableType);
+        TableType.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 
-        newBrandLbl.setText("Nueva Marca:");
+        newTypeLbl.setText("Nuevo Tipo:");
 
-        newbrandTxt.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        newTypeTxt.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         DataUpdateBtn.setBackground(new java.awt.Color(18, 90, 173));
         DataUpdateBtn.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -170,77 +197,96 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
             }
         });
 
+        categoryLbl.setText("Categoria Correspondiente:");
+
+        cmbCategory.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbCategoryItemStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout contentLayout = new javax.swing.GroupLayout(content);
         content.setLayout(contentLayout);
         contentLayout.setHorizontalGroup(
             contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(contentLayout.createSequentialGroup()
-                .addGap(54, 54, 54)
-                .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, contentLayout.createSequentialGroup()
+                .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(contentLayout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addGap(13, 13, 13)
-                        .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(104, 104, 104)
+                        .addComponent(DataUpdateBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 290, Short.MAX_VALUE))
                     .addGroup(contentLayout.createSequentialGroup()
-                        .addComponent(newBrandLbl)
-                        .addGap(18, 18, 18)
-                        .addComponent(newbrandTxt)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnClean)
-                        .addGap(85, 85, 85)))
-                .addContainerGap())
-            .addGroup(contentLayout.createSequentialGroup()
-                .addGap(106, 106, 106)
-                .addComponent(DataUpdateBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(121, 121, 121))
+                        .addGap(34, 34, 34)
+                        .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(contentLayout.createSequentialGroup()
+                                .addComponent(newTypeLbl)
+                                .addGap(18, 18, 18)
+                                .addComponent(newTypeTxt, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnClean, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(contentLayout.createSequentialGroup()
+                                .addComponent(categoryLbl)
+                                .addGap(18, 18, 18)
+                                .addComponent(cmbCategory, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnDelete))
+                .addGap(26, 26, 26))
         );
         contentLayout.setVerticalGroup(
             contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, contentLayout.createSequentialGroup()
-                .addGap(12, 12, 12)
+                .addGap(25, 25, 25)
                 .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
                     .addGroup(contentLayout.createSequentialGroup()
-                        .addGap(47, 47, 47)
+                        .addGap(9, 9, 9)
+                        .addComponent(categoryLbl))
+                    .addComponent(cmbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE)
+                    .addGroup(contentLayout.createSequentialGroup()
+                        .addGap(34, 34, 34)
                         .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(25, 25, 25)
                 .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnClean, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(newbrandTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(newBrandLbl)))
-                .addGap(54, 54, 54)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(newTypeTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(newTypeLbl))
+                    .addComponent(btnClean, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addComponent(DataUpdateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(25, 25, 25))
+                .addGap(19, 19, 19))
         );
-
-        contentTitleLbl.setText("Configuración de marcas");
 
         javax.swing.GroupLayout bgLayout = new javax.swing.GroupLayout(bg);
         bg.setLayout(bgLayout);
         bgLayout.setHorizontalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(bgLayout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addComponent(contentTitleLbl, javax.swing.GroupLayout.DEFAULT_SIZE, 735, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(bgLayout.createSequentialGroup()
-                .addGap(118, 118, 118)
-                .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(120, 120, 120))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bgLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(contentTitleLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(628, 628, 628))
+            .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(bgLayout.createSequentialGroup()
+                    .addGap(144, 144, 144)
+                    .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGap(107, 107, 107)))
         );
         bgLayout.setVerticalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bgLayout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(contentTitleLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(75, 75, 75))
+                .addGap(16, 16, 16)
+                .addComponent(contentTitleLbl)
+                .addContainerGap(427, Short.MAX_VALUE))
+            .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(bgLayout.createSequentialGroup()
+                    .addGap(41, 41, 41)
+                    .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGap(18, 18, 18)))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -255,34 +301,27 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void loadBrand() {
-        try {
-            DefaultTableModel tableModel = (DefaultTableModel) TableBrand.getModel();
-            tableModel.setRowCount(0);
-            List<Brand> brandList = brandDao.consult();
-            brandList.stream().forEach(b -> tableModel.addRow(new Object[]{b.getId(), b.getName()}));
-        } catch (Exception ex) {
-            Logger.getLogger(BrandConfiguration.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
     private void DataUpdateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DataUpdateBtnActionPerformed
         upData();
     }//GEN-LAST:event_DataUpdateBtnActionPerformed
     private void upData() {
         try {
-            String name = newbrandTxt.getText().trim();
+            String name = newTypeTxt.getText().trim();
             if (name.isEmpty()) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Introduzca el nombre de la nueva marca. \n", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
-                newbrandTxt.requestFocus();
+                newTypeTxt.requestFocus();
                 return;
             }
 
-            Brand brand = isEditable ? brandEditable : new Brand();
-            brand.setName(name);
+            Type type = isEditable ? typeEditable : new Type();
+            Category category = (Category) cmbCategory.getSelectedItem();
+            type.setName(name);
+            type.setCategoryId(category.getId());
+
             if (isEditable) {
-                brandDao.modify(brand);
+                typeDao.modify(type);
             } else {
-                brandDao.record(brand);
+                typeDao.record(type);
             }
 
             String succecssMsg = isEditable ? "modificado" : "registrado";
@@ -290,76 +329,92 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
             if (!isEditable) {
                 cleanFields();
             }
-            loadBrand();
+            loadTypeByCategorySelected();
         } catch (Exception ex) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + ex.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }
-
-    private void cleanFields() {
-        isEditable = false;
-        newbrandTxt.setText("");
-        newBrandLbl.setText("Nueva Marca:");
-    }
-
-
     private void btnCleanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCleanActionPerformed
         cleanFields();
     }//GEN-LAST:event_btnCleanActionPerformed
-
+    private void cleanFields() {
+        isEditable = false;
+        newTypeTxt.setText("");
+        DataUpdateBtn.setText("Subir");
+        newTypeLbl.setText("Nuevo Tipo:");
+    }
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-        setEditableFields();
+        setEditableType();
     }//GEN-LAST:event_btnEditActionPerformed
-    private void setEditableFields() {
-        DefaultTableModel tableModel = (DefaultTableModel) TableBrand.getModel();
 
-        if (TableBrand.getSelectedRow() == -1) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar una marca a editar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+    private void setEditableType() {
+        DefaultTableModel tableModel = (DefaultTableModel) TableType.getModel();
+        if (TableType.getSelectedRow() == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un tipo a editar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
         } else {
             isEditable = true;
-            newBrandLbl.setText("Editar Marca:");
-            Integer id = (Integer) tableModel.getValueAt(TableBrand.getSelectedRow(), 0);
-            String name = (String) tableModel.getValueAt(TableBrand.getSelectedRow(), 1);
-            brandEditable = new Brand(id, name);
-            newbrandTxt.setText(name);
+            newTypeLbl.setText("Editar Tipo:");
+            DataUpdateBtn.setText("Editar");
+            Integer id = (Integer) tableModel.getValueAt(TableType.getSelectedRow(), 0);
+            String name = (String) tableModel.getValueAt(TableType.getSelectedRow(), 1);
+            typeEditable = new Type(id, name);
+            newTypeTxt.setText(name);
         }
-
     }
+
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        deleteBrand();
-        loadBrand();
+        deleteType();
+        cleanFields();
+        loadTypeByCategorySelected();
     }//GEN-LAST:event_btnDeleteActionPerformed
-    private void deleteBrand() {
-        DefaultTableModel tableModel = (DefaultTableModel) TableBrand.getModel();
-        if (TableBrand.getSelectedRow() == -1) {
+    private void deleteType() {
+        DefaultTableModel tableModel = (DefaultTableModel) TableType.getModel();
+        if (TableType.getSelectedRow() == -1) {
             javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar una marca a eliminar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         int confirmed = javax.swing.JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar estos datos? \n", "CONFIMARCIÓN", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
         if (confirmed == javax.swing.JOptionPane.YES_OPTION) {
-            Integer id = (Integer) tableModel.getValueAt(TableBrand.getSelectedRow(), 0);
-            String name = (String) tableModel.getValueAt(TableBrand.getSelectedRow(), 1);
+            Integer id = (Integer) tableModel.getValueAt(TableType.getSelectedRow(), 0);
+            String name = (String) tableModel.getValueAt(TableType.getSelectedRow(), 1);
             try {
-                brandDao.delete(new Brand(id, name));
+                typeDao.delete(new Type(id, name));
             } catch (Exception ex) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + ex.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
         }
-
     }
+    private void cmbCategoryItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbCategoryItemStateChanged
+        loadTypeByCategorySelected();
+    }//GEN-LAST:event_cmbCategoryItemStateChanged
+
+    private void loadTypeByCategorySelected() {
+        try {
+            DefaultTableModel tableModel = (DefaultTableModel) TableType.getModel();
+            tableModel.setRowCount(0);
+            Category category = (Category) cmbCategory.getSelectedItem();
+            List<Type> typeList = typeDao.consultByCategory(category);
+            typeList.stream().forEach(t -> tableModel.addRow(new Object[]{t.getId(), t.getName()}));
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton DataUpdateBtn;
-    private javax.swing.JTable TableBrand;
+    private javax.swing.JTable TableType;
     private javax.swing.JPanel bg;
     private javax.swing.JButton btnClean;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
+    private javax.swing.JLabel categoryLbl;
+    private javax.swing.JComboBox<Category> cmbCategory;
     private javax.swing.JPanel content;
     private javax.swing.JLabel contentTitleLbl;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JLabel newBrandLbl;
-    private javax.swing.JTextField newbrandTxt;
+    private javax.swing.JLabel newTypeLbl;
+    private javax.swing.JTextField newTypeTxt;
     // End of variables declaration//GEN-END:variables
 
 }

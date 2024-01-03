@@ -8,20 +8,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
-public class Type {
+public class Category {
     Integer id;
     String name;
-    Integer categoryId;
 
-    public Type(Integer id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-    
-    
-    
     @Override
     public String toString() {
-        return this.name;
+        return name;
     }
+    
 }

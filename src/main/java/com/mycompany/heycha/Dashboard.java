@@ -66,6 +66,7 @@ public class Dashboard extends javax.swing.JFrame {
             btnClients.putClientProperty("FlatLaf.style", "background: #26354f");
             btnSales.putClientProperty("FlatLaf.style", "background: #26354f");
             btnReserved.putClientProperty("FlatLaf.style", "background: #26354f");
+            btnProductConfiguration.putClientProperty("FlatLaf.style", "background: #26354f");
         } else {
             FlatCyanLightIJTheme.setup();
             ModeBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon-sun.png")));
@@ -79,6 +80,7 @@ public class Dashboard extends javax.swing.JFrame {
             btnClients.putClientProperty("FlatLaf.style", "background: #1565C0");
             btnSales.putClientProperty("FlatLaf.style", "background: #1565C0");
             btnReserved.putClientProperty("FlatLaf.style", "background: #1565C0");
+            btnProductConfiguration.putClientProperty("FlatLaf.style", "background: #1565C0");
         }
 
         // Actualiza los estilos de los paneles

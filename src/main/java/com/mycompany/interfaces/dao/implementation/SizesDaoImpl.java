@@ -104,7 +104,7 @@ public class SizesDaoImpl extends Database implements SizesDao {
                 }
             }
         } catch (SQLException e) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de insercion en la base de datos", e);
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de consulta en la base de datos", e);
             throw e;
         }
         return list;
@@ -130,7 +130,7 @@ public class SizesDaoImpl extends Database implements SizesDao {
                 st.executeUpdate();
             }
         } catch (Exception e) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de insercion en la base de datos", e);
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de eliminacion en la base de datos", e);
             throw e;
         }
 
