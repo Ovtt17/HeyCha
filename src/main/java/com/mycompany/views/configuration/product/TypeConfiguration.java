@@ -30,7 +30,6 @@ public class TypeConfiguration extends javax.swing.JPanel implements IStyleable 
         if (isDarkModeEnabled) {
             bg.putClientProperty("FlatLaf.style", "background: #172030");
             content.putClientProperty("FlatLaf.style", "background: #172030");
-            contentTitleLbl.setForeground(Color.white);
             newTypeLbl.setForeground(Color.white);
             categoryLbl.setForeground(Color.white);
 
@@ -41,7 +40,6 @@ public class TypeConfiguration extends javax.swing.JPanel implements IStyleable 
         } else {
             bg.putClientProperty("FlatLaf.style", "background: #FFFFFF");
             content.putClientProperty("FlatLaf.style", "background: #FFFFFF");
-            contentTitleLbl.setForeground(Color.black);
             newTypeLbl.setForeground(Color.black);
             categoryLbl.setForeground(Color.black);
 
@@ -54,7 +52,6 @@ public class TypeConfiguration extends javax.swing.JPanel implements IStyleable 
 
     @Override
     public void initStyles() {
-        contentTitleLbl.putClientProperty("FlatLaf.styleClass", "h2");
         newTypeLbl.putClientProperty("FlatLaf.styleClass", "h2");
         newTypeTxt.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del nuevo tipo.");
 
@@ -102,7 +99,6 @@ public class TypeConfiguration extends javax.swing.JPanel implements IStyleable 
     private void initComponents() {
 
         bg = new javax.swing.JPanel();
-        contentTitleLbl = new javax.swing.JLabel();
         content = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         TableType = new javax.swing.JTable();
@@ -116,8 +112,6 @@ public class TypeConfiguration extends javax.swing.JPanel implements IStyleable 
         cmbCategory = new javax.swing.JComboBox<>();
 
         bg.setBackground(new java.awt.Color(255, 255, 255));
-
-        contentTitleLbl.setText("Configuración de tipos");
 
         content.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -213,21 +207,21 @@ public class TypeConfiguration extends javax.swing.JPanel implements IStyleable 
                 .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(contentLayout.createSequentialGroup()
                         .addGap(104, 104, 104)
-                        .addComponent(DataUpdateBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 290, Short.MAX_VALUE))
+                        .addComponent(DataUpdateBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(contentLayout.createSequentialGroup()
                         .addGap(34, 34, 34)
                         .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(contentLayout.createSequentialGroup()
                                 .addComponent(newTypeLbl)
                                 .addGap(18, 18, 18)
-                                .addComponent(newTypeTxt, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE)
+                                .addComponent(newTypeTxt)
                                 .addGap(18, 18, 18)
                                 .addComponent(btnClean, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(contentLayout.createSequentialGroup()
                                 .addComponent(categoryLbl)
                                 .addGap(18, 18, 18)
                                 .addComponent(cmbCategory, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -245,7 +239,7 @@ public class TypeConfiguration extends javax.swing.JPanel implements IStyleable 
                     .addComponent(cmbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
                     .addGroup(contentLayout.createSequentialGroup()
                         .addGap(34, 34, 34)
                         .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -266,27 +260,17 @@ public class TypeConfiguration extends javax.swing.JPanel implements IStyleable 
         bg.setLayout(bgLayout);
         bgLayout.setHorizontalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bgLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(contentTitleLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(628, 628, 628))
-            .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(bgLayout.createSequentialGroup()
-                    .addGap(144, 144, 144)
-                    .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGap(107, 107, 107)))
+            .addGroup(bgLayout.createSequentialGroup()
+                .addGap(101, 101, 101)
+                .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(107, 107, 107))
         );
         bgLayout.setVerticalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bgLayout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(contentTitleLbl)
-                .addContainerGap(427, Short.MAX_VALUE))
-            .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(bgLayout.createSequentialGroup()
-                    .addGap(41, 41, 41)
-                    .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGap(18, 18, 18)))
+                .addGap(30, 30, 30)
+                .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -370,7 +354,7 @@ public class TypeConfiguration extends javax.swing.JPanel implements IStyleable 
     private void deleteType() {
         DefaultTableModel tableModel = (DefaultTableModel) TableType.getModel();
         if (TableType.getSelectedRow() == -1) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar una marca a eliminar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un tipo a eliminar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         int confirmed = javax.swing.JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar estos datos? \n", "CONFIMARCIÓN", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
@@ -411,7 +395,6 @@ public class TypeConfiguration extends javax.swing.JPanel implements IStyleable 
     private javax.swing.JLabel categoryLbl;
     private javax.swing.JComboBox<Category> cmbCategory;
     private javax.swing.JPanel content;
-    private javax.swing.JLabel contentTitleLbl;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel newTypeLbl;
     private javax.swing.JTextField newTypeTxt;

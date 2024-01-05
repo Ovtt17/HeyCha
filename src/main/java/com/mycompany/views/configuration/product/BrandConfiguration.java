@@ -28,7 +28,6 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
         if (isDarkModeEnabled) {
             bg.putClientProperty("FlatLaf.style", "background: #172030");
             content.putClientProperty("FlatLaf.style", "background: #172030");
-            contentTitleLbl.setForeground(Color.white);
             newBrandLbl.setForeground(Color.white);
 
             DataUpdateBtn.putClientProperty("FlatLaf.style", "background: #0c9294");
@@ -38,7 +37,6 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
         } else {
             bg.putClientProperty("FlatLaf.style", "background: #FFFFFF");
             content.putClientProperty("FlatLaf.style", "background: #FFFFFF");
-            contentTitleLbl.setForeground(Color.black);
             newBrandLbl.setForeground(Color.black);
 
             DataUpdateBtn.putClientProperty("FlatLaf.style", "background: #125AAD");
@@ -50,7 +48,6 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
 
     @Override
     public void initStyles() {
-        contentTitleLbl.putClientProperty("FlatLaf.styleClass", "h2");
         newBrandLbl.putClientProperty("FlatLaf.styleClass", "h2");
         newbrandTxt.putClientProperty("JTextField.placeholderText", "Ingrese el nombre de la nueva marca.");
 
@@ -80,7 +77,6 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
         btnClean = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
-        contentTitleLbl = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setPreferredSize(new java.awt.Dimension(755, 441));
@@ -186,7 +182,7 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
                     .addGroup(contentLayout.createSequentialGroup()
                         .addComponent(newBrandLbl)
                         .addGap(18, 18, 18)
-                        .addComponent(newbrandTxt)
+                        .addComponent(newbrandTxt, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
                         .addComponent(btnClean)
                         .addGap(85, 85, 85)))
@@ -201,7 +197,7 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, contentLayout.createSequentialGroup()
                 .addGap(12, 12, 12)
                 .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)
                     .addGroup(contentLayout.createSequentialGroup()
                         .addGap(47, 47, 47)
                         .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -218,29 +214,21 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
                 .addGap(25, 25, 25))
         );
 
-        contentTitleLbl.setText("Configuración de marcas");
-
         javax.swing.GroupLayout bgLayout = new javax.swing.GroupLayout(bg);
         bg.setLayout(bgLayout);
         bgLayout.setHorizontalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bgLayout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addComponent(contentTitleLbl, javax.swing.GroupLayout.DEFAULT_SIZE, 735, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(bgLayout.createSequentialGroup()
-                .addGap(118, 118, 118)
+                .addGap(106, 106, 106)
                 .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(120, 120, 120))
+                .addGap(111, 111, 111))
         );
         bgLayout.setVerticalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(bgLayout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(contentTitleLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(30, 30, 30)
                 .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(75, 75, 75))
+                .addGap(29, 29, 29))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -356,7 +344,6 @@ public class BrandConfiguration extends javax.swing.JPanel implements IStyleable
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
     private javax.swing.JPanel content;
-    private javax.swing.JLabel contentTitleLbl;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel newBrandLbl;
     private javax.swing.JTextField newbrandTxt;

@@ -111,6 +111,11 @@ public class ProductConfiguration extends javax.swing.JPanel implements IStyleab
         rbCategory.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         rbCategory.setForeground(new java.awt.Color(0, 0, 0));
         rbCategory.setText("Categoria");
+        rbCategory.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbCategoryActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout headerPanelLayout = new javax.swing.GroupLayout(headerPanel);
         headerPanel.setLayout(headerPanelLayout);
@@ -154,8 +159,7 @@ public class ProductConfiguration extends javax.swing.JPanel implements IStyleab
             .addGroup(bgLayout.createSequentialGroup()
                 .addComponent(headerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(contentPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 482, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(contentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -177,6 +181,10 @@ public class ProductConfiguration extends javax.swing.JPanel implements IStyleab
     private void rbTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbTypeActionPerformed
         ShowPanel(new TypeConfiguration(this.lightOrDarkMode));
     }//GEN-LAST:event_rbTypeActionPerformed
+
+    private void rbCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbCategoryActionPerformed
+        ShowPanel(new CategoryConfiguration(this.lightOrDarkMode));
+    }//GEN-LAST:event_rbCategoryActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -54,7 +54,7 @@ public class TypeDaoImpl extends Database implements TypeDao {
 
     @Override
     public List<Type> consultByCategory(Category category) throws Exception {
-        List<Type> list = null;
+        List<Type> list;
         try (Connection conn = this.getConnection()) {
             String query = "select * from tipos where id_categoria = ?;";
             final PreparedStatement st = conn.prepareStatement(query);

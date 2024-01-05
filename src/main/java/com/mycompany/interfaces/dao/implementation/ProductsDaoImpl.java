@@ -47,19 +47,10 @@ public class ProductsDaoImpl extends Database implements ProductsDao {
 
     private void setProductFields(PreparedStatement st, Product product) throws SQLException {
         // Asigna los valores para los parámetros de la sentencia SQL
-        st.setString(1, product.getName()); // Reemplaza con el método adecuado para obtener el nombre
-        st.setFloat(2, product.getPrice());   // Reemplaza con el método adecuado para obtener el precio
-        if (product.getDescription() != null) {
-            st.setString(3, product.getDescription());
-        } else {
-            st.setNull(3, Types.VARCHAR);
-        }
-
-        if (product.getDiscount() != null) {
-            st.setInt(4, product.getDiscount());
-        } else {
-            st.setNull(4, Types.INTEGER);
-        }
+        st.setString(1, product.getName());
+        st.setFloat(2, product.getPrice());
+        st.setObject(3, product.getDescription() != null ? product.getDescription() : null, Types.VARCHAR);
+        st.setObject(4, product.getDiscount() != null ? product.getDiscount() : null, Types.INTEGER);
 
         st.setInt(5, product.getIdBrand());
         st.setInt(6, product.getIdCategory());
@@ -276,7 +267,7 @@ public class ProductsDaoImpl extends Database implements ProductsDao {
                 try (rs) {
                     while (rs.next()) {
                         String categoryName = rs.getString("nombre_categoria");
-                        
+
                         Integer typeId = rs.getInt("id");
                         String typeName = rs.getString("nombre_tipo");
 

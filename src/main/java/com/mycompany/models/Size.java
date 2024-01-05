@@ -8,15 +8,15 @@ import lombok.Setter;
 @Setter
 public class Size {
 
-    private Integer id;
-    private Integer productId;
-    private Integer sizeId;
-    private Integer price;
-    private Integer amount;
+    Integer id;
+    Integer productId;
+    Integer sizeId;
+    Integer price;
+    Integer amount;
 
-    private String sizeName;
-    private String productName;
-
+    String sizeName;
+    String productName;
+    
     public Size() {
     }
 
@@ -35,6 +35,7 @@ public class Size {
         this.sizeName = sizeName;
     }
 
+    
     public Size(Integer sizeId, String sizeName) {
         this.sizeId = sizeId;
         this.sizeName = sizeName;
