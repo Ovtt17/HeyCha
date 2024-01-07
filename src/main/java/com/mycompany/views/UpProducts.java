@@ -1,7 +1,7 @@
 package com.mycompany.views;
 
 import com.mycompany.interfaces.dao.implementation.ProductsDaoImpl;
-import com.mycompany.interfaces.dao.implementation.SizesDaoImpl;
+import com.mycompany.interfaces.dao.implementation.ProductSizeDaoImpl;
 import com.mycompany.models.Product;
 import com.mycompany.models.Size;
 import java.awt.Color;
@@ -13,34 +13,35 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import javax.swing.table.DefaultTableModel;
-import com.mycompany.interfaces.dao.SizesDao;
 import com.mycompany.interfaces.dao.ProductsDao;
 import com.mycompany.interfaces.style.IStyleable;
 import com.mycompany.models.Type;
 import javax.swing.JComboBox;
+import com.mycompany.interfaces.dao.ProductSizeDao;
+import com.mycompany.models.Brand;
+import com.mycompany.models.Category;
+import com.mycompany.models.ProductSize;
 
 public class UpProducts extends javax.swing.JPanel implements IStyleable {
+
     ProductsDao productDao = new ProductsDaoImpl();
-    SizesDao sizeDao = new SizesDaoImpl();
+    ProductSizeDao sizeDao = new ProductSizeDaoImpl();
 
     boolean isEditable = false;
     Product productEditable;
-    List<Size> originalSizes;
-    List<Size> newSizes = new ArrayList<>();
+    List<ProductSize> originalSizes;
+    List<ProductSize> newSizes = new ArrayList<>();
 
-    List<Size> sizesToDelete = new ArrayList<>();
+    List<ProductSize> sizesToDelete = new ArrayList<>();
 
-    HashMap<String, List<Size>> sizeListByCategoryName = new HashMap<>();
-    HashMap<String, List<Type>> typeListByCategoryName = new HashMap<>();
-    HashMap<String, Integer> sizeSelected = new HashMap<>();
-
+//    HashMap<String, Integer> sizeSelected = new HashMap<>();
     public UpProducts(boolean isDarkModeEnabled) {
         initComponents();
         updateStyles(isDarkModeEnabled);
         initStyles();
     }
 
-    public UpProducts(Product product, List<Size> list, boolean isDarkModeEnabled) {
+    public UpProducts(Product product, List<ProductSize> list, boolean isDarkModeEnabled) {
         initComponents();
         isEditable = true;
         productEditable = product;
@@ -95,10 +96,8 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
                 categoryCmb.removeItemListener(itemListener);
             }
 
-            productDao.loadCmb(brandCmb, categoryCmb);
-            
-            sizeListByCategoryName = productDao.loadSizes();
-            typeListByCategoryName = productDao.loadTypes();
+            productDao.loadComboboxByCategory(categoryCmb);
+            productDao.loadComboboxByBrand(brandCmb);
 
             for (ItemListener itemListener : itemListeners) {
                 categoryCmb.addItemListener(itemListener);
@@ -111,24 +110,21 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
         if (isEditable) {
             title.setText("Editar producto.");
             DataUpdateBtn.setText("Guardar");
-            try {
-                nameTxt.setText(productEditable.getName());
-                priceTxt.setText(String.valueOf(productEditable.getPrice()));
-                descriptionTxt.setText(productEditable.getDescription());
-                Integer discount = productEditable.getDiscount() == null ? 0 : productEditable.getDiscount();
-                discountTxt.setText(String.valueOf(discount));
-                brandCmb.setSelectedItem(productEditable.getBrandName());
-                categoryCmb.setSelectedItem(productEditable.getCategoryName());
-                typeCmb.setSelectedItem(productEditable.getTypeName());
+            
+            nameTxt.setText(productEditable.getName());
+            priceTxt.setText(String.valueOf(productEditable.getPrice()));
+            descriptionTxt.setText(productEditable.getDescription());
+            Integer discount = productEditable.getDiscount() == null ? 0 : productEditable.getDiscount();
+            discountTxt.setText(String.valueOf(discount));
+            brandCmb.setSelectedItem(productEditable.getBrand());
+            categoryCmb.setSelectedItem(productEditable.getCategory());
+            typeCmb.setSelectedItem(productEditable.getType());
 
-                DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
-                originalSizes.forEach(s -> {
-                    model.addRow(new Object[]{s.getSizeName(), s.getAmount()});
-                    sizeSelected.put(s.getSizeName(), s.getSizeId());
-                });
-
-            } catch (Exception e) {
-            }
+            DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
+            originalSizes.forEach(s -> {
+                Size size = new Size(s.getSizeId(), s.getSizeName());
+                model.addRow(new Object[]{size, s.getAmount()});
+            });
         }
     }
 
@@ -477,9 +473,12 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
 
         String description = descriptionTxt.getText().trim().isEmpty() ? null : descriptionTxt.getText().trim();
 
-        Integer brandId = brandCmb.getSelectedIndex() == -1 ? null : brandCmb.getSelectedIndex() + 1;
-        Integer categoryId = categoryCmb.getSelectedIndex() == -1 ? null : categoryCmb.getSelectedIndex() + 1;
+        Brand brand = (Brand) brandCmb.getSelectedItem();
+        Category category = (Category) categoryCmb.getSelectedItem();
         Type type = (Type) typeCmb.getSelectedItem();
+
+        Integer brandId = brand.getId();
+        Integer categoryId = category.getId();
         Integer typeId = type.getId();
 
         boolean incorrectData = name.isEmpty() || price == null || brandId == null || categoryId == null || typeId == null || SizeTable.getRowCount() == 0;
@@ -495,9 +494,9 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
         product.setPrice(price);
         product.setDescription(description);
         product.setDiscount(discount);
-        product.setIdBrand(brandId);
-        product.setIdCategory(categoryId);
-        product.setIdType(typeId);
+        product.setBrand(brand);
+        product.setCategory(category);
+        product.setType(type);
 
         try {
             DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
@@ -505,7 +504,7 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
             Integer productId = isEditable ? productDao.modify(product) : productDao.record(product);
 
             if (isEditable) {
-                List<Size> sizesToModify = new ArrayList<>(originalSizes);
+                List<ProductSize> sizesToModify = new ArrayList<>(originalSizes);
 
                 if (!sizesToDelete.isEmpty()) {
                     sizesToModify.removeAll(sizesToDelete);
@@ -530,13 +529,12 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
                         Logger.getLogger(UpProducts.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 });
-                
+
             } else {
                 for (int i = 0; i < model.getRowCount(); i++) {
-                    String sizeName = (String) model.getValueAt(i, 0);
+                    Size size = (Size) model.getValueAt(i, 0);
                     Integer amount = (Integer) model.getValueAt(i, 1);
-                    Integer sizeId = sizeSelected.get(sizeName);
-                    newSizes.add(new Size(productId, sizeId, amount));
+                    newSizes.add(new ProductSize(productId, size.getId(), amount));
                 }
                 newSizes.forEach(s -> {
                     try {
@@ -565,37 +563,39 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
         if (SizeTable.getRowCount() > 0) {
             model.setRowCount(0);
         }
-        String categorySelected = (String) categoryCmb.getSelectedItem();
-        List<Size> sizeList = sizeListByCategoryName.get(categorySelected);
-        List<Type> typeList = typeListByCategoryName.get(categorySelected);
-        
-        loadListInComboBox(sizeList, sizeCmb);
-        loadListInComboBox(typeList, typeCmb);
-        
+        Category categorySelected = (Category) categoryCmb.getSelectedItem();
+
+        try {
+            Category category = productDao.loadSizes(categorySelected);
+            loadListInComboBox(category.getSizeList(), sizeCmb);
+            loadListInComboBox(category.getTypeList(), typeCmb);
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+
     }//GEN-LAST:event_categoryCmbItemStateChanged
     private <T> void loadListInComboBox(List<T> list, JComboBox combobox) {
         combobox.removeAllItems();
         list.forEach(s -> combobox.addItem(s));
     }
-    
+
     private void addSizeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSizeBtnActionPerformed
         DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
 
         Integer amount = ((Number) amountSpinner.getValue()).intValue();
         Integer sizeSelectedIndex = sizeCmb.getSelectedIndex();
-        Size size = (Size) sizeCmb.getSelectedItem(); 
-
-        String sizeName = size.getSizeName();
-        Integer sizeId = size.getSizeId();
-
+        Size size = (Size) sizeCmb.getSelectedItem();
+        String sizeName = size.getName();
+        Integer sizeId = size.getId();
+        
         if (sizeSelectedIndex == -1 || amount == 0) {
             javax.swing.JOptionPane.showMessageDialog(this, "Debe marcar la talla que desea agregar y dar una cantidad mayor que 0.\n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         boolean sizeExistsInTable = IntStream.range(0, model.getRowCount())
-                .mapToObj(i -> (String) model.getValueAt(i, 0))
-                .anyMatch(tableItem -> tableItem.equals(sizeName));
+                .mapToObj(i -> (Size) model.getValueAt(i, 0))
+                .anyMatch(tableItem -> tableItem.equals(size));
 
         if (sizeExistsInTable) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ya agregó la talla " + sizeName + ".\n\nIngrese una nueva talla", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -604,10 +604,9 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
 
         if (isEditable) {
             final Integer productId = productEditable.getId();
-            newSizes.add(new Size(productId, sizeId, amount, sizeName));
+            newSizes.add(new ProductSize(productId, sizeId, amount));
         }
-        model.addRow(new Object[]{sizeName, amount});
-        sizeSelected.put(sizeName, sizeId);
+        model.addRow(new Object[]{size, amount});
         amountSpinner.setValue(0);
     }//GEN-LAST:event_addSizeBtnActionPerformed
 
@@ -623,16 +622,14 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
             javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar una talla para borrar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        String sizeName = (String) model.getValueAt(selectedRow, 0);
+        Size size = (Size) model.getValueAt(selectedRow, 0);
         Integer amount = (Integer) model.getValueAt(selectedRow, 1);
 
         model.removeRow(selectedRow);
-        Integer sizeId = sizeSelected.get(sizeName);
-        sizeSelected.remove(sizeName);
 
         if (isEditable) {
             final Integer productId = productEditable.getId();
-            Size productSize = new Size(productId, sizeId, amount, sizeName);
+            ProductSize productSize = new ProductSize(productId, size.getId(), amount);
             sizesToDelete.add(productSize);
         }
     }//GEN-LAST:event_deleteSizeBtnActionPerformed
@@ -665,8 +662,8 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
     private javax.swing.JButton addSizeBtn;
     private javax.swing.JSpinner amountSpinner;
     private javax.swing.JPanel bg;
-    private javax.swing.JComboBox<String> brandCmb;
-    private javax.swing.JComboBox<String> categoryCmb;
+    private javax.swing.JComboBox<Brand> brandCmb;
+    private javax.swing.JComboBox<Category> categoryCmb;
     private javax.swing.JLabel categoryLbl;
     private javax.swing.JButton deleteSizeBtn;
     private javax.swing.JLabel descriptionLbl;
@@ -681,10 +678,10 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
     private javax.swing.JPanel panelRight;
     private javax.swing.JLabel priceLbl;
     private javax.swing.JTextField priceTxt;
-    private javax.swing.JComboBox<Object> sizeCmb;
+    private javax.swing.JComboBox<Size> sizeCmb;
     private javax.swing.JLabel sizeLbl;
     private javax.swing.JLabel title;
-    private javax.swing.JComboBox<String> typeCmb;
+    private javax.swing.JComboBox<Type> typeCmb;
     private javax.swing.JLabel typeLbl;
     // End of variables declaration//GEN-END:variables
 

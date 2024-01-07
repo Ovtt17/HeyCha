@@ -1,6 +1,8 @@
 package com.mycompany.views.configuration.product;
 
+import com.mycompany.interfaces.dao.CategoryDao;
 import com.mycompany.interfaces.dao.TypeDao;
+import com.mycompany.interfaces.dao.implementation.CategoryDaoImpl;
 import com.mycompany.interfaces.dao.implementation.TypeDaoImpl;
 import com.mycompany.interfaces.style.IStyleable;
 import com.mycompany.models.Category;
@@ -8,13 +10,13 @@ import com.mycompany.models.Type;
 import java.awt.Color;
 import java.awt.event.ItemListener;
 import java.util.List;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.table.DefaultTableModel;
 
 public class TypeConfiguration extends javax.swing.JPanel implements IStyleable {
 
     TypeDao typeDao = new TypeDaoImpl();
+    CategoryDao categoryDao = new CategoryDaoImpl();
     Type typeEditable;
     boolean isEditable = false;
 
@@ -64,13 +66,12 @@ public class TypeConfiguration extends javax.swing.JPanel implements IStyleable 
 
     private void loadCombobox() {
         try {
-            List<Category> categoryList = typeDao.loadCategories();
+            List<Category> categoryList = categoryDao.consult();
             ItemListener[] itemListeners = cmbCategory.getListeners(ItemListener.class);
 
             removeEventListener(cmbCategory, itemListeners);
             categoryList.forEach(c -> cmbCategory.addItem(c));
             addEventListener(cmbCategory, itemListeners);
-
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -291,7 +292,7 @@ public class TypeConfiguration extends javax.swing.JPanel implements IStyleable 
     private void upData() {
         try {
             String name = newTypeTxt.getText().trim();
-            if (name.isEmpty()) {
+            if (name.isEmpty() || name.isBlank()) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Introduzca el nombre de la nueva marca. \n", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
                 newTypeTxt.requestFocus();
                 return;

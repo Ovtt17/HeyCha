@@ -1,49 +1,45 @@
 package com.mycompany.models;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@NoArgsConstructor
 @Getter
 @Setter
 public class Size {
-
     Integer id;
-    Integer productId;
-    Integer sizeId;
-    Integer price;
-    Integer amount;
-
-    String sizeName;
-    String productName;
+    String name;
+    List<CategorySize> categorySizeList = new ArrayList<>();
     
-    public Size() {
+    public Size(String name) {
+        this.name = name;
     }
 
-    //save product sizes
-    public Size(Integer productId, Integer sizeId, Integer amount) {
-        this.productId = productId;
-        this.sizeId = sizeId;
-        this.amount = amount;
+    public Size(Integer id, String name) {
+        this.id = id;
+        this.name = name;
     }
-
-    // edit sizes
-    public Size(Integer productId, Integer sizeId, Integer amount, String sizeName) {
-        this.productId = productId;
-        this.sizeId = sizeId;
-        this.amount = amount;
-        this.sizeName = sizeName;
-    }
-
     
-    public Size(Integer sizeId, String sizeName) {
-        this.sizeId = sizeId;
-        this.sizeName = sizeName;
+    public void addCategorySize(CategorySize cs) {
+        this.categorySizeList.add(cs);
+    }
+    
+    @Override
+    public String toString() {
+        return name;
     }
 
     @Override
-    public String toString() {
-        return this.sizeName;
+    public int hashCode() {
+        int hash = 5;
+        hash = 41 * hash + Objects.hashCode(this.id);
+        hash = 41 * hash + Objects.hashCode(this.name);
+        return hash;
     }
 
     @Override
@@ -51,18 +47,18 @@ public class Size {
         if (this == obj) {
             return true;
         }
-        if (obj == null || getClass() != obj.getClass()) {
+        if (obj == null) {
             return false;
         }
-        Size that = (Size) obj;
-        return (productId == null ? that.productId == null : productId.equals(that.productId))
-                && (sizeId == null ? that.sizeId == null : sizeId.equals(that.sizeId))
-                && (sizeName == null ? that.sizeName == null : sizeName.equals(that.sizeName))
-                && (amount == null ? that.amount == null : amount.equals(that.amount));
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Size other = (Size) obj;
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        return Objects.equals(this.id, other.id);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(productId, sizeId, sizeName, amount);
-    }
+        
 }

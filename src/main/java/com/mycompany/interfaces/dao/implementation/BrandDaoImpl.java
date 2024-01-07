@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JComboBox;
 
 public class BrandDaoImpl extends Database implements BrandDao {
 
@@ -86,6 +87,28 @@ public class BrandDaoImpl extends Database implements BrandDao {
             }
         } catch (SQLException e) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de eliminación en la base de datos", e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void loadCombobox(JComboBox<Brand> combobox) throws Exception {
+        try (Connection con = this.getConnection()) {
+            String queryCategory = "select * from marcas;";
+            final PreparedStatement ps = con.prepareStatement(queryCategory);
+            try (ps) {
+                final ResultSet rs = ps.executeQuery(queryCategory);
+                try (rs) {
+                    while (rs.next()) {
+                        Integer id = rs.getInt("id");
+                        String name = rs.getString("nombre");
+                        combobox.addItem(new Brand(id, name));
+                    }
+                }
+            }            
+            combobox.setSelectedIndex(-1);
+        } catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de cargar los ComboBox de agregar o modificar en la base de datos", e);
             throw e;
         }
     }

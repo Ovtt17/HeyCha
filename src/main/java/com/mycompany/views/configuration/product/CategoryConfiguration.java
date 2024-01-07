@@ -84,6 +84,7 @@ public class CategoryConfiguration extends javax.swing.JPanel implements IStylea
         }
 
     }
+
     private void removeEventListener(JComboBox<Category> combobox, ItemListener[] itemListeners) {
         for (ItemListener itemListener : itemListeners) {
             combobox.removeItemListener(itemListener);
@@ -330,8 +331,8 @@ public class CategoryConfiguration extends javax.swing.JPanel implements IStylea
     private void upData() {
         try {
             String name = newCategoryTxt.getText().trim();
-            
-            if (name.isEmpty()) {
+
+            if (name.isEmpty() || name.isBlank()) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Introduzca el nombre de la nueva marca. \n", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
                 newCategoryTxt.requestFocus();
                 return;
@@ -364,7 +365,15 @@ public class CategoryConfiguration extends javax.swing.JPanel implements IStylea
         newCategoryLbl.setText("Nueva Categoria:");
     }
 
-    private void setEditableType() {
+    private void btnCleanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCleanActionPerformed
+        cleanFields();
+    }//GEN-LAST:event_btnCleanActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        setEditableCategory();
+    }//GEN-LAST:event_btnEditActionPerformed
+
+    private void setEditableCategory() {
         DefaultTableModel tableModel = (DefaultTableModel) TableCategory.getModel();
         if (TableCategory.getSelectedRow() == -1) {
             javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un tipo a editar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
@@ -375,10 +384,16 @@ public class CategoryConfiguration extends javax.swing.JPanel implements IStylea
             Integer id = (Integer) tableModel.getValueAt(TableCategory.getSelectedRow(), 0);
             String name = (String) tableModel.getValueAt(TableCategory.getSelectedRow(), 1);
             categoryEditable = new Category(id, name);
+            cmbCategories.setSelectedItem(categoryEditable);
+            loadSizeOfCategorySelected();
             newCategoryTxt.setText(name);
         }
     }
-
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        deleteType();
+        cleanFields();
+        loadCategories();
+    }//GEN-LAST:event_btnDeleteActionPerformed
     private void deleteType() {
         DefaultTableModel tableModel = (DefaultTableModel) TableCategory.getModel();
         if (TableCategory.getSelectedRow() == -1) {
@@ -396,25 +411,10 @@ public class CategoryConfiguration extends javax.swing.JPanel implements IStylea
             }
         }
     }
-
-    private void btnCleanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCleanActionPerformed
-        cleanFields();
-    }//GEN-LAST:event_btnCleanActionPerformed
-
-    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-        setEditableType();
-    }//GEN-LAST:event_btnEditActionPerformed
-
-    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        deleteType();
-        cleanFields();
-        loadCategories();
-    }//GEN-LAST:event_btnDeleteActionPerformed
-
     private void cmbCategoriesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbCategoriesItemStateChanged
-        loadTableSize();
+        loadSizeOfCategorySelected();
     }//GEN-LAST:event_cmbCategoriesItemStateChanged
-    private void loadTableSize() {
+    private void loadSizeOfCategorySelected() {
         try {
             DefaultTableModel model = (DefaultTableModel) TableSizes.getModel();
             model.setRowCount(0);

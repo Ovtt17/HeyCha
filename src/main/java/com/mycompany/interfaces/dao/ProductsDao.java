@@ -1,5 +1,7 @@
 package com.mycompany.interfaces.dao;
 
+import com.mycompany.models.Brand;
+import com.mycompany.models.Category;
 import com.mycompany.models.Size;
 import com.mycompany.models.Type;
 import com.mycompany.models.Product;
@@ -13,20 +15,13 @@ public interface ProductsDao {
     Integer record (Product product) throws Exception;
     Integer modify (Product product) throws Exception;
     void delete (int productId) throws Exception;
-    List<Product> consult(String name, String brand, String category) throws Exception;
+    List<Product> consultFiltered(Product product) throws Exception;
+    List<Product> consultAllProducts() throws Exception;
     Product getProductById(int productId) throws Exception;
     
-    /**
-     * obteniendo datos desde la base de datos para llenar los campos para agregar productos.
-     * @param brandCmb
-     * @param categoryCmb
-     * @param typeCmb
-     * @throws Exception 
-     */
-    void loadCmb(JComboBox<String> brandCmb, JComboBox<String> categoryCmb) throws Exception;
-    void loadFilterCmb(JComboBox<String> BrandFilterCmb, JComboBox<String> CategoryFilterCmb) throws Exception;
-    void fillComboBox(Connection con, JComboBox<String> comboBox, String query) throws SQLException;
+    void loadComboboxByCategory(JComboBox<Category> combobox) throws Exception;
+    void loadComboboxByBrand(JComboBox<Brand> combobox) throws Exception;
     
-    HashMap<String, List<Size>> loadSizes() throws SQLException;
-    HashMap<String, List<Type>> loadTypes() throws SQLException;
+    Category loadSizes(Category categorySelected) throws Exception;
+    HashMap<String, List<Type>> loadTypes() throws Exception;
 }

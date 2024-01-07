@@ -92,29 +92,4 @@ public class TypeDaoImpl extends Database implements TypeDao {
             throw e;
         }
     }
-
-    @Override
-    public List<Category> loadCategories() throws Exception {
-        List<Category> list = null;
-        try (Connection conn = this.getConnection()) {
-            String query = "select * from categorias;";
-            final PreparedStatement st = conn.prepareStatement(query);
-            try (st) {
-                list = new ArrayList();
-                final ResultSet rs = st.executeQuery();
-                try (rs) {
-                    while (rs.next()) {
-                        Integer id = rs.getInt("id");
-                        String name = rs.getString("nombre");
-                        list.add(new Category(id, name));
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de cargar las categorias en la base de datos", e);
-            throw e;
-        }
-        return list;
-    }
-
 }

@@ -10,6 +10,4 @@ public interface TypeDao {
     void modify(Type type)throws Exception;
     List<Type> consultByCategory(Category category) throws Exception;
     void delete(Type type)throws Exception;
-    
-    List<Category> loadCategories() throws Exception;
 }

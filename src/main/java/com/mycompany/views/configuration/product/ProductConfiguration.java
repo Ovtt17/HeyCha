@@ -75,6 +75,7 @@ public class ProductConfiguration extends javax.swing.JPanel implements IStyleab
         rbBrand = new javax.swing.JRadioButton();
         rbType = new javax.swing.JRadioButton();
         rbCategory = new javax.swing.JRadioButton();
+        rbSizes = new javax.swing.JRadioButton();
 
         bg.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -117,6 +118,16 @@ public class ProductConfiguration extends javax.swing.JPanel implements IStyleab
             }
         });
 
+        buttonGroup.add(rbSizes);
+        rbSizes.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        rbSizes.setForeground(new java.awt.Color(0, 0, 0));
+        rbSizes.setText("Tallas");
+        rbSizes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbSizesActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout headerPanelLayout = new javax.swing.GroupLayout(headerPanel);
         headerPanel.setLayout(headerPanelLayout);
         headerPanelLayout.setHorizontalGroup(
@@ -127,24 +138,29 @@ public class ProductConfiguration extends javax.swing.JPanel implements IStyleab
                         .addGap(6, 6, 6)
                         .addComponent(title))
                     .addGroup(headerPanelLayout.createSequentialGroup()
-                        .addGap(213, 213, 213)
-                        .addComponent(rbBrand, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(169, 169, 169)
+                        .addComponent(rbBrand, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(rbType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(rbType, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(rbCategory, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGap(215, 215, 215))
+                        .addComponent(rbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(rbSizes)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         headerPanelLayout.setVerticalGroup(
             headerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(headerPanelLayout.createSequentialGroup()
                 .addGap(6, 6, 6)
                 .addComponent(title)
-                .addGap(6, 6, 6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(headerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(rbBrand, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(rbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(rbType, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+                    .addGroup(headerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(rbType, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(rbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(rbSizes)))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout bgLayout = new javax.swing.GroupLayout(bg);
@@ -159,7 +175,7 @@ public class ProductConfiguration extends javax.swing.JPanel implements IStyleab
             .addGroup(bgLayout.createSequentialGroup()
                 .addComponent(headerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(contentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(contentPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -186,6 +202,10 @@ public class ProductConfiguration extends javax.swing.JPanel implements IStyleab
         ShowPanel(new CategoryConfiguration(this.lightOrDarkMode));
     }//GEN-LAST:event_rbCategoryActionPerformed
 
+    private void rbSizesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbSizesActionPerformed
+        ShowPanel(new SizeConfiguration(this.lightOrDarkMode));
+    }//GEN-LAST:event_rbSizesActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bg;
@@ -194,6 +214,7 @@ public class ProductConfiguration extends javax.swing.JPanel implements IStyleab
     private javax.swing.JPanel headerPanel;
     private javax.swing.JRadioButton rbBrand;
     private javax.swing.JRadioButton rbCategory;
+    private javax.swing.JRadioButton rbSizes;
     private javax.swing.JRadioButton rbType;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables

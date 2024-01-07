@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JComboBox;
 
 public class CategoryDaoImpl extends Database implements CategoryDao {
 
@@ -45,7 +46,7 @@ public class CategoryDaoImpl extends Database implements CategoryDao {
     @Override
     public void modify(Category category) throws Exception {
         try (Connection conn = this.getConnection()) {
-            String query = "udpate categorias set nombre = ? where id = ?";
+            String query = "update categorias set nombre = ? where id = ?";
             PreparedStatement ps = conn.prepareStatement(query);
             try (ps) {
                 ps.setString(1, category.getName());
@@ -91,7 +92,7 @@ public class CategoryDaoImpl extends Database implements CategoryDao {
                 psDetails.setInt(1, category.getId());
                 psDetails.executeUpdate();
             }
-            
+
             String queryCategory = "delete from categorias where id = ?;";
             PreparedStatement psCategory = conn.prepareStatement(queryCategory);
             try (psCategory) {
@@ -113,11 +114,12 @@ public class CategoryDaoImpl extends Database implements CategoryDao {
                 ps.setInt(2, categoryExample);
                 ps.executeUpdate();
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de insercion de tallas por categoria en la base de datos", e);
             throw e;
         }
     }
+
     @Override
     public List<Size> getSizes(Integer categoryId) throws Exception {
         List<Size> list = null;
@@ -141,6 +143,27 @@ public class CategoryDaoImpl extends Database implements CategoryDao {
             throw e;
         }
         return list;
+    }
+
+    @Override
+    public void loadCombobox(JComboBox<Category> combobox) throws Exception {
+        try (Connection con = this.getConnection()) {
+            String queryCategory = "select * from categorias;";
+            final PreparedStatement ps = con.prepareStatement(queryCategory);
+            try (ps) {
+                final ResultSet rs = ps.executeQuery(queryCategory);
+                try (rs) {
+                    while (rs.next()) {
+                        Integer id = rs.getInt("id");
+                        String name = rs.getString("nombre");
+                        combobox.addItem(new Category(id, name));
+                    }
+                }
+            }
+            combobox.setSelectedIndex(-1);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al cargar los combobox de categorias", e);
+        }
     }
 
 }
