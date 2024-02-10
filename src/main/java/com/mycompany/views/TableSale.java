@@ -1,48 +1,56 @@
 package com.mycompany.views;
 
-import com.mycompany.implementationDAO.DAOProductsImpl;
-import com.mycompany.implementationDAO.DAOProductsSizesImpl;
-import com.mycompany.interfaces.DAOProductSizes;
-import com.mycompany.interfaces.DAOProducts;
-import com.mycompany.models.ProductSizes;
-import com.mycompany.models.ModelProducts;
-import com.mycompany.models.ModelSalesProducts;
+import com.mycompany.interfaces.dao.implementation.ProductsDaoImpl;
+import com.mycompany.interfaces.dao.implementation.ProductSizeDaoImpl;
+import com.mycompany.models.Size;
+import com.mycompany.models.Product;
+import com.mycompany.models.SaleDetail;
 import java.awt.Color;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
+import com.mycompany.interfaces.dao.ProductsDao;
+import com.mycompany.models.ReservationDetail;
+import com.mycompany.interfaces.dao.ProductSizeDao;
+import com.mycompany.interfaces.style.IStyleable;
+import com.mycompany.models.Brand;
+import com.mycompany.models.Category;
+import com.mycompany.models.ProductSize;
+import java.awt.event.ItemListener;
+import javax.swing.JComboBox;
 
-public class TableSale extends javax.swing.JDialog {
+public class TableSale extends javax.swing.JDialog implements IStyleable {
 
+    boolean saleMode = false;
     UpSales upSales;
-    ViewProducts p = new ViewProducts();
-    List<ModelProducts> products;
-    Float productPrice;
+    UpReservation upReservation;
 
-    public TableSale(java.awt.Frame parent, boolean modal, boolean darkModeStatus) {
-        super(parent, modal);
-        initComponents();
-        initTable(darkModeStatus);
-    }
+    ProductsDao productDao = new ProductsDaoImpl();
 
     public TableSale(java.awt.Frame parent, boolean modal, UpSales upSales, boolean darkModeStatus) {
         super(parent, modal);
         initComponents();
-        initTable(darkModeStatus);
         this.upSales = upSales;
+        saleMode = true;
+        updateStyles(darkModeStatus);
+        initStyles();
+        loadProducts();
     }
 
-    private TableSale() {
+    public TableSale(java.awt.Frame parent, boolean modal, UpReservation upReservation, boolean darkModeStatus) {
+        super(parent, modal);
+        initComponents();
+        this.upReservation = upReservation;
+        updateStyles(darkModeStatus);
+        initStyles();
+        loadProducts();
     }
 
-    private void initTable(boolean darkModeStatus) {
-        jTableProducts.getTableHeader().setBackground(new Color(0, 0, 0));
-        TableDetails.getTableHeader().setBackground(new Color(0, 0, 0));
-        jTableProducts.getTableHeader().setForeground(new Color(255, 255, 255));
-        TableDetails.getTableHeader().setForeground(new Color(255, 255, 255));
-        if (darkModeStatus) {
+    @Override
+    public void updateStyles(boolean isDarkModeEnabled) {
+        if (isDarkModeEnabled) {
             title.setForeground(Color.white);
             background_products.putClientProperty("FlatLaf.style", "background: #172030");
             btnAdd.putClientProperty("FlatLaf.style", "background: #0c9294");
@@ -53,32 +61,61 @@ public class TableSale extends javax.swing.JDialog {
             btnAdd.putClientProperty("FlatLaf.style", "background: #125AAD");
             btnCleanField.putClientProperty("FlatLaf.style", "background: #125AAD");
         }
+    }
+
+    @Override
+    public void initStyles() {
+        jTableProducts.getTableHeader().setBackground(new Color(0, 0, 0));
+        TableDetails.getTableHeader().setBackground(new Color(0, 0, 0));
+        jTableProducts.getTableHeader().setForeground(new Color(255, 255, 255));
+        TableDetails.getTableHeader().setForeground(new Color(255, 255, 255));
+
         btnAdd.putClientProperty("JButton.buttonType", "roundRect");
         btnCleanField.putClientProperty("JButton.buttonType", "roundRect");
 
         this.setLocationRelativeTo(null);
-        DefaultTableModel modelProduct = (DefaultTableModel) jTableProducts.getModel();
-        jTableProducts.setDefaultEditor(Object.class, null);
-        modelProduct.setRowCount(0);
-        String nameToFind = productSearch.getText();
-        String brandSelected = "NINGUNO";
-        String categorySelected = "NINGUNO";
-        try {
-            DAOProducts dao = new DAOProductsImpl();
-            dao.consult(nameToFind, brandSelected, categorySelected).forEach((p) -> {
-                modelProduct.addRow(new Object[]{p.getId(), p.getName(), p.getBrandName(), p.getCategoryName(), p.getSizeAvailable(), p.getTotalExistence(), p.getPrice()});
 
-            });
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
         try {
-            DAOProducts dao = new DAOProductsImpl();
-            dao.loadFilterCmb(BrandFilterCmb, CategoryFilterCmb);
+            ItemListener[] ilBrand = BrandFilterCmb.getListeners(ItemListener.class);
+            ItemListener[] ilCategories = CategoryFilterCmb.getListeners(ItemListener.class);
+
+            removeEventListener(BrandFilterCmb, ilBrand);
+            removeEventListener(CategoryFilterCmb, ilCategories);
+
+            productDao.loadComboboxByBrand(BrandFilterCmb);
+            productDao.loadComboboxByCategory(CategoryFilterCmb);
+
+            addEventListener(BrandFilterCmb, ilBrand);
+            addEventListener(CategoryFilterCmb, ilCategories);
+
+        } catch (Exception ex) {
+            Logger.getLogger(ViewProducts.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private <T> void removeEventListener(JComboBox<T> combobox, ItemListener[] itemListeners) {
+        for (ItemListener itemListener : itemListeners) {
+            combobox.removeItemListener(itemListener);
+        }
+    }
+
+    private <T> void addEventListener(JComboBox<T> combobox, ItemListener[] itemListeners) {
+        for (ItemListener itemListener : itemListeners) {
+            combobox.addItemListener(itemListener);
+        }
+    }
+
+    private void loadProducts() {
+        DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
+        try {
+            model.setRowCount(0);
+            productDao.consultAllProducts()
+                    .forEach((p)
+                            -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrand().getName(), p.getCategory().getName(), p.getType().getName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice()}));
+
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
-        jTableProducts.setModel(modelProduct);
     }
 
     /**
@@ -129,11 +166,11 @@ public class TableSale extends javax.swing.JDialog {
 
             },
             new String [] {
-                "ID", "Nombre", "Marca", "Categoria", "Tallas Disponibles", "Total Existencia", "Precio"
+                "ID", "Nombre", "Precio", "Marca", "Categoria", "Tipo", "Tallas Disponibles", "Total Existencia", "Valor Total"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -159,7 +196,6 @@ public class TableSale extends javax.swing.JDialog {
             }
         });
 
-        BrandFilterCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NINGUNO" }));
         BrandFilterCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         BrandFilterCmb.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -167,7 +203,6 @@ public class TableSale extends javax.swing.JDialog {
             }
         });
 
-        CategoryFilterCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NINGUNO" }));
         CategoryFilterCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         CategoryFilterCmb.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -309,25 +344,17 @@ public class TableSale extends javax.swing.JDialog {
         loadProductSize();
     }//GEN-LAST:event_jTableProductsMouseClicked
     private void loadProductSize() {
-        List<ProductSizes> productSizeList;
+        List<ProductSize> productSizeList;
         try {
-            DAOProductSizes dao = new DAOProductsSizesImpl();
-//            if (table.getSelectedRow() < 0) {
-//                javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un producto para ver sus detalles. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-//                return;
-//            }
-
+            ProductSizeDao dao = new ProductSizeDaoImpl();
             int selectedRow = jTableProducts.getSelectedRow();
             int productId = (int) jTableProducts.getValueAt(selectedRow, 0);
 
             DefaultTableModel model = (DefaultTableModel) TableDetails.getModel();
             model.setRowCount(0);
 
-            productPrice = (Float) jTableProducts.getValueAt(selectedRow, 6);
             productSizeList = dao.consult(productId);
             productSizeList.forEach((p) -> model.addRow(new Object[]{p.getId(), p.getProductId(), p.getProductName(), p.getSizeName(), p.getPrice(), p.getAmount()}));
-            TableDetails.setModel(model);
-
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -342,9 +369,19 @@ public class TableSale extends javax.swing.JDialog {
 
     private void btnCleanFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCleanFieldActionPerformed
         productSearch.setText("");
-        BrandFilterCmb.setSelectedIndex(0);
-        CategoryFilterCmb.setSelectedIndex(0);
-        filteredConsult();
+
+        ItemListener[] ilBrand = BrandFilterCmb.getListeners(ItemListener.class);
+        ItemListener[] ilCategories = CategoryFilterCmb.getListeners(ItemListener.class);
+
+        removeEventListener(BrandFilterCmb, ilBrand);
+        removeEventListener(CategoryFilterCmb, ilCategories);
+
+        BrandFilterCmb.setSelectedIndex(-1);
+        CategoryFilterCmb.setSelectedIndex(-1);
+
+        addEventListener(BrandFilterCmb, ilBrand);
+        addEventListener(CategoryFilterCmb, ilCategories);
+        loadProducts();
     }//GEN-LAST:event_btnCleanFieldActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
@@ -359,11 +396,17 @@ public class TableSale extends javax.swing.JDialog {
         String productName = (String) TableDetails.getValueAt(selectedRow, 2);
         String sizeName = (String) TableDetails.getValueAt(selectedRow, 3);
 
-        Float price = productPrice;
+        Float price = (Float) TableDetails.getValueAt(selectedRow, 4);
         Integer amount = (Integer) AmountSpinner.getValue();
 
-        ModelSalesProducts salesDetails = new ModelSalesProducts(productSizeId, productId, productName, sizeName, price, amount);
-        upSales.addProduct(salesDetails);
+        if (saleMode) {
+            SaleDetail salesDetails = new SaleDetail(productSizeId, productId, productName, sizeName, price, amount);
+            upSales.addProduct(salesDetails);
+        } else {
+            ReservationDetail rDetails = new ReservationDetail(productSizeId, productId, productName, sizeName, price, amount);
+            upReservation.addProduct(rDetails);
+        }
+
         javax.swing.JOptionPane.showMessageDialog(this, "El producto se ha agregado al carrito de compras. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
         this.dispose();
     }//GEN-LAST:event_btnAddActionPerformed
@@ -378,60 +421,31 @@ public class TableSale extends javax.swing.JDialog {
     }//GEN-LAST:event_TableDetailsMouseClicked
 
     private void filteredConsult() {
-        DAOProducts dao = new DAOProductsImpl();
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
+        Product product = new Product();
         model.setRowCount(0);
-        String productNameToSearch = productSearch.getText();
-        String productBrandToSearch = BrandFilterCmb.getSelectedItem() == null ? "NINGUNO" : BrandFilterCmb.getSelectedItem().toString();
-        String productCategoryToSearch = CategoryFilterCmb.getSelectedItem() == null ? "NINGUNO" : CategoryFilterCmb.getSelectedItem().toString();
+        product.setName(productSearch.getText().isEmpty() ? "" : productSearch.getText());
+
+        Brand brand = BrandFilterCmb.getSelectedIndex() != -1 ? (Brand) BrandFilterCmb.getSelectedItem() : new Brand("");
+        Category category = CategoryFilterCmb.getSelectedIndex() != -1 ? (Category) CategoryFilterCmb.getSelectedItem() : new Category("");
+
+        product.setBrand(brand);
+        product.setCategory(category);
 
         try {
-            dao.consult(productNameToSearch, productBrandToSearch, productCategoryToSearch).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getBrandName(), p.getCategoryName(), p.getSizeAvailable(), p.getTotalExistence(), p.getPrice()}));
+            productDao.consultFiltered(product)
+                    .forEach((p)
+                            -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrand().getName(), p.getCategory().getName(), p.getType().getName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice()}));
         } catch (Exception ex) {
             Logger.getLogger(ViewProducts.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(TableSale.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(TableSale.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(TableSale.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(TableSale.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new TableSale().setVisible(true);
-            }
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JSpinner AmountSpinner;
-    private javax.swing.JComboBox<String> BrandFilterCmb;
+    private javax.swing.JComboBox<Brand> BrandFilterCmb;
     private javax.swing.JLabel BrandLbl;
-    private javax.swing.JComboBox<String> CategoryFilterCmb;
+    private javax.swing.JComboBox<Category> CategoryFilterCmb;
     private javax.swing.JLabel CategoryLbl;
     private javax.swing.JTable TableDetails;
     private javax.swing.JLabel amountLbl;

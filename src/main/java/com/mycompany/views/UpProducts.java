@@ -1,12 +1,8 @@
 package com.mycompany.views;
 
-import com.mycompany.implementationDAO.DAOProductsImpl;
-import com.mycompany.implementationDAO.DAOProductsSizesImpl;
-import com.mycompany.interfaces.DAOProductSizes;
-import com.mycompany.interfaces.DAOProducts;
-import com.mycompany.models.ModelProducts;
-import com.mycompany.interfaces.Styleable;
-import com.mycompany.models.ProductSizes;
+import com.mycompany.interfaces.dao.implementation.ProductsDaoImpl;
+import com.mycompany.interfaces.dao.implementation.ProductSizeDaoImpl;
+import com.mycompany.models.Product;
 import com.mycompany.models.Size;
 import java.awt.Color;
 import java.awt.event.ItemListener;
@@ -17,20 +13,26 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import javax.swing.table.DefaultTableModel;
+import com.mycompany.interfaces.dao.ProductsDao;
+import com.mycompany.interfaces.style.IStyleable;
+import com.mycompany.models.Type;
+import javax.swing.JComboBox;
+import com.mycompany.interfaces.dao.ProductSizeDao;
+import com.mycompany.models.Brand;
+import com.mycompany.models.Category;
+import com.mycompany.models.ProductSize;
 
-public class UpProducts extends javax.swing.JPanel implements Styleable {
-    DAOProducts dao;
-    DAOProductSizes daoSize;
+public class UpProducts extends javax.swing.JPanel implements IStyleable {
+
+    ProductsDao productDao = new ProductsDaoImpl();
+    ProductSizeDao sizeDao = new ProductSizeDaoImpl();
 
     boolean isEditable = false;
-    ModelProducts productEditable;
-    List<ProductSizes> originalSizes;
-    List<ProductSizes> newSizes = new ArrayList<>();
+    Product productEditable;
+    List<ProductSize> originalSizes;
+    List<ProductSize> newSizes = new ArrayList<>();
 
-    List<ProductSizes> sizesToDelete = new ArrayList<>();
-
-    HashMap<String, List<Size>> sizeListByCategoryName = new HashMap<>();
-    HashMap<String, Integer> sizeSelected = new HashMap<>();
+    List<ProductSize> sizesToDelete = new ArrayList<>();
 
     public UpProducts(boolean isDarkModeEnabled) {
         initComponents();
@@ -38,7 +40,7 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         initStyles();
     }
 
-    public UpProducts(ModelProducts product, List<ProductSizes> list, boolean isDarkModeEnabled) {
+    public UpProducts(Product product, List<ProductSize> list, boolean isDarkModeEnabled) {
         initComponents();
         isEditable = true;
         productEditable = product;
@@ -66,7 +68,8 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         }
     }
 
-    private void initStyles() {
+    @Override
+    public void initStyles() {
         title.putClientProperty("FlatLaf.styleClass", "h1");
         nameLbl.putClientProperty("FlatLaf.styleClass", "h2");
         priceLbl.putClientProperty("FlatLaf.styleClass", "h2");
@@ -86,16 +89,14 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         SizeTable.getTableHeader().setForeground(new Color(255, 255, 255));
 
         try {
-            dao = new DAOProductsImpl();
             ItemListener[] itemListeners = categoryCmb.getListeners(ItemListener.class);
 
             for (ItemListener itemListener : itemListeners) {
                 categoryCmb.removeItemListener(itemListener);
             }
 
-            dao.loadCmb(brandCmb, categoryCmb, typeCmb);
-            dao = new DAOProductsImpl();
-            sizeListByCategoryName = dao.loadSizes();
+            productDao.loadComboboxByCategory(categoryCmb);
+            productDao.loadComboboxByBrand(brandCmb);
 
             for (ItemListener itemListener : itemListeners) {
                 categoryCmb.addItemListener(itemListener);
@@ -108,24 +109,21 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         if (isEditable) {
             title.setText("Editar producto.");
             DataUpdateBtn.setText("Guardar");
-            try {
-                nameTxt.setText(productEditable.getName());
-                priceTxt.setText(String.valueOf(productEditable.getPrice()));
-                descriptionTxt.setText(productEditable.getDescription());
-                Integer discount = productEditable.getDiscount() == null ? 0 : productEditable.getDiscount();
-                discountTxt.setText(String.valueOf(discount));
-                brandCmb.setSelectedItem(productEditable.getBrandName());
-                categoryCmb.setSelectedItem(productEditable.getCategoryName());
-                typeCmb.setSelectedItem(productEditable.getTypeName());
+            
+            nameTxt.setText(productEditable.getName());
+            priceTxt.setText(String.valueOf(productEditable.getPrice()));
+            descriptionTxt.setText(productEditable.getDescription());
+            Integer discount = productEditable.getDiscount() == null ? 0 : productEditable.getDiscount();
+            discountTxt.setText(String.valueOf(discount));
+            brandCmb.setSelectedItem(productEditable.getBrand());
+            categoryCmb.setSelectedItem(productEditable.getCategory());
+            typeCmb.setSelectedItem(productEditable.getType());
 
-                DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
-                originalSizes.forEach(s -> {
-                    model.addRow(new Object[]{s.getSizeName(), s.getAmount()});
-                    sizeSelected.put(s.getSizeName(), s.getSizeId());
-                });
-
-            } catch (Exception e) {
-            }
+            DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
+            originalSizes.forEach(s -> {
+                Size size = new Size(s.getSizeId(), s.getSizeName());
+                model.addRow(new Object[]{size, s.getAmount()});
+            });
         }
     }
 
@@ -265,39 +263,42 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
                     .addGroup(panelRightLayout.createSequentialGroup()
                         .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelRightLayout.createSequentialGroup()
+                                .addComponent(sizeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(196, 196, 196))
+                            .addGroup(panelRightLayout.createSequentialGroup()
                                 .addComponent(typeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(262, 262, 262))
+                                .addGap(198, 198, 198))
                             .addGroup(panelRightLayout.createSequentialGroup()
                                 .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(panelRightLayout.createSequentialGroup()
-                                        .addComponent(sizeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGap(172, 172, 172))
-                                    .addGroup(panelRightLayout.createSequentialGroup()
-                                        .addComponent(categoryLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGap(136, 136, 136))
-                                    .addComponent(typeCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(sizeCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(categoryCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                                .addGap(24, 24, 24)
-                                .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(amountSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(addSizeBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(deleteSizeBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(24, 24, 24))))
+                                .addGap(24, 24, 24)))
+                        .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(amountSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(addSizeBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(deleteSizeBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(24, 24, 24))
+                    .addGroup(panelRightLayout.createSequentialGroup()
+                        .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelRightLayout.createSequentialGroup()
+                                .addComponent(categoryLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(136, 136, 136))
+                            .addComponent(typeCmb, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(categoryCmb, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(112, 112, 112))))
         );
         panelRightLayout.setVerticalGroup(
             panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelRightLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
+                .addComponent(categoryLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(categoryCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(typeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(typeCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(categoryLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(categoryCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(sizeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -413,7 +414,7 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(panelRight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(57, 57, 57))
+                .addContainerGap())
         );
         bgLayout.setVerticalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -438,7 +439,7 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, 714, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -471,11 +472,15 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
 
         String description = descriptionTxt.getText().trim().isEmpty() ? null : descriptionTxt.getText().trim();
 
-        Integer idBrand = brandCmb.getSelectedIndex() == -1 ? null : brandCmb.getSelectedIndex() + 1;
-        Integer idCategory = categoryCmb.getSelectedIndex() == -1 ? null : categoryCmb.getSelectedIndex() + 1;
-        Integer idType = typeCmb.getSelectedIndex() == -1 ? null : typeCmb.getSelectedIndex() + 1;
+        Brand brand = (Brand) brandCmb.getSelectedItem();
+        Category category = (Category) categoryCmb.getSelectedItem();
+        Type type = (Type) typeCmb.getSelectedItem();
 
-        boolean incorrectData = name.isEmpty() || price == null || idBrand == null || idCategory == null || idType == null || SizeTable.getRowCount() == 0;
+        Integer brandId = brand.getId();
+        Integer categoryId = category.getId();
+        Integer typeId = type.getId();
+
+        boolean incorrectData = name.isEmpty() || price == null || brandId == null || categoryId == null || typeId == null || SizeTable.getRowCount() == 0;
 
         if (incorrectData) {
             javax.swing.JOptionPane.showMessageDialog(this, "Debe llenar todos los campos correctamente. \n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -483,59 +488,56 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
             return;
         }
 
-        ModelProducts product = isEditable ? productEditable : new ModelProducts();
+        Product product = isEditable ? productEditable : new Product();
         product.setName(name);
         product.setPrice(price);
         product.setDescription(description);
         product.setDiscount(discount);
-        product.setIdBrand(idBrand);
-        product.setIdCategory(idCategory);
-        product.setIdType(idType);
+        product.setBrand(brand);
+        product.setCategory(category);
+        product.setType(type);
 
         try {
-            dao = new DAOProductsImpl();
-            daoSize = new DAOProductsSizesImpl();
             DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
 
-            Integer productId = isEditable ? dao.modify(product) : dao.record(product);
+            Integer productId = isEditable ? productDao.modify(product) : productDao.record(product);
 
             if (isEditable) {
-                List<ProductSizes> sizesToModify = new ArrayList<>(originalSizes);
+                List<ProductSize> sizesToModify = new ArrayList<>(originalSizes);
 
                 if (!sizesToDelete.isEmpty()) {
                     sizesToModify.removeAll(sizesToDelete);
                     sizesToDelete.forEach(s -> {
                         try {
-                            daoSize.delete(s);
+                            sizeDao.delete(s);
                         } catch (Exception ex) {
                             Logger.getLogger(UpProducts.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     });
                 }
-
                 if (!newSizes.isEmpty()) {
                     sizesToModify.addAll(newSizes);
                 }
                 sizesToModify.forEach(s -> {
                     try {
-                        boolean isModified = daoSize.modify(s);
+                        boolean isModified = sizeDao.modify(s);
                         if (!isModified) {
-                            daoSize.record(s);
+                            sizeDao.record(s);
                         }
                     } catch (Exception ex) {
                         Logger.getLogger(UpProducts.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 });
+
             } else {
                 for (int i = 0; i < model.getRowCount(); i++) {
-                    String sizeName = (String) model.getValueAt(i, 0);
+                    Size size = (Size) model.getValueAt(i, 0);
                     Integer amount = (Integer) model.getValueAt(i, 1);
-                    Integer sizeId = sizeSelected.get(sizeName);
-                    newSizes.add(new ProductSizes(productId, sizeId, amount));
+                    newSizes.add(new ProductSize(productId, size.getId(), amount));
                 }
                 newSizes.forEach(s -> {
                     try {
-                        daoSize.record(s);
+                        sizeDao.record(s);
                     } catch (Exception ex) {
                         Logger.getLogger(UpProducts.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -543,7 +545,7 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
             }
             newSizes.clear();
             sizesToDelete.clear();
-            String succecssMsg = isEditable ? "modificado" : "registrado";
+            String succecssMsg = isEditable ? "modificados" : "registrados";
             javax.swing.JOptionPane.showMessageDialog(this, "Datos " + succecssMsg + " correctamente. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             if (!isEditable) {
                 emptyFields();
@@ -560,12 +562,21 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         if (SizeTable.getRowCount() > 0) {
             model.setRowCount(0);
         }
+        Category categorySelected = (Category) categoryCmb.getSelectedItem();
 
-        String sizeSelected = (String) categoryCmb.getSelectedItem();
-        List<Size> sizeList = sizeListByCategoryName.get(sizeSelected);
-        sizeCmb.removeAllItems();
-        sizeList.forEach(s -> sizeCmb.addItem(s));
+        try {
+            Category category = productDao.loadSizes(categorySelected);
+            loadListInComboBox(category.getSizeList(), sizeCmb);
+            loadListInComboBox(category.getTypeList(), typeCmb);
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+
     }//GEN-LAST:event_categoryCmbItemStateChanged
+    private <T> void loadListInComboBox(List<T> list, JComboBox combobox) {
+        combobox.removeAllItems();
+        list.forEach(s -> combobox.addItem(s));
+    }
 
     private void addSizeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addSizeBtnActionPerformed
         DefaultTableModel model = (DefaultTableModel) SizeTable.getModel();
@@ -573,18 +584,17 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
         Integer amount = ((Number) amountSpinner.getValue()).intValue();
         Integer sizeSelectedIndex = sizeCmb.getSelectedIndex();
         Size size = (Size) sizeCmb.getSelectedItem();
-
         String sizeName = size.getName();
         Integer sizeId = size.getId();
-
+        
         if (sizeSelectedIndex == -1 || amount == 0) {
             javax.swing.JOptionPane.showMessageDialog(this, "Debe marcar la talla que desea agregar y dar una cantidad mayor que 0.\n", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         boolean sizeExistsInTable = IntStream.range(0, model.getRowCount())
-                .mapToObj(i -> (String) model.getValueAt(i, 0))
-                .anyMatch(tableItem -> tableItem.equals(sizeName));
+                .mapToObj(i -> (Size) model.getValueAt(i, 0))
+                .anyMatch(tableItem -> tableItem.equals(size));
 
         if (sizeExistsInTable) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ya agregó la talla " + sizeName + ".\n\nIngrese una nueva talla", "AVISO", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -593,11 +603,9 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
 
         if (isEditable) {
             final Integer productId = productEditable.getId();
-            ProductSizes productSize = new ProductSizes(productId, sizeId, amount, sizeName);
-            newSizes.add(productSize);
+            newSizes.add(new ProductSize(productId, sizeId, amount));
         }
-        model.addRow(new Object[]{sizeName, amount});
-        sizeSelected.put(sizeName, sizeId);
+        model.addRow(new Object[]{size, amount});
         amountSpinner.setValue(0);
     }//GEN-LAST:event_addSizeBtnActionPerformed
 
@@ -613,16 +621,14 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
             javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar una talla para borrar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        String sizeName = (String) model.getValueAt(selectedRow, 0);
+        Size size = (Size) model.getValueAt(selectedRow, 0);
         Integer amount = (Integer) model.getValueAt(selectedRow, 1);
 
         model.removeRow(selectedRow);
-        Integer sizeId = sizeSelected.get(sizeName);
-        sizeSelected.remove(sizeName);
 
         if (isEditable) {
             final Integer productId = productEditable.getId();
-            ProductSizes productSize = new ProductSizes(productId, sizeId, amount, sizeName);
+            ProductSize productSize = new ProductSize(productId, size.getId(), amount);
             sizesToDelete.add(productSize);
         }
     }//GEN-LAST:event_deleteSizeBtnActionPerformed
@@ -655,8 +661,8 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
     private javax.swing.JButton addSizeBtn;
     private javax.swing.JSpinner amountSpinner;
     private javax.swing.JPanel bg;
-    private javax.swing.JComboBox<String> brandCmb;
-    private javax.swing.JComboBox<String> categoryCmb;
+    private javax.swing.JComboBox<Brand> brandCmb;
+    private javax.swing.JComboBox<Category> categoryCmb;
     private javax.swing.JLabel categoryLbl;
     private javax.swing.JButton deleteSizeBtn;
     private javax.swing.JLabel descriptionLbl;
@@ -671,10 +677,10 @@ public class UpProducts extends javax.swing.JPanel implements Styleable {
     private javax.swing.JPanel panelRight;
     private javax.swing.JLabel priceLbl;
     private javax.swing.JTextField priceTxt;
-    private javax.swing.JComboBox<Object> sizeCmb;
+    private javax.swing.JComboBox<Size> sizeCmb;
     private javax.swing.JLabel sizeLbl;
     private javax.swing.JLabel title;
-    private javax.swing.JComboBox<String> typeCmb;
+    private javax.swing.JComboBox<Type> typeCmb;
     private javax.swing.JLabel typeLbl;
     // End of variables declaration//GEN-END:variables
 

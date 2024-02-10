@@ -1,13 +1,10 @@
 package com.mycompany.views;
 
-import com.mycompany.implementationDAO.DAOSalesImpl;
-import com.mycompany.implementationDAO.DAOSalesProductsImpl;
-import com.mycompany.interfaces.DAOSales;
-import com.mycompany.interfaces.DAOSalesProducts;
-import com.mycompany.interfaces.Styleable;
-import com.mycompany.models.ProductSizes;
-import com.mycompany.models.ModelSales;
-import com.mycompany.models.ModelSalesProducts;
+import com.mycompany.interfaces.dao.implementation.SalesDaoImpl;
+import com.mycompany.interfaces.dao.implementation.SalesDetailsDaoImpl;
+import com.mycompany.models.Size;
+import com.mycompany.models.Sale;
+import com.mycompany.models.SaleDetail;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,13 +14,19 @@ import java.util.Objects;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import com.mycompany.interfaces.dao.SalesDao;
+import com.mycompany.interfaces.dao.SalesDetailsDao;
+import com.mycompany.interfaces.style.IStyleable;
 
-public class UpSales extends javax.swing.JPanel implements Styleable {
+public class UpSales extends javax.swing.JPanel implements IStyleable {
+
+    SalesDao dao = new SalesDaoImpl();
+    SalesDetailsDao saleDetailsDao = new SalesDetailsDaoImpl();
 
     boolean isEditable = false;
     boolean darkModeStatus = false;
-    private ModelSales saleEditable;
-    private List<ModelSalesProducts> products;
+    private Sale saleEditable;
+    private List<SaleDetail> products;
     HashMap<String, Integer> clientHashMap;
 
     private DefaultTableModel newModel = new DefaultTableModel();
@@ -41,7 +44,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
     public UpSales() {
     }
 
-    public UpSales(ModelSales sale, List<ModelSalesProducts> salesDetailsEditable, boolean isDarkModeEnabled) {
+    public UpSales(Sale sale, List<SaleDetail> salesDetailsEditable, boolean isDarkModeEnabled) {
         initComponents();
         isEditable = true;
         updateStyles(isDarkModeEnabled);
@@ -54,7 +57,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
         updateTable();
     }
 
-    public void addProduct(ModelSalesProducts product) {
+    public void addProduct(SaleDetail product) {
         this.products.add(product);
         updateTable();
     }
@@ -103,7 +106,8 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
         BtnDeleteProduct.putClientProperty("JButton.buttonType", "roundRect");
     }
 
-    private void initStyles() {
+    @Override
+    public void initStyles() {
         jTable1.getTableHeader().setBackground(new Color(0, 0, 0));
         jTable1.getTableHeader().setForeground(new Color(255, 255, 255));
         title.putClientProperty("FlatLaf.styleClass", "h1");
@@ -114,7 +118,6 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
             newModel.addColumn("Id de venta");
         } else {
             try {
-                DAOSales dao = new DAOSalesImpl();
                 dao.loadClientsCmb(clientsCmb);
             } catch (Exception e) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -209,6 +212,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
         TotalLbl.setText("Total:");
 
         totalValueTxt.setEditable(false);
+        totalValueTxt.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         clientLbl.setText("Cliente:");
 
@@ -228,7 +232,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bgLayout.createSequentialGroup()
                 .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(bgLayout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(442, 533, Short.MAX_VALUE)
                         .addComponent(TotalLbl)
                         .addGap(37, 37, 37)
                         .addComponent(totalValueTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -243,7 +247,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
                                 .addComponent(BtnAddProduct)
                                 .addGap(18, 18, 18)
                                 .addComponent(BtnDeleteProduct))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE))))
+                            .addComponent(jScrollPane1))))
                 .addGap(100, 100, 100))
         );
         bgLayout.setVerticalGroup(
@@ -259,7 +263,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
                         .addComponent(BtnDeleteProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(clientsCmb, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(TotalLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -300,13 +304,12 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
         }
         try {
 
-            ModelSales sale = isEditable ? saleEditable : new ModelSales();
+            Sale sale = isEditable ? saleEditable : new Sale();
             sale.setClientId(clientId);
             sale.setQuantitySold(totalQuantitySold);
-            sale.setTotalMoneySold(total);
+            sale.setTotalMoneyEarned(total);
             sale.setDate(date);
 
-            DAOSales dao = new DAOSalesImpl();
             Integer idSale = isEditable ? dao.modify(sale) : dao.record(sale);
 
             products.stream()
@@ -314,12 +317,11 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
                     .forEach((p) -> {
                         try {
                             p.setSaleId(idSale);
-                            DAOSalesProducts daoSalesProducts = new DAOSalesProductsImpl();
 
                             if (isEditable) {
-                                daoSalesProducts.modify(p);
+                                saleDetailsDao.modify(p);
                             } else {
-                                daoSalesProducts.record(p);
+                                saleDetailsDao.record(p);
                             }
 
                         } catch (Exception e) {
@@ -379,7 +381,7 @@ public class UpSales extends javax.swing.JPanel implements Styleable {
                 // TODO
                 try {
                     int selectedRow = selectedRows[i];
-                    DAOSalesProducts daoSalesDetails = new DAOSalesProductsImpl();
+                    SalesDetailsDao daoSalesDetails = new SalesDetailsDaoImpl();
                     int idIndex = 0, nameIndex = 0, sizeIndex = 0, priceIndex = 0, amountIndex = 0;
                     if (isEditable) {
                         Integer saleId = (Integer) jTable1.getValueAt(selectedRow, 0);

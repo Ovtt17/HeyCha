@@ -21,7 +21,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="bg" alignment="0" max="32767" attributes="0"/>
+          <Component id="bg" pref="714" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -57,7 +57,7 @@
                   <Component id="jSeparator2" min="-2" pref="15" max="-2" attributes="0"/>
                   <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                   <Component id="panelRight" max="32767" attributes="0"/>
-                  <EmptySpace min="-2" pref="57" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -117,33 +117,38 @@
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
+                                      <Component id="sizeLbl" max="32767" attributes="0"/>
+                                      <EmptySpace min="-2" pref="196" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" attributes="0">
                                       <Component id="typeLbl" max="32767" attributes="0"/>
-                                      <EmptySpace min="262" pref="262" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="198" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="sizeLbl" max="32767" attributes="0"/>
-                                              <EmptySpace min="172" pref="172" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="categoryLbl" max="32767" attributes="0"/>
-                                              <EmptySpace min="136" pref="136" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Component id="typeCmb" max="32767" attributes="0"/>
                                           <Component id="sizeCmb" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="categoryCmb" alignment="0" max="32767" attributes="0"/>
                                           <Component id="jScrollPane1" alignment="0" pref="0" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="1" attributes="0">
-                                          <Component id="amountSpinner" min="-2" max="-2" attributes="0"/>
-                                          <Component id="addSizeBtn" alignment="0" min="-2" pref="51" max="-2" attributes="0"/>
-                                          <Component id="deleteSizeBtn" alignment="0" min="-2" pref="51" max="-2" attributes="0"/>
-                                      </Group>
                                   </Group>
                               </Group>
+                              <Group type="103" groupAlignment="1" attributes="0">
+                                  <Component id="amountSpinner" min="-2" max="-2" attributes="0"/>
+                                  <Component id="addSizeBtn" alignment="0" min="-2" pref="51" max="-2" attributes="0"/>
+                                  <Component id="deleteSizeBtn" alignment="0" min="-2" pref="51" max="-2" attributes="0"/>
+                              </Group>
                               <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="1" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="categoryLbl" max="32767" attributes="0"/>
+                                      <EmptySpace min="-2" pref="136" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Component id="typeCmb" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="categoryCmb" alignment="0" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="112" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -153,14 +158,14 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
+                      <Component id="categoryLbl" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Component id="categoryCmb" min="-2" pref="33" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="typeLbl" max="32767" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="typeCmb" min="-2" pref="35" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="categoryLbl" max="32767" attributes="0"/>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="categoryCmb" min="-2" pref="35" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                       <Component id="sizeLbl" max="32767" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -211,7 +216,7 @@
                 <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="categoryCmbItemStateChanged"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;Category&gt;"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="sizeLbl">
@@ -232,7 +237,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;Object&gt;"/>
+                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;Size&gt;"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JSpinner" name="amountSpinner">
@@ -297,7 +302,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;Type&gt;"/>
               </AuxValues>
             </Component>
             <Container class="javax.swing.JScrollPane" name="jScrollPane1">
@@ -513,7 +518,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+                <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;Brand&gt;"/>
               </AuxValues>
             </Component>
           </SubComponents>

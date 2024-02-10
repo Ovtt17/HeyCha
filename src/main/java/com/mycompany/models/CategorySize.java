@@ -2,19 +2,19 @@ package com.mycompany.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter @Setter
 public class CategorySize {
-    private Integer id;
-    private Integer categoryId;
-    private Integer sizeId;
+    Integer id;
+    Category category;
+    Size size;
 
-    public CategorySize(Integer categoryId, Integer sizeId) {
-        this.categoryId = categoryId;
-        this.sizeId = sizeId;
-    }
-
-    public CategorySize() {
-    }
-    
+    public CategorySize(Category category, Size size) {
+        this.category = category;
+        this.size = size;
+    }    
 }

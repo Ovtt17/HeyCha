@@ -1,31 +1,36 @@
 package com.mycompany.views;
 
-import com.mycompany.exporters.ExcelExporterImpl;
-import com.mycompany.implementationDAO.DAOProductsImpl;
-import com.mycompany.implementationDAO.DAOProductsSizesImpl;
+import com.mycompany.interfaces.exporters.implementation.ExcelExporterImpl;
+import com.mycompany.interfaces.dao.implementation.ProductsDaoImpl;
+import com.mycompany.interfaces.dao.implementation.ProductSizeDaoImpl;
 import com.mycompany.heycha.Dashboard;
-import com.mycompany.interfaces.DAOProductSizes;
-import com.mycompany.interfaces.DAOProducts;
-import com.mycompany.interfaces.ExcelExporter;
-import com.mycompany.interfaces.Styleable;
-import com.mycompany.models.ModelProducts;
-import com.mycompany.models.ProductSizes;
+import com.mycompany.interfaces.dao.CategoryDao;
+import com.mycompany.models.Product;
 import java.awt.Color;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
+import com.mycompany.interfaces.dao.ProductsDao;
+import com.mycompany.interfaces.exporters.IExcelExporter;
+import com.mycompany.interfaces.style.IStyleable;
+import com.mycompany.interfaces.dao.ProductSizeDao;
+import com.mycompany.models.Brand;
+import com.mycompany.models.Category;
+import com.mycompany.models.ProductSize;
+import java.awt.event.ItemListener;
+import javax.swing.JComboBox;
 
-public class ViewProducts extends javax.swing.JPanel implements Styleable {
+public class ViewProducts extends javax.swing.JPanel implements IStyleable {
 
     boolean lightOrDarkMode;
-    DAOProducts dao;
-    DAOProductSizes daoSize;
-    
+    ProductsDao productDao = new ProductsDaoImpl();
+    ProductSizeDao productSizeDao = new ProductSizeDaoImpl();
 
     public ViewProducts(boolean isDarkModeEnabled) {
         initComponents();
         updateStyles(isDarkModeEnabled);
+        initStyles();
         loadProducts();
     }
 
@@ -34,8 +39,7 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     }
 
     @Override
-    public void updateStyles(boolean isDarkModeEnabled) {
-        lightOrDarkMode = isDarkModeEnabled;
+    public void initStyles() {
         title.putClientProperty("FlatLaf.styleClass", "h1");
         ProductDetailsTxt.putClientProperty("FlatLaf.styleClass", "h1");
         productSearch.putClientProperty("JTextField.placeholderText", "Ingrese el nombre del producto a buscar.");
@@ -49,6 +53,11 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         TableDetails.getTableHeader().setBackground(new Color(0, 0, 0));
         jTableProducts.getTableHeader().setForeground(new Color(255, 255, 255));
         TableDetails.getTableHeader().setForeground(new Color(255, 255, 255));
+    }
+
+    @Override
+    public void updateStyles(boolean isDarkModeEnabled) {
+        lightOrDarkMode = isDarkModeEnabled;
         if (isDarkModeEnabled) {
             title.setForeground(Color.white);
             ProductDetailsTxt.setForeground(Color.white);
@@ -68,6 +77,24 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             btnCleanField.putClientProperty("FlatLaf.style", "background: #1565C0");
             btnExport.putClientProperty("FlatLaf.style", "background: #159734");
         }
+
+        try {
+            ItemListener[] ilBrand = BrandFilterCmb.getListeners(ItemListener.class);
+            ItemListener[] ilCategories = CategoryFilterCmb.getListeners(ItemListener.class);
+
+            removeEventListener(BrandFilterCmb, ilBrand);
+            removeEventListener(CategoryFilterCmb, ilCategories);
+
+            productDao.loadComboboxByBrand(BrandFilterCmb);
+            productDao.loadComboboxByCategory(CategoryFilterCmb);
+
+            addEventListener(BrandFilterCmb, ilBrand);
+            addEventListener(CategoryFilterCmb, ilCategories);
+
+        } catch (Exception ex) {
+            Logger.getLogger(ViewProducts.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         btnEdit.setEnabled(true);
         btnDelete.setEnabled(true);
         btnCleanField.setEnabled(true);
@@ -75,18 +102,26 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         CategoryFilterCmb.setEnabled(true);
     }
 
+    private <T> void removeEventListener(JComboBox<T> combobox, ItemListener[] itemListeners) {
+        for (ItemListener itemListener : itemListeners) {
+            combobox.removeItemListener(itemListener);
+        }
+    }
+
+    private <T> void addEventListener(JComboBox<T> combobox, ItemListener[] itemListeners) {
+        for (ItemListener itemListener : itemListeners) {
+            combobox.addItemListener(itemListener);
+        }
+    }
+
     private void loadProducts() {
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
-        String nameToFind = "";
-        String brandSelected = "NINGUNO";
-        String categorySelected = "NINGUNO";
         try {
-            dao = new DAOProductsImpl();
-            dao.consult(nameToFind, brandSelected, categorySelected)
-                    .forEach((p) -> 
-                            model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrandName(), p.getCategoryName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice()}));
-            dao = new DAOProductsImpl();
-            dao.loadFilterCmb(BrandFilterCmb, CategoryFilterCmb);
+            model.setRowCount(0);
+            productDao.consultAllProducts()
+                    .forEach((p)
+                            -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrand().getName(), p.getCategory().getName(), p.getType().getName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice()}));
+
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
@@ -142,11 +177,11 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
             },
             new String [] {
-                "ID", "Nombre", "Precio", "Marca", "Categoria", "Tallas Disponibles", "Total Existencia", "Valor Total"
+                "ID", "Nombre", "Precio", "Marca", "Categoria", "Tipo", "Tallas Disponibles", "Total Existencia", "Valor Total"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -194,7 +229,6 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             }
         });
 
-        BrandFilterCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NINGUNO" }));
         BrandFilterCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         BrandFilterCmb.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -202,7 +236,6 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
             }
         });
 
-        CategoryFilterCmb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NINGUNO" }));
         CategoryFilterCmb.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         CategoryFilterCmb.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -358,9 +391,6 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
         int confirmed = javax.swing.JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar estos datos? \n", "CONFIMARCIÓN", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
         if (confirmed == javax.swing.JOptionPane.YES_OPTION) {
-            dao = new DAOProductsImpl();
-            daoSize = new DAOProductsSizesImpl();
-
             int[] selectedRows = jTableProducts.getSelectedRows();
             int continueDeleting;
             for (int i = selectedRows.length - 1; i >= 0; i--) {
@@ -372,8 +402,8 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
                 }
                 try {
                     int selectedRow = selectedRows[i];
-                    dao.delete((int) jTableProducts.getValueAt(selectedRow, 0));
-                    daoSize.deleteAllSizes((int) jTableProducts.getValueAt(selectedRow, 0));
+                    productDao.delete((int) jTableProducts.getValueAt(selectedRow, 0));
+                    productSizeDao.deleteAllSizes((int) jTableProducts.getValueAt(selectedRow, 0));
                     model.removeRow(selectedRow);
                     modelDetails.setRowCount(0);
                 } catch (Exception e) {
@@ -389,11 +419,9 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
         if (jTableProducts.getSelectedRow() > -1) {
             try {
                 int productId = (int) jTableProducts.getValueAt(jTableProducts.getSelectedRow(), 0);
-                dao = new DAOProductsImpl();
-                daoSize = new DAOProductsSizesImpl();
-                ModelProducts product = dao.getProductById(productId);
-                List<ProductSizes> sizeList = daoSize.getProductSizesById(productId);
-                Dashboard.ShowPanel(new UpProducts(product, sizeList, lightOrDarkMode));
+
+                Product product = productDao.getProductById(productId);
+                Dashboard.ShowPanel(new UpProducts(product, product.getProductSizeList(), lightOrDarkMode));
             } catch (Exception e) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
@@ -408,17 +436,15 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     }//GEN-LAST:event_jTableProductsMouseClicked
 
     public void loadProductSize() {
-        List<ProductSizes> productSizeList = null;
+        List<ProductSize> productSizeList = null;
         try {
-            daoSize = new DAOProductsSizesImpl();
-
             int selectedRows = jTableProducts.getSelectedRow();
             int productId = (int) jTableProducts.getValueAt(selectedRows, 0);
 
             DefaultTableModel model = (DefaultTableModel) TableDetails.getModel();
             model.setRowCount(0);
 
-            productSizeList = daoSize.consult(productId);
+            productSizeList = productSizeDao.consult(productId);
             productSizeList.forEach((p) -> model.addRow(new Object[]{p.getId(), p.getProductId(), p.getProductName(), p.getSizeName(), p.getPrice(), p.getAmount()}));
             TableDetails.setModel(model);
 
@@ -447,13 +473,24 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
 
     private void btnCleanFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCleanFieldActionPerformed
         productSearch.setText("");
-        BrandFilterCmb.setSelectedIndex(0);
-        CategoryFilterCmb.setSelectedIndex(0);
-        filterConsult();
+
+        ItemListener[] ilBrand = BrandFilterCmb.getListeners(ItemListener.class);
+        ItemListener[] ilCategories = CategoryFilterCmb.getListeners(ItemListener.class);
+
+        removeEventListener(BrandFilterCmb, ilBrand);
+        removeEventListener(CategoryFilterCmb, ilCategories);
+
+        BrandFilterCmb.setSelectedIndex(-1);
+        CategoryFilterCmb.setSelectedIndex(-1);
+
+        addEventListener(BrandFilterCmb, ilBrand);
+        addEventListener(CategoryFilterCmb, ilCategories);
+        loadProducts();
+
     }//GEN-LAST:event_btnCleanFieldActionPerformed
 
     private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
-        ExcelExporter exporter = new ExcelExporterImpl();
+        IExcelExporter exporter = new ExcelExporterImpl();
         try {
             exporter.export(jTableProducts);
         } catch (Exception ex) {
@@ -466,24 +503,30 @@ public class ViewProducts extends javax.swing.JPanel implements Styleable {
     }//GEN-LAST:event_TableDetailsMouseClicked
 
     private void filterConsult() {
-        dao = new DAOProductsImpl();
         DefaultTableModel model = (DefaultTableModel) jTableProducts.getModel();
+        Product product = new Product();
         model.setRowCount(0);
-        String productNameToSearch = productSearch.getText();
-        String productBrandToSearch = BrandFilterCmb.getSelectedItem() == null ? "NINGUNO" : BrandFilterCmb.getSelectedItem().toString();
-        String productCategoryToSearch = CategoryFilterCmb.getSelectedItem() == null ? "NINGUNO" : CategoryFilterCmb.getSelectedItem().toString();
+        product.setName(productSearch.getText().isEmpty() ? "" : productSearch.getText());
+
+        Brand brand = BrandFilterCmb.getSelectedIndex() != -1 ? (Brand) BrandFilterCmb.getSelectedItem() : new Brand("");
+        Category category = CategoryFilterCmb.getSelectedIndex() != -1 ? (Category) CategoryFilterCmb.getSelectedItem() : new Category("");
+
+        product.setBrand(brand);
+        product.setCategory(category);
 
         try {
-            dao.consult(productNameToSearch, productBrandToSearch, productCategoryToSearch).forEach((p) -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrandName(), p.getCategoryName(), p.getTypeName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice(), p.getDescription()}));
+            productDao.consultFiltered(product)
+                    .forEach((p)
+                            -> model.addRow(new Object[]{p.getId(), p.getName(), p.getPrice(), p.getBrand().getName(), p.getCategory().getName(), p.getType().getName(), p.getSizeAvailable(), p.getTotalExistence(), p.getTotalPrice()}));
         } catch (Exception ex) {
             Logger.getLogger(ViewProducts.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<String> BrandFilterCmb;
+    private javax.swing.JComboBox<Brand> BrandFilterCmb;
     private javax.swing.JLabel BrandLbl;
-    private javax.swing.JComboBox<String> CategoryFilterCmb;
+    private javax.swing.JComboBox<Category> CategoryFilterCmb;
     private javax.swing.JLabel CategoryLbl;
     private javax.swing.JLabel ProductDetailsTxt;
     private javax.swing.JTable TableDetails;

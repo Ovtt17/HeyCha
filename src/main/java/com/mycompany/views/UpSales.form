@@ -55,7 +55,7 @@
               <Group type="102" alignment="1" attributes="0">
                   <Group type="103" groupAlignment="1" attributes="0">
                       <Group type="102" attributes="0">
-                          <EmptySpace max="32767" attributes="0"/>
+                          <EmptySpace min="442" pref="533" max="32767" attributes="0"/>
                           <Component id="TotalLbl" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
                           <Component id="totalValueTxt" min="-2" max="-2" attributes="0"/>
@@ -72,7 +72,7 @@
                                   <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                                   <Component id="BtnDeleteProduct" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <Component id="jScrollPane1" pref="574" max="32767" attributes="0"/>
+                              <Component id="jScrollPane1" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -95,7 +95,7 @@
                       </Group>
                   </Group>
                   <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                  <Component id="jScrollPane1" pref="191" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" pref="190" max="32767" attributes="0"/>
                   <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="TotalLbl" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
@@ -208,6 +208,9 @@
         <Component class="javax.swing.JTextField" name="totalValueTxt">
           <Properties>
             <Property name="editable" type="boolean" value="false"/>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Segoe UI" size="14" style="0"/>
+            </Property>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="clientLbl">
