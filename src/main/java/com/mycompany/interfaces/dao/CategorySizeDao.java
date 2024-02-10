@@ -3,5 +3,6 @@ package com.mycompany.interfaces.dao;
 import com.mycompany.models.CategorySize;
 
 public interface CategorySizeDao {
-    void record(CategorySize categorySize) throws Exception;
+    boolean record(CategorySize categorySize) throws Exception;
+    boolean delete(CategorySize categorySize) throws Exception;
 }

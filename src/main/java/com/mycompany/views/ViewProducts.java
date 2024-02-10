@@ -15,11 +15,9 @@ import com.mycompany.interfaces.dao.ProductsDao;
 import com.mycompany.interfaces.exporters.IExcelExporter;
 import com.mycompany.interfaces.style.IStyleable;
 import com.mycompany.interfaces.dao.ProductSizeDao;
-import com.mycompany.interfaces.dao.implementation.CategoryDaoImpl;
 import com.mycompany.models.Brand;
 import com.mycompany.models.Category;
 import com.mycompany.models.ProductSize;
-import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import javax.swing.JComboBox;
 
@@ -28,7 +26,6 @@ public class ViewProducts extends javax.swing.JPanel implements IStyleable {
     boolean lightOrDarkMode;
     ProductsDao productDao = new ProductsDaoImpl();
     ProductSizeDao productSizeDao = new ProductSizeDaoImpl();
-    CategoryDao categoryDao = new CategoryDaoImpl();
 
     public ViewProducts(boolean isDarkModeEnabled) {
         initComponents();
@@ -349,11 +346,11 @@ public class ViewProducts extends javax.swing.JPanel implements IStyleable {
                     .addComponent(CategoryLbl)
                     .addComponent(btnCleanField, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(ProductDetailsTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(14, 14, 14)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(background_productsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)

@@ -62,6 +62,9 @@ public class CategoryConfiguration extends javax.swing.JPanel implements IStylea
 
         TableCategory.getTableHeader().setBackground(new Color(0, 0, 0));
         TableCategory.getTableHeader().setForeground(new Color(255, 255, 255));
+        
+        TableSizes.getTableHeader().setBackground(new Color(0, 0, 0));
+        TableSizes.getTableHeader().setForeground(new Color(255, 255, 255));
     }
 
     private void loadCategories() {
@@ -73,6 +76,7 @@ public class CategoryConfiguration extends javax.swing.JPanel implements IStylea
             ItemListener[] itemListeners = cmbCategories.getListeners(ItemListener.class);
             removeEventListener(cmbCategories, itemListeners);
             cmbCategories.removeAllItems();
+            cmbCategories.addItem(new Category(0, "Ninguno"));
             addEventListener(cmbCategories, itemListeners);
             categoryList.forEach(c -> {
                 cmbCategories.addItem(c);
@@ -306,7 +310,7 @@ public class CategoryConfiguration extends javax.swing.JPanel implements IStylea
         bg.setLayout(bgLayout);
         bgLayout.setHorizontalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(content, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         bgLayout.setVerticalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -338,8 +342,8 @@ public class CategoryConfiguration extends javax.swing.JPanel implements IStylea
                 return;
             }
             Category category = isEditable ? categoryEditable : new Category();
-            Category categorySelectedAsExample = (Category) cmbCategories.getSelectedItem();
             category.setName(name);
+            Category categorySelectedAsExample = (Category) cmbCategories.getSelectedItem();
 
             if (isEditable) {
                 categoryDao.modify(category);

@@ -29,6 +29,7 @@ public class ProductConfiguration extends javax.swing.JPanel implements IStyleab
             rbBrand.setForeground(Color.white);
             rbCategory.setForeground(Color.white);
             rbType.setForeground(Color.white);
+            rbSizes.setForeground(Color.white);
         } else {
             headerPanel.putClientProperty("FlatLaf.style", "background: #FFFFFF");
             contentPanel.putClientProperty("FlatLaf.style", "background: #FFFFFF");
@@ -37,6 +38,7 @@ public class ProductConfiguration extends javax.swing.JPanel implements IStyleab
             rbBrand.setForeground(Color.black);
             rbCategory.setForeground(Color.black);
             rbType.setForeground(Color.black);
+            rbSizes.setForeground(Color.black);
         }
     }
 
@@ -46,6 +48,7 @@ public class ProductConfiguration extends javax.swing.JPanel implements IStyleab
         rbBrand.putClientProperty("FlatLaf.styleClass", "h2");
         rbCategory.putClientProperty("FlatLaf.styleClass", "h2");
         rbType.putClientProperty("FlatLaf.styleClass", "h2");
+        rbSizes.putClientProperty("FlatLaf.styleClass", "h2");
         
     }
 

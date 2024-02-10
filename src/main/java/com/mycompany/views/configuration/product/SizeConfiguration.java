@@ -8,11 +8,10 @@ import com.mycompany.interfaces.style.IStyleable;
 import com.mycompany.models.Category;
 import com.mycompany.models.CategorySize;
 import com.mycompany.models.Size;
+import java.awt.Color;
 import java.awt.event.ItemListener;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -31,21 +30,55 @@ public class SizeConfiguration extends javax.swing.JPanel implements IStyleable 
     public SizeConfiguration(boolean lightOrDarkMode) {
         initComponents();
         updateStyles(lightOrDarkMode);
+        initStyles();
         initCategory();
     }
 
     @Override
     public void updateStyles(boolean isDarkModeEnabled) {
         if (isDarkModeEnabled) {
+            bg.putClientProperty("FlatLaf.style", "background: #172030");
+            content.putClientProperty("FlatLaf.style", "background: #172030");
 
+            categoryLbl.setForeground(Color.white);
+            sizeLbl.setForeground(Color.white);
+            includeSizeLbl.setForeground(Color.white);
+
+            DataUpdateBtn.putClientProperty("FlatLaf.style", "background: #0c9294");
+            btnClean.putClientProperty("FlatLaf.style", "background: #0c9294");
+            btnEdit.putClientProperty("FlatLaf.style", "background: #0c9294");
+            btnDelete.putClientProperty("FlatLaf.style", "background: #0c9294");
         } else {
+            bg.putClientProperty("FlatLaf.style", "background: #FFFFFF");
+            content.putClientProperty("FlatLaf.style", "background: #FFFFFF");
+            categoryLbl.setForeground(Color.black);
+            sizeLbl.setForeground(Color.black);
+            includeSizeLbl.setForeground(Color.black);
 
+            DataUpdateBtn.putClientProperty("FlatLaf.style", "background: #125AAD");
+            btnClean.putClientProperty("FlatLaf.style", "background: #125AAD");
+            btnDelete.putClientProperty("FlatLaf.style", "background: #FF3333");
+            btnEdit.putClientProperty("FlatLaf.style", "background: #FFB72C");
         }
     }
 
     @Override
     public void initStyles() {
+        categoryLbl.putClientProperty("FlatLaf.styleClass", "h2");
+        sizeLbl.putClientProperty("FlatLaf.styleClass", "h2");
+        includeSizeLbl.putClientProperty("FlatLaf.styleClass", "h2");
 
+        sizeLbl.putClientProperty("JTextField.placeholderText", "Ingrese el nombre de la nueva talla.");
+
+        btnClean.putClientProperty("JButton.buttonType", "roundRect");
+        btnEdit.putClientProperty("JButton.buttonType", "roundRect");
+        btnDelete.putClientProperty("JButton.buttonType", "roundRect");
+
+        TableCategory.getTableHeader().setBackground(new Color(0, 0, 0));
+        TableCategory.getTableHeader().setForeground(new Color(255, 255, 255));
+
+        TableSize.getTableHeader().setBackground(new Color(0, 0, 0));
+        TableSize.getTableHeader().setForeground(new Color(255, 255, 255));
     }
 
     /**
@@ -57,7 +90,8 @@ public class SizeConfiguration extends javax.swing.JPanel implements IStyleable 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        bg = new javax.swing.JPanel();
+        content = new javax.swing.JPanel();
         categoryLbl = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         TableSize = new javax.swing.JTable();
@@ -72,7 +106,9 @@ public class SizeConfiguration extends javax.swing.JPanel implements IStyleable 
         btnDelete = new javax.swing.JButton();
         includeSizeLbl = new javax.swing.JLabel();
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        bg.setBackground(new java.awt.Color(255, 255, 255));
+
+        content.setBackground(new java.awt.Color(255, 255, 255));
 
         categoryLbl.setText("Categoria:");
 
@@ -92,6 +128,8 @@ public class SizeConfiguration extends javax.swing.JPanel implements IStyleable 
                 return canEdit [columnIndex];
             }
         });
+        TableSize.setGridColor(new java.awt.Color(153, 153, 153));
+        TableSize.setShowGrid(true);
         jScrollPane1.setViewportView(TableSize);
 
         TableCategory.setModel(new javax.swing.table.DefaultTableModel(
@@ -117,6 +155,8 @@ public class SizeConfiguration extends javax.swing.JPanel implements IStyleable 
                 return canEdit [columnIndex];
             }
         });
+        TableCategory.setToolTipText("");
+        TableCategory.setGridColor(new java.awt.Color(153, 153, 153));
         TableCategory.setShowGrid(true);
         TableCategory.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(TableCategory);
@@ -167,6 +207,7 @@ public class SizeConfiguration extends javax.swing.JPanel implements IStyleable 
         btnDelete.setForeground(new java.awt.Color(255, 255, 255));
         btnDelete.setText("Borrar");
         btnDelete.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnDelete.setEnabled(false);
         btnDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnDeleteActionPerformed(evt);
@@ -175,78 +216,97 @@ public class SizeConfiguration extends javax.swing.JPanel implements IStyleable 
 
         includeSizeLbl.setText("Incluir nueva talla en otras categorias:");
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(216, 216, 216)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(includeSizeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(169, 169, 169))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addGap(93, 93, 93))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(categoryLbl)
-                        .addGap(18, 18, 18)
-                        .addComponent(cmbCategory, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(121, 121, 121))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(sizeLbl)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtNewSize))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(btnEdit, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnDelete, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnClean, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(DataUpdateBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(88, 88, 88)))
-                .addGap(171, 171, 171))
+        javax.swing.GroupLayout contentLayout = new javax.swing.GroupLayout(content);
+        content.setLayout(contentLayout);
+        contentLayout.setHorizontalGroup(
+            contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, contentLayout.createSequentialGroup()
+                .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(contentLayout.createSequentialGroup()
+                        .addGap(75, 75, 75)
+                        .addComponent(sizeLbl)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtNewSize)
+                        .addGap(41, 41, 41)
+                        .addComponent(btnClean, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(contentLayout.createSequentialGroup()
+                        .addGap(78, 78, 78)
+                        .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 550, Short.MAX_VALUE)
+                            .addGroup(contentLayout.createSequentialGroup()
+                                .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(contentLayout.createSequentialGroup()
+                                        .addComponent(includeSizeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGap(52, 52, 52))
+                                    .addGroup(contentLayout.createSequentialGroup()
+                                        .addComponent(categoryLbl)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(cmbCategory, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addGap(172, 172, 172))
+                            .addComponent(jScrollPane1))))
+                .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(contentLayout.createSequentialGroup()
+                        .addGap(48, 48, 48)
+                        .addComponent(btnEdit))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, contentLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnDelete)))
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, contentLayout.createSequentialGroup()
+                .addGap(256, 256, 256)
+                .addComponent(DataUpdateBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(205, 205, 205))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+        contentLayout.setVerticalGroup(
+            contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, contentLayout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(categoryLbl)
                     .addComponent(cmbCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(contentLayout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addGroup(contentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(sizeLbl)
+                            .addComponent(txtNewSize, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnClean, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(19, 19, 19)
+                        .addComponent(includeSizeLbl)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(DataUpdateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(12, 12, 12))
+                    .addGroup(contentLayout.createSequentialGroup()
                         .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE))
-                .addGap(32, 32, 32)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(sizeLbl)
-                    .addComponent(txtNewSize, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnClean, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(includeSizeLbl)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE)
-                .addGap(15, 15, 15)
-                .addComponent(DataUpdateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18))
+                        .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+        );
+
+        javax.swing.GroupLayout bgLayout = new javax.swing.GroupLayout(bg);
+        bg.setLayout(bgLayout);
+        bgLayout.setHorizontalGroup(
+            bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        bgLayout.setVerticalGroup(
+            bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(content, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(bg, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -260,26 +320,35 @@ public class SizeConfiguration extends javax.swing.JPanel implements IStyleable 
             txtNewSize.requestFocus();
             return;
         }
-        Size size = new Size(sizeName);
-        traverseTable(TableCategory, size);
+        Size size = isEditable ? sizeEditable : new Size();
+        size.setName(sizeName);
+        traverseCategoryTable(TableCategory, size);
+
         try {
-            sizeDao.record(size);
+
+            if (isEditable) {
+                sizeDao.modify(size);
+            } else {
+                sizeDao.record(size);
+            }
+            String succecssMsg = isEditable ? "modificados" : "registrados";
+            javax.swing.JOptionPane.showMessageDialog(this, "Datos " + succecssMsg + " correctamente. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            loadSizeByCategorySelected();
         } catch (Exception ex) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + ex.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public void traverseTable(JTable table, Size size) {
+    public void traverseCategoryTable(JTable table, Size size) {
         int rowCount = table.getRowCount();
         int categoryColumn = 0;
         int checkColumn = 1;
 
         for (int i = 0; i < rowCount; i++) {
             Boolean checkedValue = (Boolean) table.getValueAt(i, checkColumn);
-
             if (Boolean.TRUE.equals(checkedValue)) {
                 Category category = (Category) table.getValueAt(i, categoryColumn);
-                size.addCategorySize(new CategorySize(category.getId()));
+                size.addCategorySize(new CategorySize(category, size));
             }
         }
     }
@@ -288,10 +357,11 @@ public class SizeConfiguration extends javax.swing.JPanel implements IStyleable 
     }//GEN-LAST:event_btnCleanActionPerformed
     private void cleanFields() {
         isEditable = false;
+        btnDelete.setEnabled(isEditable);
         txtNewSize.setText("");
         sizeLbl.setText("Nombre de nueva talla:");
         DataUpdateBtn.setText("Subir");
-
+        initCategory();
     }
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
         setEditableSize();
@@ -301,23 +371,10 @@ public class SizeConfiguration extends javax.swing.JPanel implements IStyleable 
             javax.swing.JOptionPane.showMessageDialog(this, "Debes seleccionar un tipo a editar. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
         } else {
             sizeEditable = (Size) TableSize.getValueAt(TableSize.getSelectedRow(), 0);
-            Category category = (Category) cmbCategory.getSelectedItem();
+            loadCategoryTableEditable(sizeEditable);
 
-//            CategorySize categorySize = new CategorySize(category.getId(), sizeEditable.getId());
-            try {
-                List<Category> categoryList = sizeDao.getCategoriesBySizeSelected(sizeEditable.getId());
-                loadCategoriesBySizeSelected(categoryList);
-            } catch (Exception ex) {
-                Logger.getLogger(SizeConfiguration.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-//            int checkColumn = 1;
-//            for (int i = 0; i < TableSize.getRowCount(); i++) {
-//                if(TableCategory.getValueAt(i, 0).equals(category)) {
-//                    TableCategory.setValueAt(true, i, checkColumn);
-//                }
-//            }
             isEditable = true;
+            btnDelete.setEnabled(isEditable);
             sizeLbl.setText("Editar nombre de talla:");
             includeSizeLbl.setText("Editar talla en otras categorias:");
             DataUpdateBtn.setText("Editar");
@@ -325,38 +382,70 @@ public class SizeConfiguration extends javax.swing.JPanel implements IStyleable 
         }
     }
 
-    private void loadCategoriesBySizeSelected(List<Category> categoryList) {
-        DefaultTableModel model = (DefaultTableModel) TableCategory.getModel();
-        model.setRowCount(0);
+    private void loadCategoryTableEditable(Size size) {
+        try {
+            List<Category> categoryList = sizeDao.getCategoriesBySizeSelected(size.getId());
+            DefaultTableModel model = (DefaultTableModel) TableCategory.getModel();
+            model.setRowCount(0);
 
-        AtomicInteger index = new AtomicInteger(0);
-        categoryList.forEach(c -> {
-            model.addRow(new Object[]{c});
-            model.setValueAt(true, index.getAndIncrement(), 1);
-            model.isCellEditable(index.get(), 1);
-        });
+            AtomicInteger index = new AtomicInteger(0);
+            categoryList.forEach(c -> {
+                model.addRow(new Object[]{c});
+                model.setValueAt(true, index.getAndIncrement(), 1);
+            });
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + ex.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+
     }
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-//        deleteType();
-//        cleanFields();
-//        loadTypeByCategorySelected();
+        int confirmed = javax.swing.JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar estos datos? \n", "CONFIMARCIÓN", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.WARNING_MESSAGE);
+        if (confirmed == javax.swing.JOptionPane.YES_OPTION) {
+            boolean deleted = deleteSizeFromCategories();
+            if (deleted) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Datos eliminados correctamente. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                cleanFields();
+            }
+        }
+
     }//GEN-LAST:event_btnDeleteActionPerformed
-
+    private boolean deleteSizeFromCategories() {
+        Size size = sizeEditable;
+        traverseCategoryTable(TableCategory, size);
+        boolean deleted = false;
+        try {
+            deleted = sizeDao.delete(size);
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + ex.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        return deleted;
+    }
     private void cmbCategoryItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbCategoryItemStateChanged
-        loadSizeOfCategorySelected();
+        loadSizeByCategorySelected();
     }//GEN-LAST:event_cmbCategoryItemStateChanged
-
+    private void loadSizeByCategorySelected() {
+        try {
+            DefaultTableModel model = (DefaultTableModel) TableSize.getModel();
+            model.setRowCount(0);
+            Category category = (Category) cmbCategory.getSelectedItem();
+            List<Size> sizeList = categoryDao.getSizes(category.getId());
+            sizeList.forEach(s -> model.addRow(new Object[]{s}));
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton DataUpdateBtn;
     private javax.swing.JTable TableCategory;
     private javax.swing.JTable TableSize;
+    private javax.swing.JPanel bg;
     private javax.swing.JButton btnClean;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnEdit;
     private javax.swing.JLabel categoryLbl;
     private javax.swing.JComboBox<Category> cmbCategory;
+    private javax.swing.JPanel content;
     private javax.swing.JLabel includeSizeLbl;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel sizeLbl;
@@ -367,18 +456,26 @@ public class SizeConfiguration extends javax.swing.JPanel implements IStyleable 
         try {
             List<Category> categoryList = categoryDao.consult();
             ItemListener[] itemListeners = cmbCategory.getListeners(ItemListener.class);
-            DefaultTableModel model = (DefaultTableModel) TableCategory.getModel();
-            model.setRowCount(0);
+            DefaultTableModel modelCategory = (DefaultTableModel) TableCategory.getModel();
+            DefaultTableModel modelSize = (DefaultTableModel) TableSize.getModel();
+
+            removeTableContent(modelCategory);
+            removeTableContent(modelSize);
 
             removeEventListener(cmbCategory, itemListeners);
+            cmbCategory.removeAllItems();
             categoryList.forEach(c -> {
                 cmbCategory.addItem(c);
-                model.addRow(new Object[]{c});
+                modelCategory.addRow(new Object[]{c});
             });
             addEventListener(cmbCategory, itemListeners);
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void removeTableContent(DefaultTableModel model) {
+        model.setRowCount(0);
     }
 
     private void removeEventListener(JComboBox<Category> combobox, ItemListener[] itemListeners) {
@@ -393,17 +490,4 @@ public class SizeConfiguration extends javax.swing.JPanel implements IStyleable 
             combobox.addItemListener(itemListener);
         }
     }
-
-    private void loadSizeOfCategorySelected() {
-        try {
-            DefaultTableModel model = (DefaultTableModel) TableSize.getModel();
-            model.setRowCount(0);
-            Category category = (Category) cmbCategory.getSelectedItem();
-            List<Size> sizeList = categoryDao.getSizes(category.getId());
-            sizeList.forEach(s -> model.addRow(new Object[]{s}));
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error. \n" + e.getMessage(), "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
 }

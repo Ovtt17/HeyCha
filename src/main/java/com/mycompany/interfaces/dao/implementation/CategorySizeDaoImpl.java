@@ -9,12 +9,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 
 public class CategorySizeDaoImpl extends Database implements CategorySizeDao {
 
     @Override
-    public void record(CategorySize categorySize) throws Exception {
+    public boolean record(CategorySize categorySize) throws Exception {
+        boolean recordStatus = false;
         try (Connection conn = this.getConnection()) {
             String sqlCheck = """
                               select ct.*, t.talla as nombre_talla, c.nombre as nombre_categoria
@@ -22,32 +22,49 @@ public class CategorySizeDaoImpl extends Database implements CategorySizeDao {
                               join tallas t on ct.id_talla = t.id
                               join categorias c on ct.id_categoria = c.id
                               where id_categoria = ? and id_talla = ?;""";
-            
+
             PreparedStatement psCheck = conn.prepareStatement(sqlCheck);
             try (psCheck) {
-                psCheck.setInt(1, categorySize.getCategoryId());
-                psCheck.setInt(2, categorySize.getSizeId());
-                
+                psCheck.setInt(1, categorySize.getCategory().getId());
+                psCheck.setInt(2, categorySize.getSize().getId());
+
                 ResultSet rsCheck = psCheck.executeQuery();
                 if (rsCheck.next()) {
-                    String categoryName = rsCheck.getString("nombre_categoria");
-                    String sizeName = rsCheck.getString("nombre_talla");
-                    JOptionPane.showMessageDialog(null, "La talla " + sizeName + " ya está asociada con la categoría " + categoryName + ".","AVISO", javax.swing.JOptionPane.WARNING_MESSAGE);
+                    recordStatus = false;
                 } else {
                     String sql = "insert into categorias_tallas (id_categoria, id_talla) values (?,?);";
                     PreparedStatement ps = conn.prepareStatement(sql);
                     try (ps) {
-                        ps.setInt(1, categorySize.getCategoryId());
-                        ps.setInt(2, categorySize.getSizeId());
-                        ps.executeUpdate();
+                        ps.setInt(1, categorySize.getCategory().getId());
+                        ps.setInt(2, categorySize.getSize().getId());
+                        int recorded = ps.executeUpdate();
+                        recordStatus = recorded > 0;
                     }
                 }
             }
-
         } catch (SQLException e) {
             Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de inserción de categorias_tallas en la base de datos", e);
             throw e;
         }
+        return recordStatus;
+    }
+
+    @Override
+    public boolean delete(CategorySize categorySize) throws Exception {
+        boolean deleteStatus = false;
+        try (Connection conn = this.getConnection()) {
+            String sql = "delete from categorias_tallas where id_categoria = ? and id_talla = ?;";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, categorySize.getCategory().getId());
+                ps.setInt(2, categorySize.getSize().getId());
+                int deleted = ps.executeUpdate();
+                deleteStatus = deleted > 0;
+            }
+        } catch (SQLException e) {
+            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, "Error al ejecutar la operación de eliminacion de categorias_tallas en la base de datos", e);
+            throw e;
+        }
+        return deleteStatus;
     }
 
 }

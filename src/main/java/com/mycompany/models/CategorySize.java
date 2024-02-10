@@ -10,16 +10,11 @@ import lombok.Setter;
 @Getter @Setter
 public class CategorySize {
     Integer id;
-    Integer categoryId;
-    Integer sizeId;
+    Category category;
+    Size size;
 
-    public CategorySize(Integer categoryId, Integer sizeId) {
-        this.categoryId = categoryId;
-        this.sizeId = sizeId;
-    }
-
-    public CategorySize(Integer categoryId) {
-        this.categoryId = categoryId;
-    }
-    
+    public CategorySize(Category category, Size size) {
+        this.category = category;
+        this.size = size;
+    }    
 }

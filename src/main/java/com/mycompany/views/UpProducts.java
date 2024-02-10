@@ -34,7 +34,6 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
 
     List<ProductSize> sizesToDelete = new ArrayList<>();
 
-//    HashMap<String, Integer> sizeSelected = new HashMap<>();
     public UpProducts(boolean isDarkModeEnabled) {
         initComponents();
         updateStyles(isDarkModeEnabled);
@@ -282,7 +281,7 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
                     .addGroup(panelRightLayout.createSequentialGroup()
                         .addGroup(panelRightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelRightLayout.createSequentialGroup()
-                                .addComponent(categoryLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                .addComponent(categoryLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGap(136, 136, 136))
                             .addComponent(typeCmb, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(categoryCmb, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -415,7 +414,7 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(panelRight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(57, 57, 57))
+                .addContainerGap())
         );
         bgLayout.setVerticalGroup(
             bgLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -440,7 +439,7 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(bg, javax.swing.GroupLayout.DEFAULT_SIZE, 714, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -546,7 +545,7 @@ public class UpProducts extends javax.swing.JPanel implements IStyleable {
             }
             newSizes.clear();
             sizesToDelete.clear();
-            String succecssMsg = isEditable ? "modificado" : "registrado";
+            String succecssMsg = isEditable ? "modificados" : "registrados";
             javax.swing.JOptionPane.showMessageDialog(this, "Datos " + succecssMsg + " correctamente. \n", "AVISO", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             if (!isEditable) {
                 emptyFields();
